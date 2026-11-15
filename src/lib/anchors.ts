@@ -9,11 +9,18 @@ export function headerHeight(): number {
   return h ? h.getBoundingClientRect().height : 56;
 }
 
+/** Desfase de llegada: el scroll-margin-top de la sección (en las secciones con relleno, la cabecera menos ese
+ *  relleno, para que se vean el título y los primeros controles) o, si no lo hay, el alto de la cabecera. */
+function anchorOffset(el: HTMLElement): number {
+  const sm = parseFloat(getComputedStyle(el).scrollMarginTop);
+  return Number.isFinite(sm) && sm !== 0 ? sm : headerHeight();
+}
+
 /** Desplaza hasta la sección dejando su titular justo bajo la cabecera fija. */
 export function scrollToId(id: string, immediate = false): void {
   const el = document.getElementById(id);
   if (!el) return;
-  const off = id === 'inicio' ? 0 : headerHeight();
+  const off = id === 'inicio' ? 0 : anchorOffset(el);
   const lenis = getLenis();
   if (lenis) {
     // Lenis guarda el alto de la página: tras montar los fijados de GSAP hay que recalcularlo.
@@ -23,28 +30,48 @@ export function scrollToId(id: string, immediate = false): void {
     const y = Math.max(0, el.getBoundingClientRect().top + window.scrollY - off);
     window.scrollTo({ top: y, behavior: immediate || reduced ? 'instant' : 'smooth' });
   }
+  if (immediate) ScrollTrigger.update();
 }
 
 let userMoved = false;
 
-/** Carga con hash: espera a las fuentes y a que ScrollTrigger monte los fijados, y luego salta sin animación. */
+declare global { interface Window { __fontsOn?: Promise<void> } }
+
+/** Carga con hash (QR de la memoria).
+ *  1. Salta en cuanto ScrollTrigger ha montado el fijado del viaje.
+ *  2. Las fuentes web se activan tras el primer fotograma y llegan después: al cargar cambian el alto de lo que hay
+ *     encima y empujarían la sección. Se vuelve a saltar cuando llegan y, durante unos segundos, cada vez que cambia
+ *     el alto de la página, salvo que la persona ya haya movido la página. */
 export async function settleInitialHash(): Promise<void> {
   const id = decodeURIComponent(location.hash.slice(1));
   const target = id ? document.getElementById(id) : null;
   if (!target) { document.documentElement.dataset.anchored = 'none'; return; }
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   const mark = () => { userMoved = true; };
-  ['wheel', 'touchstart', 'keydown'].forEach(ev => window.addEventListener(ev, mark, { once: true, passive: true }));
+  ['wheel', 'touchstart', 'keydown', 'mousedown'].forEach(ev => window.addEventListener(ev, mark, { once: true, passive: true }));
+  const settle = () => { if (!userMoved) { ScrollTrigger.refresh(); scrollToId(id, true); } };
 
-  try { await document.fonts.ready; } catch { /* sin Font Loading API */ }
   ScrollTrigger.refresh();
   scrollToId(id, true);
-  // Un segundo ajuste por si algo de arriba cambió de alto mientras cargaban imágenes.
-  requestAnimationFrame(() => { if (!userMoved) scrollToId(id, true); });
+
+  // Mantener el anclaje mientras la maquetación se asienta (fuentes, imágenes, islas)
+  const main = document.querySelector('main');
+  if (main && 'ResizeObserver' in window) {
+    let last = main.offsetHeight, raf = 0;
+    const ro = new ResizeObserver(() => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => { const h = main.offsetHeight; if (h !== last) { last = h; settle(); } });
+    });
+    ro.observe(main);
+    setTimeout(() => ro.disconnect(), 10000);
+  }
+  try { await window.__fontsOn; } catch { /* */ }
+  void document.body.offsetHeight;          // fuerza la maquetación para que se pidan las fuentes
+  try { await document.fonts.ready; } catch { /* sin Font Loading API */ }
+  settle();
   document.documentElement.dataset.anchored = id;
-  const again = () => { if (!userMoved) { ScrollTrigger.refresh(); scrollToId(id, true); } };
-  if (document.readyState === 'complete') setTimeout(again, 60);
-  else window.addEventListener('load', () => setTimeout(again, 60), { once: true });
+  if (document.readyState === 'complete') setTimeout(settle, 60);
+  else window.addEventListener('load', () => setTimeout(settle, 60), { once: true });
 }
 
 export function bindAnchorLinks(): void {

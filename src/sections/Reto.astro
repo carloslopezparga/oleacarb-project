@@ -140,7 +140,8 @@ const vmax = 1.1;
     .closing span { grid-column: 3 / 12; font: 400 clamp(20px, 2.1vw, 28px)/1.45 var(--f-serif); font-variation-settings: 'opsz' 28; text-wrap: pretty; }
 
     @media (max-width: 900px) {
-      .big95 { font-size: clamp(150px, 46vw, 260px); margin-bottom: 8px; }
+      /* En el móvil el «>» queda entero dentro del margen; el «95» sigue a sangre por la derecha si no cabe. */
+      .big95 { font-size: clamp(150px, 46vw, 260px); margin: 0 0 8px -0.02em; }
       .waffle-fig { grid-template-columns: minmax(0, 1fr); }
       .waffle { max-width: 320px; }
       .eq { font-size: clamp(34px, 10vw, 52px); }

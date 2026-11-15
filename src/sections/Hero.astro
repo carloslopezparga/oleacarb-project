@@ -68,8 +68,10 @@ const lat = num(territory.planta.lat, 2), lon = num(Math.abs(territory.planta.lo
       padding-top: calc(var(--header-h) + clamp(28px, 6vh, 80px)); padding-bottom: 24px; gap: 24px;
     }
     .hero-loc { font-size: 13px; color: var(--char-muted); }
+    /* En escritorio el titular se limita también por la altura (8,6vh) y se abre a 17ch: tres líneas, y en un portátil
+       (1440 × 810, 1366 × 768) el botón y las cifras quedan sobre el pliegue. En el móvil manda el mínimo de 42 px. */
     .hero h1 {
-      font-size: clamp(42px, 5.9vw, 88px); line-height: 1.0; max-width: 12.5ch; color: var(--char-ink);
+      font-size: clamp(42px, min(5.9vw, 8.6vh), 88px); line-height: 1.0; max-width: 12.5ch; color: var(--char-ink);
       letter-spacing: -.02em;
     }
     .hero h1 em { font-style: italic; font-weight: 500; color: var(--olive-l); }
@@ -103,6 +105,11 @@ const lat = num(territory.planta.lat, 2), lon = num(Math.abs(territory.planta.lo
     :global(.js) .hero h1:not(.split) { visibility: hidden; animation: h1-show 1ms 1.2s forwards; }
     @keyframes h1-show { to { visibility: visible; } }
 
+    @media (min-width: 901px) {
+      .hero-in { padding-top: calc(var(--header-h) + clamp(20px, 4vh, 80px)); gap: clamp(16px, 2.8vh, 24px); }
+      .hero h1 { max-width: 17ch; }
+      .hero-lede { max-width: 66ch; }
+    }
     @media (max-width: 900px) {
       .hero-bg::after {
         background: linear-gradient(180deg, rgba(21,25,26,.5) 0%, rgba(21,25,26,.62) 30%, rgba(21,25,26,.9) 62%, var(--char) 92%);

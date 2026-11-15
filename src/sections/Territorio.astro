@@ -97,7 +97,7 @@ const camionesTotal = impact.camiones_ano_total;   // + producto / 20 t + 40 de 
                 <g class="town">
                   <circle cx={a.x} cy={a.y} r={m.small ? 3.5 : 4.5} />
                   <text x={a.x + LBL[a.name][0]} y={a.y + LBL[a.name][1]} text-anchor={LBL[a.name][2]} font-size={m.fs}>
-                    {m.small && a.name === 'Villanueva del Arzobispo' ? 'Villanueva del Arz.' : a.name}{!m.small && <tspan class="tq"> · {num(a.supply_t)}{THIN}t</tspan>}
+                    {a.name}{!m.small && <tspan class="tq"> · {num(a.supply_t)}{THIN}t</tspan>}
                   </text>
                 </g>
               ))}
@@ -116,7 +116,8 @@ const camionesTotal = impact.camiones_ano_total;   // + producto / 20 t + 40 de 
               <rect width={m.kmPx * 12.5} height="5" class="s1" /><rect x={m.kmPx * 12.5} width={m.kmPx * 12.5} height="5" class="s2" />
               <text y="-6" font-size={m.fs - 1}>0</text><text x={m.kmPx * 25} y="-6" font-size={m.fs - 1} text-anchor="middle">25{THIN}km</text>
             </g>
-            <g class="north" transform={`translate(${m.w - (m.small ? 22 : 36)},${m.small ? 26 : 40})`}>
+            {/* En el mapa pequeño Villanueva del Arzobispo cae en la esquina superior derecha: el norte baja a la inferior, libre. */}
+            <g class="north" transform={m.small ? `translate(${m.w - 20},${m.h - 40})` : `translate(${m.w - 36},40)`}>
               <path d="M0,-16 L6,6 L0,1 L-6,6 Z" /><text y="22" text-anchor="middle" font-size={m.fs - 1}>N</text>
             </g>
           </svg>

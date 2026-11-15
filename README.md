@@ -41,7 +41,7 @@ Para pasar las e2e contra producción: `E2E_BASE_URL=https://oleacarb.vercel.app
 - **GSAP + ScrollTrigger + SplitText** y **Lenis** (solo con ratón; en pantallas táctiles, scroll nativo), sincronizados por el ticker de GSAP.
 - **d3** en módulos sueltos (`d3-sankey`, `d3-geo`, `d3-scale`, `d3-shape`) y `es-atlas`. El Sankey, el mapa, el PFD, el plano y el Gantt se calculan en la compilación: no cuestan JS en el cliente.
 - **three.js** a pelo, cargado con `import()` solo al pulsar «Ver en 3D».
-- **Fuentes** de `@fontsource` (Source Serif 4 variable con eje óptico, IBM Plex Sans, Mono y Sans Condensed), solo latin y latin-ext.
+- **Fuentes** de `@fontsource` (Source Serif 4 variable con eje óptico, IBM Plex Sans, Mono y Sans Condensed), solo latin y latin-ext, más un subconjunto propio de flechas, signos y subíndices (← → ≈ ≤ ≥ ₂) en `src/fonts/` que solo se descarga si la página los usa.
 - CSS propio con *custom properties* y capas (`tokens`, `base`, `components`, `sections`). Sin Tailwind ni bibliotecas de gráficos genéricas.
 
 ## Estructura
@@ -56,9 +56,10 @@ src/
   workers/      montecarlo.worker.ts
   data/         *.json del kit (mandan sobre todo lo demás)
   styles/       tokens.css · base.css · components.css
+  fonts/        subconjuntos de glifos (U+2070–209F, U+2190–21FF, U+2248, U+2264–2265) y sus licencias OFL
 public/         video/ (720p, 1080p y póster) · img/ · favicon.svg · apple-touch-icon.png
 tests/          model.test.ts · montecarlo.test.ts · e2e/*.spec.ts
-docs/           BRIEF.md · PROMPT.md · DIRECCION.md · reference/ · brand/ · screens/
+docs/           BRIEF.md · PROMPT.md · DIRECCION.md · reference/ · brand/ · screens/ (y screens/revision/)
 ```
 
 ## Datos y modelo
@@ -80,7 +81,7 @@ docs/           BRIEF.md · PROMPT.md · DIRECCION.md · reference/ · brand/ ·
 
 JS de la carga inicial: 67 kB comprimidos (GSAP, ScrollTrigger, SplitText, Lenis y el código de la página). Las islas, three.js y el *worker* de Monte Carlo se cargan cuando hacen falta.
 
-**Pruebas e2e** (Playwright, Chromium y WebKit en 390 × 844 y 1440 × 900): las 12 anclas en carga en frío, ausencia de scroll horizontal de 360 a 1440 px, los cuatro escenarios del simulador y el estado en la URL, `/video` (src, póster, rangos y Open Graph), la página 404 y el modo de movimiento reducido.
+**Pruebas e2e** (Playwright, Chromium y WebKit en 390 × 844 y 1440 × 900): las 12 anclas en carga en frío, el riel del viaje oculto al llegar a `/#proceso` y `/#planta`, la portada sin scroll a 1440 × 810, 1366 × 768 y 1440 × 900, ausencia de scroll horizontal de 360 a 1440 px, los cuatro escenarios del simulador y el estado en la URL, `/video` (src, póster, rangos y Open Graph), la página 404 y el modo de movimiento reducido.
 
 ## Despliegue en Vercel
 

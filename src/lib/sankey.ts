@@ -25,7 +25,8 @@ const pretty = (n: string) => (n === 'HARD CARBON' ? 'Hard carbon' : n);
 
 /* Posición de cada nodo: [depth, breadth] = [x, y] en escritorio y [y, x] en móvil (ambas en px del viewBox).
  * side: dónde va el rótulo. short: nombre corto para el móvil. */
-type Side = 'right' | 'above' | 'below' | 'over';
+// over: sobre la banda que sale hacia abajo (solo si es ancha); beside: a la derecha de la barra del nodo, a su altura.
+type Side = 'right' | 'above' | 'below' | 'over' | 'beside';
 interface Spec { at: [number, number]; side: Side; short?: string; sub?: string }
 const SPEC: Record<Mode, Record<Orient, { w: number; h: number; total: number; nw: number; nodes: Record<string, Spec> }>> = {
   mass: {
@@ -50,14 +51,14 @@ const SPEC: Record<Mode, Record<Orient, { w: number; h: number; total: number; n
       'Hueso seco a pirólisis': { at: [190, 16], side: 'over', short: 'Hueso seco' },
       'Agua evaporada': { at: [190, 182], side: 'below', short: 'Agua' },
       'Rechazos → árido': { at: [190, 282], side: 'below', short: 'Rechazos' },
-      'Carbonizado': { at: [350, 16], side: 'over' },
-      'Volátiles → oxidador': { at: [350, 182], side: 'below', short: 'Volátiles' },
-      'Carbonizado lavado': { at: [480, 16], side: 'over', short: 'Lavado' },
+      'Carbonizado': { at: [350, 16], side: 'beside' },
+      'Volátiles → oxidador': { at: [350, 206], side: 'below', short: 'Volátiles' },
+      'Carbonizado lavado': { at: [480, 16], side: 'beside', short: 'Lavado' },
       'Minerales → sales': { at: [480, 182], side: 'below', short: 'Minerales' },
-      'Carbonizado a 1.300 °C': { at: [600, 16], side: 'over', short: 'A 1.300 °C' },
+      'Carbonizado a 1.300 °C': { at: [600, 16], side: 'beside', short: 'A 1.300 °C' },
       'Gases de carbonización → oxidador': { at: [600, 182], side: 'below', short: 'Gases' },
       'HARD CARBON': { at: [720, 16], side: 'below' },
-      'Finos': { at: [720, 182], side: 'below' },
+      'Finos': { at: [720, 182], side: 'beside' },
       'Carbón activo': { at: [840, 182], side: 'below' },
       'Gases de activación → oxidador': { at: [840, 282], side: 'below', short: 'Gases' }
     } }
@@ -135,6 +136,7 @@ function build(mode: Mode, orient: Orient): Geo {
     if (s.side === 'right') label = { x: x + w + 8, y: y + h / 2 + (s.sub ? -3 : 4.5), lines: [`${name} · ${value}`, ...(s.sub ? [s.sub] : [])], sub: !!s.sub };
     else if (s.side === 'above') label = { x, y: y - 10, lines: [`${name} · ${value}`] };
     else if (s.side === 'over') label = { x: x + 8, y: y + h + 20, lines: [`${short} · ${value}`] };
+    else if (s.side === 'beside') label = { x: x + w + 8, y: y + h / 2 + 4.5, lines: [`${short} · ${value}`] };
     else label = { x, y: y + h + 18, lines: [orient === 'h' ? short : name, value] };
     return { x, y, w, h, cls: n.name === 'HARD CARBON' ? 'hc' : CLS[n.name], hc: n.name === 'HARD CARBON', name, label: { ...label, strong: n.name === 'HARD CARBON' } };
   });

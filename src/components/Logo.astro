@@ -1,0 +1,18 @@
+---
+/* Logotipo: la marca en SVG y el logotipo escrito en HTML con la fuente real (Source Serif 4, 600, +0,06 em). */
+import LogoMark from './LogoMark.astro';
+interface Props { tone?: 'char' | 'paper'; size?: number }
+const { tone = 'char', size = 28 } = Astro.props;
+---
+<span class={`logo logo--${tone}`}>
+  <LogoMark size={size} />
+  <span class="wm" aria-hidden="true"><span class="a">OLEA</span><span class="b">CARB</span></span>
+</span>
+<style>
+  .logo { display: inline-flex; align-items: center; gap: 10px; }
+  .wm { font: 600 20px/1 var(--f-serif); letter-spacing: .06em; font-variation-settings: 'opsz' 32; }
+  .logo--char .a { color: var(--olive-l); }
+  .logo--char .b { color: var(--char-ink); }
+  .logo--paper .a { color: var(--olive); }
+  .logo--paper .b { color: var(--ink); }
+</style>

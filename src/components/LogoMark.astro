@@ -1,0 +1,10 @@
+---
+/* La marca de brand/logo_mark.svg: almendra girada −32° en oliva, hexágono de trazo claro y punto ion. */
+interface Props { size?: number; class?: string }
+const { size = 28, class: cls = '' } = Astro.props;
+---
+<svg class={`mark ${cls}`} width={size} height={size} viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+  <g transform="rotate(-32 50 50)"><path d="M50,5 C81,27 81,73 50,95 C19,73 19,27 50,5 Z" fill="#5B6B2E" /></g>
+  <polygon points="63.42,57.75 50.00,65.50 36.58,57.75 36.58,42.25 50.00,34.50 63.42,42.25" fill="none" stroke="#F7F5EF" stroke-width="3.2" />
+  <circle cx="50" cy="50" r="4.8" fill="#16AEBF" />
+</svg>

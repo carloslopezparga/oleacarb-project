@@ -1,0 +1,50 @@
+@layer tokens, base, components, sections;
+
+@layer tokens {
+  :root {
+    /* carbón */
+    --char: #15191A;  --char-2: #1D2320;  --char-rule: #333B35;
+    --char-ink: #EEF0E7;  --char-muted: #A9B0A4;
+    /* papel */
+    --paper: #F6F4EE;  --surface: #FFFFFF;  --ink: #1B201C;  --muted: #5D655E;
+    --rule: #D8DCD0;  --rule-2: #E9ECE3;  --grid: rgba(27,32,28,.06);
+    /* oliva: materia y producto */
+    --olive: #5B6B2E;  --olive-d: #3C4A1C;  --olive-m: #8C9A55;
+    --olive-l: #A3B465;  /* sobre carbón */  --olive-p: #DDE3C8;
+    /* ocre: calor y gases */
+    --ochre: #B9862C;  --ochre-l: #D6A54A;  --ochre-p: #F1E2BF;
+    /* terracota: riesgo, crítico, flujo negativo */
+    --terra: #A35A3A;  --terra-l: #D88A66;  --terra-p: #F1DCD0;
+    /* ion: sodio y electricidad; --ion-d para texto sobre papel */
+    --ion: #16AEBF;  --ion-d: #0E7F8C;  --ion-p: #D7EFF2;
+
+    /* Contraste medido (WCAG):
+       --ink/--paper 15,0 · --muted/--paper 5,5 · --olive/--paper 5,3 · --terra/--paper 4,7
+       --ion-d/--paper 4,3 → solo texto grande o sobre --surface (4,7)
+       --ochre/--paper 2,9 → solo gráfico sobre --surface (3,2) o sobre carbón (5,5)
+       --char-muted/--char 8,0 · --olive-l/--char 7,8 · --ion/--char 6,6 · --ochre-l/--char 7,9 */
+
+    /* tipografía */
+    --f-serif: 'Source Serif 4', 'Source Serif 4 Variable', 'Iowan Old Style', Georgia, serif;
+    --f-sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --f-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+    --f-cond: 'IBM Plex Sans Condensed', 'IBM Plex Sans', 'Arial Narrow', sans-serif;
+
+    /* retícula */
+    --maxw: 1240px;
+    --gutter: 24px;
+    --side: max(20px, 4vw);
+    --header-h: 56px;
+
+    /* movimiento */
+    --ease-out: cubic-bezier(.2, .7, .2, 1);
+    --t-fast: 160ms;
+    --t-mid: 220ms;
+
+    color-scheme: light;
+  }
+
+  @media (max-width: 720px) {
+    :root { --gutter: 16px; --side: 20px; }
+  }
+}

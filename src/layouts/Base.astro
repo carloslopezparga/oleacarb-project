@@ -1,0 +1,50 @@
+---
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/components.css';
+import Fonts from '../components/Fonts.astro';
+import Header from '../components/Header.astro';
+import { SITE_URL } from '../config';
+
+interface Props {
+  title: string;
+  description: string;
+  path?: string;
+  ogImage?: string;
+  ogType?: string;
+  headerBase?: string;
+  bodyClass?: string;
+}
+const { title, description, path = '/', ogImage = '/img/og-video.jpg', ogType = 'website', headerBase = '', bodyClass = '' } = Astro.props;
+const canonical = new URL(path, SITE_URL).toString();
+const og = new URL(ogImage, SITE_URL).toString();
+---
+<!doctype html>
+<html lang="es-ES">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#15191A" />
+    <meta name="color-scheme" content="light" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta property="og:site_name" content="OLEACARB" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={og} />
+    <meta property="og:type" content={ogType} />
+    <slot name="head" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <Fonts />
+  </head>
+  <body class={bodyClass}>
+    <Header base={headerBase} />
+    <slot />
+  </body>
+</html>

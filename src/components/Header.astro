@@ -1,0 +1,158 @@
+---
+import Logo from './Logo.astro';
+import { VIDEO } from '../config';
+interface Props { base?: string }
+const { base = '' } = Astro.props;   // '' en la portada, '/' en /video y /404
+
+const SECTIONS = [
+  ['inicio', 'Inicio'], ['reto', 'El reto'], ['territorio', 'Territorio'], ['viaje', 'Una tonelada'],
+  ['proceso', 'Proceso'], ['planta', 'Planta'], ['balances', 'Balances'], ['calendario', 'Calendario'],
+  ['simulador', 'Simulador'], ['impacto', 'Impacto'], ['video', 'Vídeo'], ['equipo', 'Equipo'], ['fuentes', 'Fuentes']
+] as const;
+const NAV = ['viaje', 'proceso', 'planta', 'balances', 'calendario', 'simulador', 'impacto'];
+const label = (id: string) => SECTIONS.find(s => s[0] === id)![1];
+---
+<a class="skip" href={`${base}#main`}>Saltar al contenido</a>
+<header class="site-head on-char">
+  <div class="wrap head-row">
+    <a class="brand" href={`${base}#inicio`} aria-label="OLEACARB, ir al inicio"><Logo /></a>
+    <nav class="head-nav" aria-label="Secciones">
+      <ul role="list">
+        {NAV.map(id => <li><a href={`${base}#${id}`} data-nav={id}>{label(id)}</a></li>)}
+      </ul>
+    </nav>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu">
+      <span class="bars" aria-hidden="true"><i></i><i></i></span><span>Índice</span>
+    </button>
+  </div>
+  <div class="progress" aria-hidden="true"><i></i></div>
+</header>
+
+<div id="menu" class="menu on-char" role="dialog" aria-modal="true" aria-label="Índice de secciones" hidden>
+  <div class="wrap menu-in">
+    <div class="menu-top">
+      <span class="mono menu-k">Índice · 13 secciones</span>
+      <button class="menu-close" type="button" aria-label="Cerrar el índice">Cerrar <span aria-hidden="true">×</span></button>
+    </div>
+    <ol class="menu-list" role="list">
+      {SECTIONS.map(([id, name], i) => (
+        <li><a href={`${base}#${id}`}><span class="mono">{String(i + 1).padStart(2, '0')}</span>{name}</a></li>
+      ))}
+    </ol>
+    <div class="menu-short">
+      <a class="btn btn--ion" href="/video">Ver el vídeo <span class="mono">{VIDEO.duration}</span></a>
+      <a class="btn btn--line" href={`${base}#simulador`}>Abrir el simulador</a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .site-head {
+    position: fixed; inset: 0 0 auto 0; z-index: 100;
+    height: calc(var(--header-h) + env(safe-area-inset-top, 0px));
+    padding-top: env(safe-area-inset-top, 0px);
+    background: var(--char);
+    border-bottom: 1px solid var(--char-rule);
+  }
+  .head-row { height: var(--header-h); display: flex; align-items: center; gap: 24px; }
+  .brand { text-decoration: none; display: inline-flex; min-height: 44px; align-items: center; }
+  .head-nav { margin-left: auto; }
+  .head-nav ul { display: flex; gap: 2px; margin: 0; }
+  .head-nav a {
+    display: inline-flex; align-items: center; min-height: 44px; padding: 0 10px;
+    font: 500 14px/1 var(--f-sans); color: var(--char-muted); text-decoration: none; position: relative;
+    transition: color var(--t-fast) var(--ease-out);
+  }
+  .head-nav a:hover, .head-nav a[aria-current="true"] { color: var(--char-ink); }
+  .head-nav a[aria-current="true"]::after {
+    content: ""; position: absolute; left: 10px; right: 10px; bottom: 8px; height: 2px; background: var(--ion);
+  }
+  .menu-btn {
+    display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 12px;
+    background: transparent; border: 1px solid var(--char-rule); border-radius: 4px; color: var(--char-ink);
+    font: 500 14px var(--f-sans);
+  }
+  .menu-btn:hover { border-color: var(--char-ink); }
+  .bars { display: grid; gap: 5px; width: 16px; }
+  .bars i { display: block; height: 1.5px; background: currentColor; }
+  @media (max-width: 1180px) { .head-nav { display: none; } .menu-btn { margin-left: auto; } }
+
+  .progress { position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; pointer-events: none; }
+  .progress i { display: block; height: 100%; background: var(--ion); transform-origin: 0 50%; transform: scaleX(var(--p, 0)); }
+
+  .menu {
+    position: fixed; inset: 0; z-index: 150; overflow: auto; overscroll-behavior: contain;
+    padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .menu[hidden] { display: none; }
+  .menu-in { min-height: 100%; display: flex; flex-direction: column; padding-block: 8px 32px; }
+  .menu-top { display: flex; align-items: center; justify-content: space-between; height: var(--header-h); }
+  .menu-k { font-size: 13px; color: var(--char-muted); }
+  .menu-close {
+    min-height: 44px; padding: 0 14px; border: 1px solid var(--char-rule); border-radius: 4px;
+    background: transparent; color: var(--char-ink); font: 500 14px var(--f-sans);
+  }
+  .menu-list { margin: 16px 0 28px; columns: 2 280px; column-gap: var(--gutter); }
+  .menu-list li { break-inside: avoid; border-top: 1px solid var(--char-rule); }
+  .menu-list a {
+    display: flex; align-items: baseline; gap: 16px; padding: 12px 0; min-height: 44px;
+    font: 600 clamp(24px, 3.4vw, 34px)/1.15 var(--f-serif); font-variation-settings: 'opsz' 48;
+    text-decoration: none; color: var(--char-ink);
+  }
+  .menu-list a .mono { font: 500 13px var(--f-mono); color: var(--olive-l); min-width: 2ch; }
+  .menu-list a:hover { color: var(--olive-l); }
+  .menu-short { display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto; }
+  :global(html.menu-open) { overflow: hidden; }
+</style>
+
+<script>
+  import { getLenis } from '../lib/motion';
+  const btn = document.querySelector<HTMLButtonElement>('.menu-btn')!;
+  const menu = document.getElementById('menu')!;
+  const closeBtn = menu.querySelector<HTMLButtonElement>('.menu-close')!;
+  function open() {
+    menu.hidden = false; btn.setAttribute('aria-expanded', 'true');
+    document.documentElement.classList.add('menu-open'); getLenis()?.stop();
+    menu.querySelector<HTMLElement>('.menu-list a')?.focus();
+  }
+  function close(focusBtn = true) {
+    menu.hidden = true; btn.setAttribute('aria-expanded', 'false');
+    document.documentElement.classList.remove('menu-open'); getLenis()?.start();
+    if (focusBtn) btn.focus();
+  }
+  btn.addEventListener('click', () => (menu.hidden ? open() : close()));
+  closeBtn.addEventListener('click', () => close());
+  menu.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { e.preventDefault(); close(); }
+    if (e.key === 'Tab') {
+      const f = [...menu.querySelectorAll<HTMLElement>('a, button')];
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+  menu.addEventListener('click', (e) => { if ((e.target as Element).closest('a')) close(false); });
+
+  // Barra de progreso de lectura y sección activa
+  const bar = document.querySelector<HTMLElement>('.progress i');
+  let ticking = false;
+  const upd = () => {
+    ticking = false;
+    const max = document.documentElement.scrollHeight - innerHeight;
+    bar?.style.setProperty('--p', String(max > 0 ? Math.min(1, scrollY / max) : 0));
+  };
+  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(upd); } }, { passive: true });
+  upd();
+
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-nav]')];
+  if (links.length && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => {
+      es.forEach(e => {
+        if (!e.isIntersecting) return;
+        links.forEach(a => a.toggleAttribute('aria-current', a.dataset.nav === e.target.id));
+        links.forEach(a => { if (a.dataset.nav === e.target.id) a.setAttribute('aria-current', 'true'); });
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    document.querySelectorAll('main > section[id]').forEach(s => io.observe(s));
+  }
+</script>

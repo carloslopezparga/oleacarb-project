@@ -96,6 +96,9 @@
   .on-paper { --focus: var(--ion-d); background: var(--paper); color: var(--ink); }
 
   section[id] { scroll-margin-top: var(--header-h); position: relative; }
+  /* Al llegar por ancla se salta casi todo el relleno superior de la sección: el índice queda a 14 px de la cabecera
+     y caben el título y la primera fila de controles. Mismo valor que el relleno de .sec (components.css). */
+  section.sec[id] { scroll-margin-top: calc(var(--header-h) + 14px - clamp(72px, 10vw, 136px)); }
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {

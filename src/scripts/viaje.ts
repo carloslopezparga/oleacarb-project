@@ -162,6 +162,8 @@ export function initViaje(): void {
     anticipatePin: 1,
     invalidateOnRefresh: true,
     animation: tl,
+    // Tras un salto sin evento de scroll (carga con ancla), el timeline se coloca donde toca sin esperar al scrub.
+    onRefresh: (self) => { tl.progress(self.progress); render(); },
     snap: coarse ? undefined : { snapTo: 'labelsDirectional', inertia: false, duration: { min: 0.2, max: 0.6 }, delay: 0.15, ease: 'power1.inOut' }
   });
 

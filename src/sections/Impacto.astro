@@ -45,7 +45,8 @@ const TAG: Record<string, string> = { Producto: 't-prod', Coproducto: 't-prod', 
       <div class="conesa-b">
         <h3>{C.total} interacciones valoradas, ninguna severa ni crítica</h3>
         <div class="conesa" role="img" aria-label={`Matriz de impactos: ${C.moderados} moderados, ${C.compatibles} compatibles y ${C.positivos} positivos; ${C.severos} severos y ${C.criticos} críticos.`}>
-          {conesa.map(c => <span class={c.cls} style={`flex:${c.n}`}><b class="num">{c.n}</b> {c.k}</span>)}
+          <span class="c-bar">{conesa.map(c => <i class={c.cls} style={`flex:${c.n}`}></i>)}</span>
+          <span class="c-key">{conesa.map(c => <span class={c.cls}><i></i><b class="num">{c.n}</b><span class="k">{c.k}</span></span>)}</span>
         </div>
         <p class="src">{C.metodo}. Severos: {C.severos}. Críticos: {C.criticos}.</p>
         <dl class="imp-kv">
@@ -97,12 +98,19 @@ const TAG: Record<string, string> = { Producto: 't-prod', Coproducto: 't-prod', 
 
     .imp-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(28px, 5vw, 72px); }
     .imp-grid h3 { font-size: clamp(22px, 2vw, 28px); margin-bottom: 16px; }
-    .conesa { display: flex; height: 52px; margin-bottom: 10px; }
-    .conesa span { display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 14px; color: var(--ink); padding: 0 6px; white-space: nowrap; overflow: hidden; }
-    .conesa b { font: 600 20px var(--f-serif); }
-    .c-mod { background: var(--ochre-p); border: 1px solid var(--ochre); }
-    .c-comp { background: var(--rule-2); border: 1px solid var(--muted); border-left: 0; }
-    .c-pos { background: var(--olive); color: var(--surface) !important; border: 1px solid var(--olive); }
+    /* Barra sin texto y, debajo, la clave en tres columnas iguales: el tramo de 9 es estrecho para su rótulo. */
+    .conesa { display: grid; gap: 12px; margin-bottom: 14px; }
+    .c-bar { display: flex; height: 28px; }
+    .c-bar i { display: block; min-width: 0; }
+    .c-key { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .c-key > span { display: grid; grid-template-columns: 12px minmax(0, 1fr); grid-template-areas: 'sw n' '. k'; column-gap: 8px; align-items: center; }
+    .c-key i { grid-area: sw; width: 12px; height: 12px; }
+    .c-key b { grid-area: n; font: 600 22px/1.1 var(--f-serif); color: var(--ink); }
+    .c-key .k { grid-area: k; font-size: 14px; line-height: 1.25; color: var(--ink); }
+    .c-mod > i, i.c-mod { background: var(--ochre-p); border: 1px solid var(--ochre); }
+    .c-comp > i, i.c-comp { background: var(--rule-2); border: 1px solid var(--muted); }
+    .c-bar i.c-comp { border-left: 0; }
+    .c-pos > i, i.c-pos { background: var(--olive); border: 1px solid var(--olive); }
     .imp-kv { display: grid; gap: 0; margin: 28px 0 0; border-top: 1px solid var(--ink); }
     .imp-kv div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--rule); align-items: baseline; }
     .imp-kv dt { color: var(--muted); font-size: 15px; }
@@ -119,7 +127,7 @@ const TAG: Record<string, string> = { Producto: 't-prod', Coproducto: 't-prod', 
     @media (max-width: 900px) {
       .imp-big { font-size: clamp(130px, 44vw, 220px); margin-bottom: 18px; }
       .imp-grid { grid-template-columns: minmax(0, 1fr); }
-      .conesa span { font-size: 12.5px; }
+      .c-key .k { font-size: 13px; }
       .imp-kv div { flex-direction: column; gap: 2px; }
     }
   }

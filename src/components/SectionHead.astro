@@ -1,0 +1,11 @@
+---
+/* Cabecera de sección: índice de plano en el margen (Plex Mono) + titular + entradilla. */
+interface Props { n: string; name: string; id: string; title: string; lede?: string }
+const { n, name, id, title, lede } = Astro.props;
+---
+<header class="sec-head g12">
+  <p class="sec-idx"><b>{n}</b> / {name}</p>
+  <h2 id={`${id}-h`} set:html={title} />
+  {lede && <p class="lede" set:html={lede} />}
+  <slot />
+</header>

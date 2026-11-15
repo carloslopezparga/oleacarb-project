@@ -1,0 +1,97 @@
+{
+ "nota": "Cifras de la memoria del proyecto (modelo revisado, euros constantes de 2026). Caso de decisión: C (precio 7 €/kg, rendimiento 15 %, sin ayudas).",
+ "hueso_recibido_t": 24157.303371,
+ "hueso_seco_t": 21500.0,
+ "humedad_recepcion": 0.11,
+ "hc_t_diseno_14": 3010.0,
+ "hc_t_objetivo_15": 3225.0,
+ "carbon_activo_t_14": 191.678561,
+ "carbon_activo_t_15": 103.528561,
+ "capex_planta_Meur": 61.566214,
+ "capex_acumulado_con_fases_Meur": 65.3,
+ "capex_precision": "±30 % (estudio previo)",
+ "empleos_directos": 55,
+ "turnos": "3 turnos diarios, 5 equipos",
+ "electricidad_propia_pct": 72.951037,
+ "calor_proceso_propio_pct": 100,
+ "conexion_red_MW": 1.2,
+ "conexion_red_sin_ORC_MW": 2.6,
+ "carbono_fijado_pct": 28.743969,
+ "huella_kgCO2_por_kg": 0.205485,
+ "vertedero_t": 0,
+ "rechazos_a_arido_pct": 2,
+ "parcela_m": [
+  200,
+  200
+ ],
+ "parcela_m2": 40000,
+ "arranque": "enero de 2032",
+ "tasa_real": 0.08,
+ "horizonte": "2027-2051",
+ "financiacion": {
+  "deuda_pct": 45,
+  "interes_real": 0.035,
+  "aportacion_maxima_Meur": 41.877441,
+  "tir_accionista": 0.094937,
+  "dscr_min": 1.982377
+ },
+ "montecarlo": {
+  "p_van_pos_hoy": 0.149,
+  "p_van_pos_condicionado": 0.87575
+ },
+ "ayudas_totales_CA_Meur": 18.48,
+ "escenarios": {
+  "P": {
+   "name": "Prudente",
+   "params": {
+    "price_hc": 6.0,
+    "yield_hc": 0.14,
+    "aid_ier": 0.0,
+    "aid_test": 0.0
+   },
+   "npv": -18.09637,
+   "irr": 0.032407,
+   "pb": 15.358273,
+   "breakeven": 7.343604
+  },
+  "C": {
+   "name": "Condiciones del Hito 2",
+   "params": {
+    "price_hc": 7.0,
+    "yield_hc": 0.15,
+    "aid_ier": 0.0,
+    "aid_test": 0.0
+   },
+   "npv": -0.238526,
+   "irr": 0.079439,
+   "pb": 9.307057,
+   "breakeven": 7.016543
+  },
+  "CA": {
+   "name": "Condiciones + ayudas",
+   "params": {
+    "price_hc": 7.0,
+    "yield_hc": 0.15,
+    "aid_ier": 0.3,
+    "aid_test": 0.4
+   },
+   "npv": 9.431939,
+   "irr": 0.10576,
+   "pb": 7.509772,
+   "breakeven": 6.325016
+  },
+  "O": {
+   "name": "Optimista",
+   "params": {
+    "price_hc": 8.0,
+    "yield_hc": 0.16,
+    "aid_ier": 0.3,
+    "aid_test": 0.4
+   },
+   "npv": 29.118182,
+   "irr": 0.151117,
+   "pb": 5.676695,
+   "breakeven": 6.069485
+  }
+ }
+}

@@ -1,0 +1,100 @@
+---
+import SectionHead from '../components/SectionHead.astro';
+import Sankey from '../components/Sankey.svelte';
+import { sankeyGeo } from '../lib/sankey';
+import { arc } from 'd3-shape';
+import { balances, key, elec } from '../lib/data';
+import { num, THIN } from '../lib/format';
+
+// Anillo de electricidad (balances.json → energy.electricidad): ORC 62,6 %, FV 10,4 %, red 27,0 % de 12,71 GWh/año.
+const parts = [
+  { k: 'ORC', v: elec.orc, cls: 'r-orc', t: 'con el calor de los gases' },
+  { k: 'Fotovoltaica', v: elec.fv, cls: 'r-fv', t: 'en cubierta, 0,8 MWp' },
+  { k: 'Red', v: elec.red, cls: 'r-red', t: 'comprada' }
+];
+const R = 92, r0 = 66;
+let acc = 0;
+const segs = parts.map(p => {
+  const a0 = acc * 2 * Math.PI, a1 = (acc + p.v) * 2 * Math.PI; acc += p.v;
+  return { ...p, d: arc()({ innerRadius: r0, outerRadius: R, startAngle: a0, endAngle: a1, padAngle: 0.012 } as never) as string };
+});
+const m = balances.mass, e = balances.energy;
+// Entradilla: 124,6 kg de hard carbon por tonelada → 12,5 de cada 100; gases a oxidador = (693,4 + 29,5) kg/t + 275,8 t/año de activación
+// ÷ 24.157 t → 73 %, «casi tres cuartas partes» (process.json → por_tonelada, balances.json → mass.links).
+---
+<section id="balances" class="sec on-char chapter bal" aria-labelledby="balances-h">
+  <div class="wrap">
+    <SectionHead n="07" name="Balances" id="balances"
+      title="Dónde va cada tonelada y cada kilovatio hora"
+      lede="El balance cierra: de cada 100&#8239;kg de hueso que llegan, unos 12,5 acaban en el ánodo y casi tres cuartas partes se queman como gas de proceso, que calienta la planta y mueve el ORC. Caso de diseño (14&#8239;%)." />
+
+    <Sankey client:visible geo={sankeyGeo} />
+
+    <div class="bal-figs">
+      <div class="bf"><b class="num">{num(key.carbono_fijado_pct, 1)}{THIN}%</b><span>del carbono del hueso queda fijado en <em>hard carbon</em> y carbón activo</span></div>
+      <div class="bf"><b class="num">{num(key.calor_proceso_propio_pct)}{THIN}%</b><span>del calor de proceso sale de los gases de la propia planta</span></div>
+      <div class="bf"><b class="num">{num(key.conexion_red_MW, 1)}{THIN}MW</b><span>de conexión a red en lugar de {num(key.conexion_red_sin_ORC_MW, 1)}{THIN}MW, algo clave en una provincia con la red saturada</span></div>
+      <figure class="ring">
+        <svg viewBox="-100 -100 200 200" role="img" aria-label={`Electricidad consumida: ${num(elec.totalGWh, 2)} GWh al año. ORC ${num(elec.orc * 100, 1)} %, fotovoltaica ${num(elec.fv * 100, 1)} %, red ${num(elec.red * 100, 1)} %.`}>
+          <defs><pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" class="h-bg" /><line x1="0" y1="0" x2="0" y2="5" class="h-ln" /></pattern></defs>
+          {segs.map(s => <path d={s.d} class={s.cls} />)}
+          <text y="-4" text-anchor="middle" class="ring-n">{num(elec.totalGWh, 2)}</text>
+          <text y="16" text-anchor="middle" class="ring-u">GWh/año</text>
+        </svg>
+        <figcaption>
+          <p class="ring-k mono">Electricidad que consume la planta</p>
+          <ul role="list">
+            {segs.map(s => <li><i class={`sw ${s.cls}`}></i><b class="num">{num(s.v * 100, 1)}{THIN}%</b> {s.k} <span>· {s.t}</span></li>)}
+          </ul>
+        </figcaption>
+      </figure>
+    </div>
+
+    <details class="as-table">
+      <summary>Ver los balances como tabla</summary>
+      <div class="tables">
+        <div class="scroll-x"><table class="dtable">
+          <caption>Balance de materia, t/año (caso de diseño, 14 %)</caption>
+          <thead><tr><th scope="col">De</th><th scope="col">A</th><th scope="col" class="n">t/año</th></tr></thead>
+          <tbody>{(m.links as [string, string, number][]).map(([a, b, v]) => <tr><td>{a}</td><td>{b === 'HARD CARBON' ? 'Hard carbon' : b}</td><td class="n">{num(v)}</td></tr>)}</tbody>
+        </table></div>
+        <div class="scroll-x"><table class="dtable">
+          <caption>Balance de energía, GWh/año</caption>
+          <thead><tr><th scope="col">De</th><th scope="col">A</th><th scope="col" class="n">GWh/año</th></tr></thead>
+          <tbody>{(e.links as [string, string, number][]).map(([a, b, v]) => <tr><td>{a}</td><td>{b}</td><td class="n">{num(v, 2)}</td></tr>)}</tbody>
+        </table></div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<style>
+  @layer sections {
+    .bal :global(.sk) { margin-top: -8px; }
+    .bal-figs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.4fr); gap: var(--gutter); margin-top: clamp(32px, 4vw, 56px); padding-top: 24px; border-top: 1px solid var(--char-rule); align-items: start; }
+    .bf { display: grid; gap: 8px; }
+    .bf b { font: 600 clamp(36px, 4vw, 52px)/1 var(--f-serif); color: var(--char-ink); font-variation-settings: 'opsz' 60; }
+    .bf span { color: var(--char-muted); font-size: 15px; max-width: 30ch; }
+    .ring { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 18px; align-items: center; }
+    .ring svg { width: 140px; height: 140px; }
+    .r-orc { fill: var(--ion); } .r-fv { fill: url(#hatch); } .r-red { fill: var(--char-muted); }
+    .h-bg { fill: var(--char); } .h-ln { stroke: var(--ion); stroke-width: 2.6; }
+    i.sw { display: inline-block; width: 12px; height: 12px; margin-right: 8px; vertical-align: -1px; }
+    i.r-orc { background: var(--ion); } i.r-red { background: var(--char-muted); }
+    i.r-fv { background: repeating-linear-gradient(45deg, var(--ion) 0 2px, var(--char) 2px 4px); outline: 1px solid var(--ion); }
+    .ring-n { font: 600 30px var(--f-serif); fill: var(--char-ink); }
+    .ring-u { font: 500 12px var(--f-mono); fill: var(--char-muted); }
+    .ring-k { font-size: 12.5px; color: var(--char-muted); margin-bottom: 8px; }
+    .ring ul { display: grid; gap: 6px; margin: 0; font-size: 15px; color: var(--char-ink); }
+    .ring li span { color: var(--char-muted); }
+    .ring li b { font-weight: 600; }
+    .tables { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gutter); margin-top: 12px; }
+    @media (max-width: 1100px) { .bal-figs { grid-template-columns: repeat(3, minmax(0, 1fr)); } .ring { grid-column: 1 / -1; } }
+    @media (max-width: 760px) {
+      .bal-figs { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+      .ring { grid-template-columns: 120px minmax(0, 1fr); }
+      .ring svg { width: 120px; height: 120px; }
+      .tables { grid-template-columns: minmax(0, 1fr); }
+    }
+  }
+</style>

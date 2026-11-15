@@ -1,0 +1,162 @@
+---
+import SectionHead from '../components/SectionHead.astro';
+import Cajetin from '../components/Cajetin.astro';
+import Pfd from '../components/Pfd.astro';
+import { desktop, mobile } from '../lib/pfd';
+import { process, stageEquipment } from '../lib/data';
+import { num, THIN, chem } from '../lib/format';
+const ST = process.stages;
+const kindName = { olive: 'materia y producto', ochre: 'calor y gases', ion: 'agua evaporada', gray: 'minerales y rechazos', terra: 'ácido' };
+---
+<section id="proceso" class="sec sheet on-paper proc" aria-labelledby="proceso-h">
+  <div class="wrap">
+    <SectionHead n="05" name="Proceso" id="proceso"
+      title="Siete etapas y ningún residuo a vertedero"
+      lede="Las 16 corrientes del diagrama de flujo de la memoria, con sus caudales anuales. El grosor y la velocidad de cada una siguen el logaritmo de su caudal. Toca una corriente para ver su ficha y una etapa para abrir su panel." />
+
+    <figure class="pfd-fig field">
+      <div class="pfd-wrap">
+        <Pfd L={desktop} variant="desk" />
+        <Pfd L={mobile} variant="mob" />
+        <div class="ficha" role="status" aria-live="polite" hidden></div>
+      </div>
+      <figcaption class="pfd-leg">
+        <ul role="list">
+          {Object.entries(kindName).map(([k, n]) => <li><i class={`lg lg-${k}`}></i>{n}</li>)}
+          <li><i class="lg lg-loop"></i>bucle de energía</li>
+        </ul>
+        <span class="src">Caudales del caso de diseño (14{THIN}%), t/año. Fuente: memoria, capítulo 8 y anexo B.</span>
+      </figcaption>
+    </figure>
+
+    <div class="stage-tabs" role="tablist" aria-label="Etapas del proceso">
+      {ST.map((s, i) => (
+        <button type="button" role="tab" id={`tab-st-${i}`} aria-controls={`panel-st-${i}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-i={i}>
+          <span class="mono">{i + 1}</span>{s.short}
+        </button>
+      ))}
+    </div>
+    <div class="stage-panels">
+      {ST.map((s, i) => (
+        <div class="spanel" id={`panel-st-${i}`} role="tabpanel" aria-labelledby={`tab-st-${i}`} data-i={i} hidden={i !== 0}>
+          <div class="sp-main">
+            <p class="sp-n mono">Etapa {i + 1} de 7</p>
+            <h3 set:html={chem(s.title)} />
+            <p class="sp-cond mono" set:html={chem(s.cond)} />
+            <p set:html={chem(s.text)} />
+            <dl class="sp-kv">{s.kv.map(([k, v]) => <><dt>{k}</dt><dd set:html={chem(v)} /></>)}</dl>
+            {i === 4 && (
+              <a class="to-viaje" href="#viaje">
+                <span class="mono">0,38{THIN}nm</span>
+                <span>Ver la microestructura en el viaje de una tonelada <span aria-hidden="true">→</span></span>
+              </a>
+            )}
+          </div>
+          <div class="sp-eq">
+            <h4 class="mono">Equipos del área {stageEquipment[i][0]?.area}{i === 5 ? ' y 700' : i === 6 ? ' y 900' : ''}</h4>
+            <ul role="list">
+              {stageEquipment[i].map(e => (
+                <li>
+                  <span class="eq-tag mono">{e.tag}</span>
+                  <span class="eq-body"><b set:html={chem(e.name)} /><span set:html={chem(e.spec)} /></span>
+                  <span class="eq-kw mono">{e.kw ? `${num(e.kw)}${THIN}kW` : '—'}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <details class="as-table">
+      <summary>Ver tabla de corrientes</summary>
+      <div class="scroll-x">
+        <table class="dtable">
+          <caption>Las 16 corrientes del PFD (caso de diseño)</caption>
+          <thead><tr><th scope="col">N.º</th><th scope="col">Corriente</th><th scope="col" class="n">t/año</th><th scope="col" class="n">t/h</th><th scope="col" class="n">°C</th><th scope="col">Origen</th><th scope="col">Destino</th></tr></thead>
+          <tbody>
+            {process.streams.map(s => (
+              <tr><td class="mono">{s.id}</td><th scope="row" set:html={chem(s.name)} /><td class="n">{num(s.ta)}</td><td class="n">{num(s.th, 3)}</td><td class="n">{num(s.T)}</td><td>{s.frm}</td><td>{s.to}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </details>
+    <Cajetin code="P-01" title="Diagrama de flujo del proceso" />
+  </div>
+  <div class="bsheet pfd-sheet" role="dialog" aria-modal="false" aria-label="Detalle del proceso">
+    <div class="grab"><span></span><button type="button" class="ibtn bs-close" aria-label="Cerrar">×</button></div>
+    <div class="bs-body"></div>
+  </div>
+</section>
+
+<style>
+  @layer sections {
+    .pfd-fig { padding: clamp(10px, 2vw, 24px); margin: 0 calc(-1 * clamp(0px, 2vw, 24px)); }
+    .pfd-wrap { position: relative; }
+    @media (max-width: 760px) { .pfd-fig { margin: 0; padding: 8px 4px; } }
+    .ficha {
+      position: absolute; z-index: 5; pointer-events: none; width: max-content; max-width: 300px;
+      background: var(--ink); color: var(--paper); padding: 12px 14px; font-size: 14px; line-height: 1.45;
+    }
+    .ficha :global(b) { display: block; font: 600 16px var(--f-serif); margin: 2px 0 6px; }
+    .ficha :global(.fn) { font: 500 12px var(--f-mono); color: var(--olive-p); }
+    .ficha :global(dl) { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; margin: 0; }
+    .ficha :global(dt) { color: var(--rule); font-size: 13px; }
+    .ficha :global(dd) { margin: 0; font-variant-numeric: tabular-nums; }
+
+    .pfd-leg { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 24px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--rule); }
+    .pfd-leg ul { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; font-size: 13px; }
+    .pfd-leg li { display: inline-flex; align-items: center; gap: 8px; }
+    .lg { width: 22px; height: 4px; }
+    .lg-olive { background: var(--olive); } .lg-ochre { background: var(--ochre); } .lg-ion { background: var(--ion-d); } .lg-gray { background: var(--muted); } .lg-terra { background: var(--terra); }
+    .lg-loop { background: repeating-linear-gradient(90deg, var(--ochre) 0 7px, transparent 7px 12px); }
+
+    .stage-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 36px 0 0; }
+    .stage-tabs button {
+      display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px;
+      border: 1px solid var(--rule); border-radius: 4px; background: var(--surface); color: var(--ink); font: 500 14px var(--f-sans);
+    }
+    .stage-tabs button .mono { font-size: 12px; color: var(--muted); }
+    .stage-tabs button[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+    .stage-tabs button[aria-selected="true"] .mono { color: var(--olive-p); }
+    .stage-panels { margin-top: 14px; }
+    .spanel { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); padding: clamp(20px, 3vw, 32px); background: var(--surface); border: 1px solid var(--rule); }
+    .spanel[hidden] { display: none; }
+    .sp-main { display: grid; gap: 12px; align-content: start; }
+    .sp-n { font-size: 12px; color: var(--muted); }
+    .sp-main h3 { font-size: clamp(24px, 2.4vw, 32px); }
+    .sp-cond { font-size: 13px; color: var(--olive-d); }
+    .sp-kv { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 18px; margin-top: 4px; font-size: 15px; border-top: 1px solid var(--rule); padding-top: 12px; }
+    .sp-kv dt { color: var(--muted); }
+    .sp-kv dd { margin: 0; font-variant-numeric: tabular-nums; font-weight: 500; }
+    .to-viaje { display: flex; align-items: center; gap: 14px; margin-top: 8px; padding: 12px 14px; background: var(--char); color: var(--char-ink); text-decoration: none; --focus: var(--ion); }
+    .to-viaje .mono { color: var(--ion); font-size: 13px; }
+    .to-viaje:hover span:last-child { text-decoration: underline; text-underline-offset: 3px; }
+    .sp-eq h4 { font: 500 12px var(--f-mono); color: var(--muted); margin-bottom: 8px; letter-spacing: 0; }
+    .sp-eq ul { display: grid; margin: 0; }
+    .sp-eq li { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; gap: 12px; padding: 10px 0; border-top: 1px solid var(--rule-2); font-size: 14px; }
+    .eq-tag { font-size: 12.5px; color: var(--olive-d); font-weight: 500; }
+    .eq-body { display: grid; gap: 2px; }
+    .eq-body b { font-weight: 600; }
+    .eq-body span { color: var(--muted); }
+    .eq-kw { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+
+    :global(.pfd-sheet .bs-body) { padding-top: 6px; }
+    :global(.pfd-sheet .spanel) { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; padding: 0; border: 0; background: none; }
+    :global(.pfd-sheet .ficha-m b) { display: block; font: 600 20px var(--f-serif); margin: 4px 0 10px; }
+    :global(.pfd-sheet .ficha-m .fn) { font: 500 12px var(--f-mono); color: var(--muted); }
+    :global(.pfd-sheet .ficha-m dl) { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; }
+    :global(.pfd-sheet .ficha-m dt) { color: var(--muted); }
+    :global(.pfd-sheet .ficha-m dd) { margin: 0; font-variant-numeric: tabular-nums; }
+
+    @media (max-width: 900px) {
+      .spanel { grid-template-columns: minmax(0, 1fr); }
+      .stage-tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
+      .stage-tabs button { flex: none; }
+      .sp-eq li { grid-template-columns: 84px minmax(0, 1fr); }
+      .eq-kw { grid-column: 2; }
+    }
+
+  }
+</style>

@@ -1,0 +1,70 @@
+{
+ "footprint_kgCO2_per_kg": [
+  {
+   "name": "OLEACARB, hard carbon de hueso (estimación)",
+   "v": 0.205485,
+   "color": "#56662B"
+  },
+  {
+   "name": "Hard carbon de coco",
+   "v": 2.6,
+   "color": "#A97A22"
+  },
+  {
+   "name": "Grafito sintético",
+   "v": 25.1,
+   "color": "#9E5636"
+  }
+ ],
+ "footprint_nota": "kg de CO₂ fósil por kg de material. OLEACARB: alcances 1 y 2 más el transporte del hueso, estimación del equipo pendiente de ACV. Coco y grafito: Voß et al., Energy & Environmental Science, 2025.",
+ "conesa": {
+  "total": 42,
+  "moderados": 24,
+  "compatibles": 9,
+  "positivos": 9,
+  "severos": 0,
+  "criticos": 0,
+  "metodo": "Matriz de Leopold valorada con la importancia de Conesa"
+ },
+ "destinos": [
+  {
+   "stream": "Hard carbon",
+   "text": "3.010 t/año a fabricantes de celdas",
+   "tag": "Producto"
+  },
+  {
+   "stream": "Carbón activo de los finos",
+   "text": "192 t/año para tratamiento de aguas y gases",
+   "tag": "Coproducto"
+  },
+  {
+   "stream": "Sales potásicas y cálcicas",
+   "text": "≈ 274 t/año como fertilizante o salmuera",
+   "tag": "Subproducto"
+  },
+  {
+   "stream": "Gases de pirólisis, carbonización y activación",
+   "text": "17.739 t/año al oxidador térmico",
+   "tag": "Energía"
+  },
+  {
+   "stream": "Calor del condensador del ORC",
+   "text": "≈ 41 GWh/año a 80 °C para el secado; el resto, a aerorrefrigeración",
+   "tag": "Energía"
+  },
+  {
+   "stream": "Rechazos de cribado",
+   "text": "483 t/año de piedras y tierra a gestor de áridos",
+   "tag": "Valorizable"
+  },
+  {
+   "stream": "Humos del oxidador",
+   "text": "≈ 12.000 Nm³/h tras SNCR y filtro de mangas, chimenea de 30 m",
+   "tag": "Emisión"
+  }
+ ],
+ "co2_fijado_t": 11103.316156,
+ "camiones_ano_total": 916.792135,
+ "camiones_hueso_ano": 726.292135,
+ "camiones_nota": "(hueso recibido − 6.000 t por cinta) / 25 t + producto / 20 t + 40 de reactivos y otros; 44 km de media por carretera"
+}

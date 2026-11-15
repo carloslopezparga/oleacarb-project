@@ -1,0 +1,149 @@
+---
+import SectionHead from '../components/SectionHead.astro';
+import { key, boneCostPerT, valuePerKgDry, FUEL_PRICE_EUR_KG, plantGWh, economics } from '../lib/data';
+import { num, THIN } from '../lib/format';
+
+const cells = Array.from({ length: 100 }, (_, i) => i);
+// Valor del hueso, €/kg seco
+const bars = [
+  { v: FUEL_PRICE_EUR_KG, d: 2, k: 'como combustible', note: `AVEBIOM, 2T-2026: 204${THIN}€/t sin IVA, entregado`, cls: 'b-muted' },
+  { v: boneCostPerT / 1000, d: 2, k: 'le cuesta a la planta, seco y puesto en planta', note: `${num(boneCostPerT)}${THIN}€/t, modelo de la memoria`, cls: 'b-muted' },
+  { v: valuePerKgDry, d: 2, k: 'convertido en ánodo, carbón activo y energía', note: `ventas de un año tipo, ${num(economics.scenarios.C.kpi.sales37, 2)}${THIN}M€, entre ${num(key.hueso_seco_t)}${THIN}t`, cls: 'b-olive' }
+];
+const vmax = 1.1;
+---
+<section id="reto" class="sec on-paper reto" aria-labelledby="reto-h">
+  <div class="wrap">
+    <SectionHead n="02" name="El reto" id="reto"
+      title="Europa quiere baterías sin litio, pero el ánodo sigue llegando de Asia"
+      lede="Las celdas de ion-sodio no llevan litio, cobalto ni níquel. Su ánodo es un carbón desordenado, el <em>hard carbon</em>, y hoy casi toda la cadena está en un solo país." />
+
+    <div class="reto-a g12">
+      <p class="big95" aria-hidden="true"><span class="gt">&gt;</span>95<span class="pc">%</span></p>
+      <figure class="waffle-fig">
+        <svg class="waffle" viewBox="0 0 220 220" role="img" aria-label="Gofre de 100 cuadros: 96 en terracota (China) y 4 en oliva (resto del mundo). Más del 95 % de la capacidad de celdas de sodio prevista para 2030 está en China.">
+          {cells.map(i => {
+            const x = (i % 10) * 22, y = Math.floor(i / 10) * 22;
+            return <rect x={x + 1} y={y + 1} width="19" height="19" class={i < 96 ? 'c-terra' : 'c-olive'} style={`--i:${i}`} />;
+          })}
+        </svg>
+        <figcaption>
+          <p class="fig-k"><span class="sw sw-terra"></span>China <span class="sw sw-olive"></span>resto del mundo · capacidad de celdas de sodio prevista para 2030</p>
+          <p class="claim">Más del 95{THIN}% está en China. En Europa empiezan Bihar Batteries (Gipuzkoa, línea piloto) y Altris (Suecia).</p>
+          <p class="src"><a href="https://www.iea.org/commentaries/sodium-ion-battery-momentum-grows-but-challenges-remain">IEA, 17-02-2026</a> · <a href="https://www.ess-news.com/2026/06/18/spains-bihar-batteries-targets-sodium-ion-pilot-cell-line-by-2027/">ESS News, 18-06-2026</a></p>
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="reto-b g12">
+      <div class="eq-block">
+        <p class="eq" role="img" aria-label="60 GWh por 1,5 kilos por kWh son 90.000 toneladas">
+          <span class="t t1">60<small>{THIN}GWh</small></span>
+          <span class="op t2">×</span>
+          <span class="t t3">1,5<small>{THIN}kg/kWh</small></span>
+          <span class="op t4">=</span>
+          <span class="t t5 res"><span class="eqn" data-to="90000">90.000</span><small>{THIN}t</small></span>
+        </p>
+        <p>Cada kWh de celda consume entre 1,2 y 1,5{THIN}kg de <em>hard carbon</em>. Solo el contrato de CATL con HyperStrong, 60{THIN}GWh en tres años, pide a 1,5{THIN}kg/kWh unas 90.000{THIN}t: más que toda la producción mundial de 2025.</p>
+        <p class="src"><a href="https://news.metal.com/newscontent/104121178">SMM, sep-2026</a> · <a href="https://www.nacells.com/reports/hard-carbon-2026">SPIR, 2026</a> · <a href="https://www.energy-storage.news/a-turning-point-catl-and-hyperstrong-sign-60gwh-sodium-ion-agreement/">Energy-Storage.news, 27-04-2026</a></p>
+      </div>
+      <div class="prec-block">
+        <p class="prec-h"><b class="num">54{THIN}%</b> biomasa · <b class="num">32{THIN}%</b> coco</p>
+        <!-- El 14 % restante = 100 − 54 − 32; la fuente no lo desglosa. -->
+        <div class="prec" role="img" aria-label="Precursores del hard carbon en 2025: 54 % biomasa, 32 % cáscara de coco y 14 % otros">
+          <span class="p1" style="--w:54"><i>biomasa</i></span><span class="p2" style="--w:32"><i>coco</i></span><span class="p3" style="--w:14"></span>
+        </div>
+        <p>Así se repartieron los precursores del <em>hard carbon</em> en 2025, y el coco escasea. El hueso de aceituna es otro precursor duro y limpio, y Jaén lo tiene a mano.</p>
+        <p class="src"><a href="https://www.nacells.com/reports/hard-carbon-2026">SPIR 2025, recopilado por NaCells</a></p>
+      </div>
+    </div>
+
+    <figure class="value g12" aria-labelledby="value-cap">
+      <figcaption id="value-cap" class="value-cap">
+        <h3>Lo que vale un kilo de hueso seco</h3>
+        <p>Convertido en ánodo, carbón activo y energía vale cinco o seis veces más que quemado.</p>
+      </figcaption>
+      <div class="vbars" role="list">
+        {bars.map(b => (
+          <div class={`vbar ${b.cls}`} role="listitem">
+            <p class="vk"><b class="num">{num(b.v, b.d)}{THIN}€/kg</b> {b.k}</p>
+            <span class="track" aria-hidden="true"><span class="fill" style={`--w:${(b.v / vmax * 100).toFixed(2)}%`}></span></span>
+            <p class="src">{b.note}</p>
+          </div>
+        ))}
+        <div class="vscale" aria-hidden="true"><span>0</span><span>0,50</span><span>1,00{THIN}€/kg</span></div>
+      </div>
+    </figure>
+
+    <p class="closing g12"><span>Con 1,2–1,5{THIN}kg/kWh, las {num(key.hc_t_diseno_14)}{THIN}t/año del caso de diseño abastecen entre {num(plantGWh.d14.lo, 1)} y {num(plantGWh.d14.hi, 1)}{THIN}GWh de celdas al año ({num(plantGWh.o15.lo, 1)}–{num(plantGWh.o15.hi, 1)}{THIN}GWh con las {num(key.hc_t_objetivo_15)}{THIN}t del 15{THIN}%): una línea piloto grande o una fábrica pequeña.</span></p>
+  </div>
+</section>
+
+<style>
+  @layer sections {
+    .reto { overflow: hidden; }
+    .reto-a { align-items: center; margin-bottom: clamp(56px, 8vw, 96px); }
+    .big95 {
+      grid-column: 1 / 7; margin: 0 0 0 calc(-1 * var(--side) - 0.06em);
+      font: 600 clamp(150px, 27vw, 400px)/.8 var(--f-serif); font-variation-settings: 'opsz' 60;
+      letter-spacing: -.05em; color: var(--terra); white-space: nowrap;
+    }
+    .big95 .gt, .big95 .pc { font-size: .34em; letter-spacing: 0; vertical-align: .9em; color: var(--ink); }
+    .big95 .gt { margin-right: .06em; }
+    .waffle-fig { grid-column: 7 / 13; display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 24px; align-items: end; }
+    .waffle { width: 100%; height: auto; }
+    .waffle rect { fill: var(--rule-2); transition: fill var(--t-mid) var(--ease-out); transition-delay: calc(var(--i) * 9ms); }
+    .waffle.is-in .c-terra { fill: var(--terra); }
+    .waffle.is-in .c-olive { fill: var(--olive); }
+    .fig-k { font: 500 12px/1.5 var(--f-mono); color: var(--muted); margin-bottom: 12px; }
+    .sw { display: inline-block; width: 10px; height: 10px; vertical-align: -1px; margin-right: 4px; }
+    .sw-terra { background: var(--terra); } .sw-olive { background: var(--olive); margin-left: 8px; }
+    .claim { font-size: 17px; margin-bottom: 10px; }
+
+    .reto-b { row-gap: 48px; margin-bottom: clamp(64px, 9vw, 112px); }
+    .eq-block { grid-column: 1 / 8; display: grid; gap: 14px; align-content: start; padding-top: 22px; border-top: 2px solid var(--ink); }
+    .prec-block { grid-column: 9 / 13; display: grid; gap: 14px; align-content: start; padding-top: 22px; border-top: 1px solid var(--rule); }
+    .eq-block p, .prec-block p { max-width: 58ch; }
+    .eq { display: flex; flex-wrap: wrap; align-items: baseline; gap: .2em .35em; font: 600 clamp(36px, 4.6vw, 64px)/1.05 var(--f-serif); font-variation-settings: 'opsz' 60; font-variant-numeric: tabular-nums; }
+    .eq small { font: 500 .36em var(--f-sans); color: var(--muted); }
+    .eq .op { color: var(--muted); font-weight: 400; }
+    .eq .res { color: var(--olive); }
+    :global(.js) .eq:not(.is-in) .t, :global(.js) .eq:not(.is-in) .op { opacity: 0; }
+    .eq .t, .eq .op { transition: opacity var(--t-mid) var(--ease-out); }
+    .eq .t2 { transition-delay: 120ms; } .eq .t3 { transition-delay: 240ms; } .eq .t4 { transition-delay: 360ms; } .eq .t5 { transition-delay: 480ms; }
+    .prec-h { font-size: 15px; color: var(--muted); }
+    .prec-h b { font: 600 30px/1 var(--f-serif); color: var(--ink); margin-right: 2px; }
+    .prec { display: flex; height: 40px; background: var(--rule-2); }
+    .prec span { width: calc(var(--w) * 1%); transform-origin: 0 50%; display: flex; align-items: center; padding-left: 8px; overflow: hidden; }
+    .prec i { font: 500 13px var(--f-cond); font-style: normal; color: var(--surface); white-space: nowrap; }
+    .prec .p1 { background: var(--olive); } .prec .p2 { background: var(--terra); } .prec .p3 { background: var(--rule); }
+    :global(.js) .prec:not(.is-in) span { transform: scaleX(0); }
+    .prec span { transition: transform 240ms var(--ease-out); }
+    .prec .p2 { transition-delay: 160ms; } .prec .p3 { transition-delay: 300ms; }
+
+    .value { padding-block: clamp(32px, 4vw, 48px); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); align-items: start; }
+    .value-cap { grid-column: 1 / 5; display: grid; gap: 10px; }
+    .value-cap h3 { font-size: clamp(24px, 2.4vw, 30px); }
+    .value-cap p { color: var(--muted); }
+    .vbars { grid-column: 5 / 13; display: grid; gap: 22px; }
+    .vk { font-size: 16px; margin-bottom: 8px; }
+    .vk b { font: 600 24px var(--f-serif); margin-right: 6px; }
+    .track { display: block; height: 14px; background: var(--rule-2); }
+    .fill { display: block; height: 100%; width: var(--w); background: var(--muted); transform-origin: 0 50%; transition: transform 260ms var(--ease-out); }
+    .b-olive .fill { background: var(--olive); }
+    :global(.js) .vbars:not(.is-in) .fill { transform: scaleX(0); }
+    .vbar:nth-child(2) .fill { transition-delay: 120ms; } .vbar:nth-child(3) .fill { transition-delay: 240ms; }
+    .vbar .src { margin-top: 6px; }
+    .vscale { display: flex; justify-content: space-between; width: calc(1 / 1.1 * 100%); font: 500 12px var(--f-mono); color: var(--muted); border-top: 1px solid var(--ink); padding-top: 6px; }
+
+    .closing { margin-top: clamp(40px, 6vw, 72px); }
+    .closing span { grid-column: 3 / 12; font: 400 clamp(20px, 2.1vw, 28px)/1.45 var(--f-serif); font-variation-settings: 'opsz' 28; text-wrap: pretty; }
+
+    @media (max-width: 900px) {
+      .big95 { font-size: clamp(150px, 46vw, 260px); margin-bottom: 8px; }
+      .waffle-fig { grid-template-columns: minmax(0, 1fr); }
+      .waffle { max-width: 320px; }
+      .eq { font-size: clamp(34px, 10vw, 52px); }
+    }
+  }
+</style>

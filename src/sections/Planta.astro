@@ -1,0 +1,217 @@
+---
+import SectionHead from '../components/SectionHead.astro';
+import Cajetin from '../components/Cajetin.astro';
+import PlantSheet from '../components/PlantSheet.svelte';
+import { plant } from '../lib/data';
+import { num, THIN } from '../lib/format';
+
+const CATS = ['Proceso', 'Almacenes', 'Servicios', 'Seguridad', 'Personas'] as const;
+const CATK: Record<string, string> = { Proceso: 'proc', Almacenes: 'alm', Servicios: 'serv', Seguridad: 'seg', Personas: 'pers' };
+// Alturas: las de plant.json; si faltan, 3 m en exteriores (BRIEF §5.6). Zonas planas sin volumen: aparcamiento, balsa, báscula y reserva.
+const FLAT = new Set(['PK', 'BP', 'BS', 'RS']);
+const zones = plant.zones.map(z => ({
+  id: z.id, name: z.name, cat: z.cat, text: z.text,
+  area: z.area_m2 ? `${num(z.area_m2)}${THIN}m² construidos` : null,
+  dims: `${num(z.w)} × ${num(z.h)}${THIN}m`,
+  height: z.height_m ? `${num(z.height_m)}${THIN}m (supuesta)` : FLAT.has(z.id) ? 'a nivel de suelo' : `3${THIN}m (supuesta, exterior)`,
+  equipment: z.equipment as [string, string][]
+}));
+// Superficies: parcela, construido y ocupación (plant.json → superficie). Ocupación = 9.886 / 40.000 = 24,7 %.
+const sup = plant.superficie;
+const occ = sup.foot / sup.parcel * 100;
+const VB = { x: -16, y: -34, w: 232, h: 252 };
+const silos = [[7.5, 7.5], [22.5, 7.5], [7.5, 22.5], [22.5, 22.5]];
+const routePts = plant.route.map(r => `${r.x},${r.y}`).join(' ');
+const ROUTE_IDS = new Set(plant.route.map(r => r.zone));   // en estas naves el rótulo va arriba a la izquierda para no taparlo con la parada
+---
+<section id="planta" class="sec sheet on-paper planta" aria-labelledby="planta-h">
+  <div class="wrap">
+    <SectionHead n="06" name="Planta" id="planta"
+      title="Cuatro hectáreas junto a la extractora de&nbsp;El&nbsp;Tejar"
+      lede="El plano a escala sobre la parcela de 200 × 200&#8239;m. El material avanza de oeste a este: entra hueso por la cinta y los camiones, y sale <em>hard carbon</em> por el muelle sur. Toca un edificio para ver qué hace y qué equipos tiene." />
+
+    <div class="pl-tools">
+      <div class="chips" role="group" aria-label="Resaltar por categoría">
+        {CATS.map(c => <button type="button" class="chip" data-cat={CATK[c]} aria-pressed="false"><i class={`cat-${CATK[c]}`}></i>{c}</button>)}
+      </div>
+      <div class="pl-actions">
+        <button type="button" class="btn btn--line pl-route" aria-pressed="true">Ruta del material</button>
+        <button type="button" class="btn btn--ink pl-3d" hidden>Ver en 3D</button>
+      </div>
+    </div>
+
+    <div class="pl-grid">
+      <figure class="pl-fig field">
+        <div class="pl-map" tabindex="0" aria-label="Plano de implantación. Con el foco aquí, + y − acercan y alejan, y las flechas mueven el plano.">
+          <svg class="plan" viewBox={`${VB.x} ${VB.y} ${VB.w} ${VB.h}`} data-vb={`${VB.x} ${VB.y} ${VB.w} ${VB.h}`} role="group" aria-label="Plano de implantación G-01 de la planta, parcela de 200 por 200 metros">
+            <defs>
+              <pattern id="g10" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M10,0 L0,0 0,10" fill="none" class="g10" /></pattern>
+            </defs>
+            <rect x={VB.x} y={VB.y} width={VB.w} height={VB.h} fill="url(#g10)" />
+            <!-- El Tejar al norte -->
+            <rect x={plant.neighbour.x} y={plant.neighbour.y} width={plant.neighbour.w} height={plant.neighbour.h} class="tejar" />
+            <text x="100" y={plant.neighbour.y + 10.2} class="lbl lbl-n" text-anchor="middle">Extractora de El Tejar (existente)</text>
+            <!-- parcela, verde y viales -->
+            <rect x="0" y="0" width={plant.parcel.w} height={plant.parcel.h} class="parcel" />
+            <rect x={plant.green[0]} y={plant.green[1]} width={plant.green[2]} height={plant.green[3]} class="green" />
+            {plant.roads.map(([x, y, w, h]) => <rect x={x} y={y} width={w} height={h} class="road" />)}
+            <line x1={plant.conveyor.desde[0]} y1={plant.conveyor.desde[1]} x2={plant.conveyor.hasta[0]} y2={plant.conveyor.hasta[1]} class="conv" />
+            <text x={plant.conveyor.hasta[0] - 2.5} y="9" class="lbl lbl-s cinta" text-anchor="end">cinta desde El Tejar</text>
+            <!-- zonas -->
+            {plant.zones.map(z => (
+              <g class={`zone cat-${CATK[z.cat]} t-${z.type}`} data-id={z.id} data-cat={CATK[z.cat]} tabindex="0" role="button" aria-label={`${z.id}: ${z.name}`}>
+                {z.type === 'silo' ? <>
+                  <rect x={z.x} y={z.y} width={z.w} height={z.h} class="zhit" />
+                  {silos.map(([a, b]) => <circle cx={z.x + a} cy={z.y + b} r="5.25" class="zshape" />)}
+                </> : z.id === 'CH' ? <circle cx={z.x + z.w / 2} cy={z.y + z.h / 2} r="2.2" class="zshape chim" />
+                  : <rect x={z.x} y={z.y} width={z.w} height={z.h} class="zshape" />}
+                {z.id === 'CH'
+                  ? <text x={z.x + z.w + 2} y={z.y + z.h / 2} class="zid" dominant-baseline="central">CH</text>
+                  : ROUTE_IDS.has(z.id)
+                    ? <text x={z.x + 2.2} y={z.y + 2.2} class="zid zid-tl" dominant-baseline="hanging">{z.id}</text>
+                    : <text x={z.x + z.w / 2} y={z.y + z.h / 2} class="zid" text-anchor="middle" dominant-baseline="central">{z.id}</text>}
+              </g>
+            ))}
+            <!-- ruta del material 1–7 -->
+            <g class="route">
+              <polyline points={routePts} class="route-l" pathLength="1" />
+              {plant.route.map((r, i) => <g class="rstop" transform={`translate(${r.x} ${r.y})`}><circle class="rs-c" r="2.6" /><text class="rs-t" text-anchor="middle" dominant-baseline="central">{i + 1}</text></g>)}
+            </g>
+            <!-- cotas -->
+            <g class="cotas">
+              <line x1="0" y1="-27" x2="200" y2="-27" /><line x1="0" y1="-30" x2="0" y2="-22" /><line x1="200" y1="-30" x2="200" y2="-22" />
+              <text x="100" y="-29" text-anchor="middle" class="lbl lbl-c">200 m</text>
+              <line x1="208" y1="0" x2="208" y2="200" /><line x1="205" y1="0" x2="211" y2="0" /><line x1="205" y1="200" x2="211" y2="200" />
+              <text x="211" y="100" class="lbl lbl-c" transform="rotate(90 211 100)" text-anchor="middle">200 m</text>
+            </g>
+            <g class="north" transform="translate(-8 8)"><path d="M0,-6 L2.6,3 L0,1 L-2.6,3 Z" /><text y="9" text-anchor="middle" class="lbl lbl-c">N</text></g>
+            <g class="scale" transform="translate(4 210)">
+              <rect width="25" height="2" class="s1" /><rect x="25" width="25" height="2" class="s2" />
+              <text y="-1.5" class="lbl lbl-c">0</text><text x="50" y="-1.5" text-anchor="middle" class="lbl lbl-c">50 m</text>
+            </g>
+            <text x="122" y="152.2" text-anchor="middle" class="lbl lbl-s acc">{plant.acceso}</text>
+          </svg>
+          <div class="pl-zoom">
+            <button type="button" class="ibtn" data-z="in" aria-label="Acercar">+</button>
+            <button type="button" class="ibtn" data-z="out" aria-label="Alejar">−</button>
+            <button type="button" class="ibtn" data-z="fit" aria-label="Encuadrar toda la parcela">
+              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 5V1h4M11 1h4v4M15 11v4h-4M5 15H1v-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+            </button>
+          </div>
+          <p class="pl-hint" aria-hidden="true"></p>
+        </div>
+  <div class="p3d" hidden>
+          <div class="p3d-bar">
+            <span class="mono p3d-k">Maqueta 3D · alturas supuestas</span>
+            <div class="p3d-btns">
+              <button type="button" class="btn btn--ion p3d-tour">Recorrido</button>
+              <button type="button" class="btn btn--line p3d-close">Cerrar 3D</button>
+            </div>
+          </div>
+          <div class="p3d-canvas"></div>
+          <div class="p3d-card" aria-live="polite" hidden></div>
+        </div>
+        <figcaption class="pl-cap">
+          <p class="src">Parcela de {num(sup.parcel)}{THIN}m² · {num(sup.built)}{THIN}m² construidos · {num(sup.foot)}{THIN}m² de ocupación ({num(occ, 1)}{THIN}%). Alturas supuestas a falta del proyecto de estructuras. Línea azul: ruta del material, del 1 al 7; línea ocre: cinta de hueso desde El Tejar.</p>
+          <p class="src pl-help"><span class="h-fine">Rueda (tras hacer clic en el plano), botones o + y − para acercar · arrastra para moverte.</span><span class="h-touch">Pellizca con dos dedos para acercar y moverte, o usa los botones.</span></p>
+        </figcaption>
+      </figure>
+      <div class="pl-side">
+        <PlantSheet client:idle zones={zones} initial="N4" />
+        <ol class="pl-route-list" role="list">
+          {plant.route.map((r, i) => <li><span class="mono">{i + 1}</span><span>{r.label}</span><span class="mono z">{r.zone}</span></li>)}
+        </ol>
+      </div>
+    </div>
+    <Cajetin code="G-01" title="Implantación" scale="1:1.000" />
+  </div>
+</section>
+
+<style>
+  @layer sections {
+    .pl-tools { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 24px; margin-bottom: 14px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip i.cat-proc { background: var(--olive); } .chip i.cat-alm { background: var(--ochre); } .chip i.cat-serv { background: var(--muted); }
+    .chip i.cat-seg { background: var(--terra); } .chip i.cat-pers { background: var(--ion-d); }
+    .pl-actions { display: flex; gap: 8px; }
+    .pl-grid { display: grid; grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); gap: var(--gutter); align-items: start; }
+    .pl-fig { padding: 10px; position: relative; }
+    .pl-map { position: relative; overflow: hidden; touch-action: pan-y; outline: none; }
+    .pl-map:focus-visible { outline: 2px solid var(--ion-d); outline-offset: 2px; }
+    .plan { width: 100%; height: auto; aspect-ratio: 232 / 252; user-select: none; -webkit-user-select: none; cursor: grab; --upx: .33; }
+    .plan.is-drag { cursor: grabbing; }
+    .g10 { stroke: var(--rule-2); stroke-width: .25; }
+    .tejar { fill: var(--rule-2); stroke: var(--muted); stroke-width: .3; stroke-dasharray: 1.6 1.2; }
+    .parcel { fill: var(--paper); stroke: var(--ink); stroke-width: .5; stroke-dasharray: 4 2; }
+    .green { fill: var(--olive-p); opacity: .7; }
+    .road { fill: var(--rule-2); }
+    .conv { stroke: var(--ochre); stroke-width: 1.6; }
+    .zone { cursor: pointer; outline: none; transition: opacity var(--t-fast) var(--ease-out); }
+    .zshape { stroke-width: .5; transition: fill var(--t-fast) var(--ease-out), stroke-width var(--t-fast); }
+    .zhit { fill: transparent; }
+    .cat-proc .zshape { fill: var(--olive-p); stroke: var(--olive); }
+    .cat-alm .zshape { fill: var(--ochre-p); stroke: var(--ochre); }
+    .cat-serv .zshape { fill: var(--rule-2); stroke: var(--muted); }
+    .cat-seg .zshape { fill: var(--terra-p); stroke: var(--terra); }
+    .cat-pers .zshape { fill: var(--ion-p); stroke: var(--ion-d); }
+    .t-exterior .zshape:not(.chim) { stroke-dasharray: 1.5 1; }
+    .zshape.chim { fill: var(--ink); stroke: none; }
+    .zone:hover .zshape, .zone:focus-visible .zshape { stroke-width: 1.2; }
+    .zone.is-on .zshape { stroke: var(--ink); stroke-width: 1.4; }
+    .zone.is-on.cat-proc .zshape { fill: var(--olive-m); }
+    .plan.has-cat .zone:not(.is-cat) { opacity: .22; }
+    .zid { font: 500 calc(12px * var(--upx)) var(--f-mono); fill: var(--ink); pointer-events: none; }
+    .t-exterior .zid { fill: var(--muted); }
+    .lbl { font-family: var(--f-cond); font-weight: 500; fill: var(--muted); font-size: calc(12px * var(--upx)); }
+    .lbl-n { fill: var(--ink); }
+    .plan.dense .cinta { display: none; }
+    .lbl-c { font-family: var(--f-mono); fill: var(--ink); font-size: calc(11.5px * var(--upx)); }
+    .acc { font-size: calc(11px * var(--upx)); }
+    .cotas line { stroke: var(--ink); stroke-width: .35; }
+    .north path { fill: var(--ink); }
+    .scale .s1 { fill: var(--ink); } .scale .s2 { fill: var(--surface); stroke: var(--ink); stroke-width: .3; }
+    .route-l { fill: none; stroke: var(--ion-d); stroke-width: calc(2.4px * var(--upx)); stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 0; transition: stroke-dashoffset 1.2s var(--ease-out); pointer-events: none; }
+    :global(.js) .pl-fig:not(.is-in) .route-l { stroke-dashoffset: 1; }
+    .rs-c { r: calc(8px * var(--upx)); fill: var(--ion-d); stroke: var(--surface); stroke-width: calc(1.5px * var(--upx)); }
+    .rs-t { font: 600 calc(10px * var(--upx)) var(--f-mono); fill: var(--surface); pointer-events: none; }
+    .rstop { pointer-events: none; }
+    .route { transition: opacity var(--t-fast); }
+    .plan.no-route .route { opacity: 0; }
+    .pl-zoom { position: absolute; right: 8px; top: 8px; display: grid; gap: 6px; }
+    .pl-hint { position: absolute; left: 50%; top: 50%; translate: -50% -50%; background: var(--ink); color: var(--paper); padding: 8px 12px; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity var(--t-mid); }
+    .pl-hint.is-on { opacity: .92; }
+    .pl-cap { margin-top: 10px; display: grid; gap: 4px; }
+    .h-touch { display: none; }
+    @media (pointer: coarse) { .h-touch { display: inline; } .h-fine { display: none; } }
+    .pl-side { display: grid; gap: 18px; position: sticky; top: calc(var(--header-h) + 16px); }
+    .pl-route-list { margin: 0; display: grid; font-size: 14px; border-top: 1px solid var(--ink); }
+    .pl-route-list li { display: grid; grid-template-columns: 24px 1fr auto; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--rule); }
+    .pl-route-list .mono { font-size: 12.5px; color: var(--ion-d); font-weight: 500; background: var(--surface); text-align: center; }
+    .pl-route-list .z { color: var(--muted); background: none; }
+
+    .p3d { position: absolute; inset: 0; z-index: 20; background: var(--char); color: var(--char-ink); display: grid; grid-template-rows: auto 1fr; box-shadow: 0 20px 60px rgba(21,25,26,.35); --focus: var(--ion); }
+    .p3d[hidden] { display: none; }
+    .p3d-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--char-rule); }
+    .p3d-k { font-size: 12.5px; color: var(--char-muted); }
+    .p3d-btns { display: flex; gap: 8px; }
+    .p3d-canvas { position: relative; min-height: 0; touch-action: none; }
+    .p3d-canvas :global(canvas) { display: block; width: 100%; height: 100%; }
+    .p3d-card[hidden] { display: none; }
+    .p3d-card { position: absolute; left: 16px; bottom: 16px; max-width: min(360px, calc(100% - 32px)); background: var(--char); border: 1px solid var(--ion); padding: 14px 16px; display: grid; gap: 4px; }
+    .p3d-card :global(.mono) { font-size: 12.5px; color: var(--ion); }
+    .p3d-card :global(b) { font: 600 20px var(--f-serif); }
+    .p3d-card :global(span:last-child) { font-size: 14px; color: var(--char-muted); }
+
+    :global(html.p3d-open .pficha) { z-index: 170; }
+    @media (max-width: 900px) {
+      .pl-grid { grid-template-columns: minmax(0, 1fr); }
+      .pl-fig { padding: 4px; margin-inline: -8px; }
+      .pl-side { position: static; }
+      .chips { flex-wrap: nowrap; overflow-x: auto; max-width: 100%; padding-bottom: 4px; }
+      .chip { flex: none; }
+      .pl-tools { display: grid; grid-template-columns: minmax(0, 1fr); }
+      .pl-zoom { position: static; display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
+      .p3d { position: fixed; inset: 0; z-index: 160; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+    }
+  }
+</style>

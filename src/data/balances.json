@@ -1,0 +1,668 @@
+{
+ "mass": {
+  "unidad": "t/año (caso de diseño, 14 %)",
+  "nodes": [
+   "Hueso recibido",
+   "Agua evaporada",
+   "Rechazos → árido",
+   "Hueso seco a pirólisis",
+   "Volátiles → oxidador",
+   "Carbonizado",
+   "Minerales → sales",
+   "Carbonizado lavado",
+   "Gases de carbonización → oxidador",
+   "Carbonizado a 1.300 °C",
+   "HARD CARBON",
+   "Finos",
+   "Carbón activo",
+   "Gases de activación → oxidador"
+  ],
+  "links": [
+   [
+    "Hueso recibido",
+    "Agua evaporada",
+    2604.157303
+   ],
+   [
+    "Hueso recibido",
+    "Rechazos → árido",
+    483.146067
+   ],
+   [
+    "Hueso recibido",
+    "Hueso seco a pirólisis",
+    21070.0
+   ],
+   [
+    "Hueso seco a pirólisis",
+    "Volátiles → oxidador",
+    16750.65
+   ],
+   [
+    "Hueso seco a pirólisis",
+    "Carbonizado",
+    4319.35
+   ],
+   [
+    "Carbonizado",
+    "Minerales → sales",
+    129.5805
+   ],
+   [
+    "Carbonizado",
+    "Carbonizado lavado",
+    4189.7695
+   ],
+   [
+    "Carbonizado lavado",
+    "Gases de carbonización → oxidador",
+    712.260815
+   ],
+   [
+    "Carbonizado lavado",
+    "Carbonizado a 1.300 °C",
+    3477.508685
+   ],
+   [
+    "Carbonizado a 1.300 °C",
+    "HARD CARBON",
+    3010.0
+   ],
+   [
+    "Carbonizado a 1.300 °C",
+    "Finos",
+    467.508685
+   ],
+   [
+    "Finos",
+    "Carbón activo",
+    191.678561
+   ],
+   [
+    "Finos",
+    "Gases de activación → oxidador",
+    275.830124
+   ]
+  ]
+ },
+ "energy": {
+  "unidad": "GWh/año",
+  "nodes": [
+   "Gases de proceso",
+   "Calor útil en aceite térmico",
+   "Pérdidas por humos",
+   "Calor de proceso",
+   "Entrada al ORC",
+   "Electricidad ORC",
+   "Calor a 80 °C"
+  ],
+  "links": [
+   [
+    "Gases de proceso",
+    "Calor útil en aceite térmico",
+    65.993056
+   ],
+   [
+    "Gases de proceso",
+    "Pérdidas por humos",
+    11.645833
+   ],
+   [
+    "Calor útil en aceite térmico",
+    "Calor de proceso",
+    17.0
+   ],
+   [
+    "Calor útil en aceite térmico",
+    "Entrada al ORC",
+    48.993056
+   ],
+   [
+    "Entrada al ORC",
+    "Electricidad ORC",
+    7.955
+   ],
+   [
+    "Entrada al ORC",
+    "Calor a 80 °C",
+    41.038056
+   ]
+  ],
+  "demanda_calor": [
+   [
+    "Pirólisis (calentamiento indirecto de los tambores)",
+    7.0
+   ],
+   [
+    "Secado del hueso (banda, agua caliente del ORC)",
+    3.5
+   ],
+   [
+    "Secado del carbonizado lavado (paletas, aceite térmico)",
+    3.8
+   ],
+   [
+    "Activación de finos (vapor y horno)",
+    1.2
+   ],
+   [
+    "Concentración de salmuera, calefacción y ACS",
+    1.5
+   ]
+  ],
+  "rendimiento_orc": 0.16237,
+  "electricidad": {
+   "total_MWh": 12714.007137,
+   "orc_MWh": 7955.0,
+   "fv_MWh": 1320.0,
+   "red_MWh": 3439.007137,
+   "consumo_por_kg_kWh": [
+    [
+     "Carbonización a 1.300 °C (2 hornos de empuje)",
+     1.98
+    ],
+    [
+     "Molienda, clasificación y envasado",
+     0.75
+    ],
+    [
+     "Pirólisis, oxidador, caldera y auxiliares del ORC",
+     0.5
+    ],
+    [
+     "Planta de nitrógeno (PSA)",
+     0.25
+    ],
+    [
+     "Lavado, filtración y secado del carbonizado",
+     0.15
+    ],
+    [
+     "Servicios generales, laboratorio y oficinas",
+     0.27
+    ]
+   ],
+   "potencia_media_MW": 1.589251,
+   "punta_MW": 2.4
+  }
+ },
+ "quimica": {
+  "ash": 129.5805,
+  "hcl_need": 96.116336,
+  "hcl_cons": 144.174504,
+  "hcl33": 436.892436,
+  "excess": 48.058168,
+  "lime": 53.082447,
+  "salts": 273.924524
+ },
+ "carbono": {
+  "c_in": 10535.0,
+  "c_hc": 2859.5,
+  "c_ac": 168.677134,
+  "fixed": 0.28744,
+  "grid": 343.900714,
+  "gnl": 202.0,
+  "road": 72.609937,
+  "fossil": 618.510651,
+  "per_kg": 0.205485,
+  "trucks": 916.792135,
+  "co2_fixed": 11103.316156,
+  "co2_grid_avoided": 795.5
+ },
+ "sankey_geometria_actual": {
+  "nota": "Geometría de las bandas de la web actual, por si quieres partir de ella.",
+  "mass": {
+   "links": [
+    {
+     "g": [
+      37,
+      70,
+      105.57,
+      250,
+      14,
+      49.57
+     ],
+     "c": "#2DBCCB",
+     "o": 0.5,
+     "k": 0
+    },
+    {
+     "g": [
+      37,
+      105.57,
+      112.17,
+      250,
+      48,
+      54.6
+     ],
+     "c": "#9AA096",
+     "o": 0.7,
+     "k": 0
+    },
+    {
+     "g": [
+      37,
+      112.17,
+      400.0,
+      250,
+      78,
+      365.83
+     ],
+     "c": "#8C9A55",
+     "o": 0.5,
+     "k": 1
+    },
+    {
+     "g": [
+      257,
+      78,
+      306.82,
+      520,
+      78,
+      306.82
+     ],
+     "c": "#D6A54A",
+     "o": 0.45,
+     "k": 2
+    },
+    {
+     "g": [
+      257,
+      306.82,
+      365.83,
+      400,
+      324.82,
+      383.83
+     ],
+     "c": "#C4D28A",
+     "o": 0.6,
+     "k": 2
+    },
+    {
+     "g": [
+      407,
+      324.82,
+      326.59,
+      700,
+      290.82,
+      292.59
+     ],
+     "c": "#9AA096",
+     "o": 0.55,
+     "k": 3
+    },
+    {
+     "g": [
+      407,
+      326.59,
+      336.32,
+      700,
+      304.59,
+      314.32
+     ],
+     "c": "#D6A54A",
+     "o": 0.55,
+     "k": 3
+    },
+    {
+     "g": [
+      407,
+      336.32,
+      377.44,
+      700,
+      326.32,
+      367.44
+     ],
+     "c": "#C4D28A",
+     "o": 0.8,
+     "k": 3
+    },
+    {
+     "g": [
+      407,
+      377.44,
+      380.06,
+      700,
+      379.44,
+      382.06
+     ],
+     "c": "#2DBCCB",
+     "o": 0.55,
+     "k": 3
+    },
+    {
+     "g": [
+      407,
+      380.06,
+      383.83,
+      700,
+      394.06,
+      397.83
+     ],
+     "c": "#D6A54A",
+     "o": 0.55,
+     "k": 3
+    }
+   ],
+   "nodes": [
+    {
+     "x": 30,
+     "y": 70,
+     "h": 330.0,
+     "c": "#A3B465"
+    },
+    {
+     "x": 250,
+     "y": 14,
+     "h": 35.574,
+     "c": "#2DBCCB"
+    },
+    {
+     "x": 250,
+     "y": 48,
+     "h": 6.6,
+     "c": "#9AA096"
+    },
+    {
+     "x": 250,
+     "y": 78,
+     "h": 287.826,
+     "c": "#C4D28A"
+    },
+    {
+     "x": 520,
+     "y": 78,
+     "h": 228.82167,
+     "c": "#D6A54A"
+    },
+    {
+     "x": 400,
+     "y": 324.82167,
+     "h": 59.00433,
+     "c": "#C4D28A"
+    },
+    {
+     "x": 700,
+     "y": 290.82167,
+     "h": 1.77013,
+     "c": "#9AA096"
+    },
+    {
+     "x": 700,
+     "y": 304.5918,
+     "h": 9.729814,
+     "c": "#D6A54A"
+    },
+    {
+     "x": 700,
+     "y": 326.321614,
+     "h": 41.118,
+     "c": "#C4D28A"
+    },
+    {
+     "x": 700,
+     "y": 379.439614,
+     "h": 2.618418,
+     "c": "#2DBCCB"
+    },
+    {
+     "x": 700,
+     "y": 394.058032,
+     "h": 3.767968,
+     "c": "#D6A54A"
+    }
+   ],
+   "labels": [
+    {
+     "x": 30,
+     "y": 422.0,
+     "t": "Hueso recibido · 24.157 t/año"
+    },
+    {
+     "x": 264,
+     "y": 35.787,
+     "t": "Agua evaporada · 2.604 t",
+     "s": 1
+    },
+    {
+     "x": 264,
+     "y": 55.3,
+     "t": "Rechazos · 483 t → árido",
+     "s": 1
+    },
+    {
+     "x": 534,
+     "y": 186.410835,
+     "t": "Volátiles · 16.751 t"
+    },
+    {
+     "x": 534,
+     "y": 204.410835,
+     "t": "al oxidador: todo el calor de la planta y 8 GWh eléctricos",
+     "s": 1
+    },
+    {
+     "x": 404,
+     "y": 401.826,
+     "t": "Carbonizado · 4.319 t",
+     "a": "middle",
+     "s": 1
+    },
+    {
+     "x": 714,
+     "y": 296.32167,
+     "t": "Minerales → sales · 130 t",
+     "s": 1
+    },
+    {
+     "x": 714,
+     "y": 313.456707,
+     "t": "Gases de carbonización → oxidador · 712 t",
+     "s": 1
+    },
+    {
+     "x": 714,
+     "y": 350.880614,
+     "t": "HARD CARBON · 3.010 t",
+     "s": 0
+    },
+    {
+     "x": 714,
+     "y": 384.939614,
+     "t": "Carbón activo · 192 t",
+     "s": 1
+    },
+    {
+     "x": 714,
+     "y": 399.942016,
+     "t": "Gases de activación → oxidador · 276 t",
+     "s": 1
+    }
+   ]
+  },
+  "energy": {
+   "links": [
+    {
+     "g": [
+      37,
+      60,
+      315.0,
+      260,
+      60,
+      315.0
+     ],
+     "c": "#D6A54A",
+     "o": 0.45,
+     "k": 0
+    },
+    {
+     "g": [
+      37,
+      315.0,
+      360.0,
+      260,
+      337.0,
+      382.0
+     ],
+     "c": "#9AA096",
+     "o": 0.55,
+     "k": 0
+    },
+    {
+     "g": [
+      267,
+      60,
+      125.69,
+      500,
+      30,
+      95.69
+     ],
+     "c": "#D88A66",
+     "o": 0.5,
+     "k": 1
+    },
+    {
+     "g": [
+      267,
+      125.69,
+      315.0,
+      500,
+      125.69,
+      315.0
+     ],
+     "c": "#D6A54A",
+     "o": 0.35,
+     "k": 1
+    },
+    {
+     "g": [
+      507,
+      125.69,
+      156.43,
+      720,
+      115.69,
+      146.43
+     ],
+     "c": "#2DBCCB",
+     "o": 0.7,
+     "k": 2
+    },
+    {
+     "g": [
+      507,
+      156.43,
+      315.0,
+      720,
+      162.43,
+      321.0
+     ],
+     "c": "#E8D7A8",
+     "o": 0.45,
+     "k": 2
+    }
+   ],
+   "nodes": [
+    {
+     "x": 30,
+     "y": 60,
+     "h": 300.0,
+     "c": "#D6A54A"
+    },
+    {
+     "x": 260,
+     "y": 60,
+     "h": 255.0,
+     "c": "#D6A54A"
+    },
+    {
+     "x": 260,
+     "y": 337.0,
+     "h": 45.0,
+     "c": "#9AA096"
+    },
+    {
+     "x": 500,
+     "y": 30,
+     "h": 65.68873,
+     "c": "#D88A66"
+    },
+    {
+     "x": 500,
+     "y": 125.68873,
+     "h": 189.31127,
+     "c": "#D6A54A"
+    },
+    {
+     "x": 720,
+     "y": 115.68873,
+     "h": 30.738462,
+     "c": "#2DBCCB"
+    },
+    {
+     "x": 720,
+     "y": 162.427191,
+     "h": 158.572809,
+     "c": "#C99A3C"
+    }
+   ],
+   "labels": [
+    {
+     "x": 30,
+     "y": 48,
+     "t": "Gases de proceso · 77,6 GWh/año"
+    },
+    {
+     "x": 274,
+     "y": 56,
+     "t": "Calor útil en aceite térmico · 66,0",
+     "s": 1
+    },
+    {
+     "x": 274,
+     "y": 363.5,
+     "t": "Pérdidas por humos · 11,6",
+     "s": 1
+    },
+    {
+     "x": 514,
+     "y": 58.844365,
+     "t": "Calor de proceso · 17,0"
+    },
+    {
+     "x": 514,
+     "y": 74.844365,
+     "t": "pirólisis, secaderos y activación",
+     "s": 1
+    },
+    {
+     "x": 514,
+     "y": 141.68873,
+     "t": "Entrada al ORC · 49,0",
+     "s": 1
+    },
+    {
+     "x": 734,
+     "y": 135.057961,
+     "t": "Electricidad · 7,96 GWhₑ (16 %)"
+    },
+    {
+     "x": 734,
+     "y": 237.713596,
+     "t": "Calor a 80 °C · 41,0"
+    },
+    {
+     "x": 734,
+     "y": 253.713596,
+     "t": "secado del hueso y aerorrefrigeración",
+     "s": 1
+    },
+    {
+     "x": 30,
+     "y": 432,
+     "t": "Electricidad total consumida 12,7 GWh: ORC 63 %, fotovoltaica 10 %, red 27 %.",
+     "s": 1
+    }
+   ]
+  }
+ }
+}

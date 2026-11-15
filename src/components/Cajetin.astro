@@ -1,0 +1,9 @@
+---
+/* Cajetín de plano, como en las hojas de la memoria: «G-01 · Implantación · 1:1.000 · OLEACARB». */
+interface Props { code: string; title: string; scale?: string }
+const { code, title, scale = 'sin escala' } = Astro.props;
+---
+<div class="cajetin" role="note" aria-label={`Hoja ${code} · ${title} · ${scale} · OLEACARB`}>
+  <span><b><i>OLEA</i>CARB</b></span><span>{code}</span>
+  <span>{title}</span><span class="k">{scale}</span>
+</div>

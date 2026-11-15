@@ -1,0 +1,126 @@
+---
+import SectionHead from '../components/SectionHead.astro';
+import { impact, footprintRatio } from '../lib/data';
+import { num, THIN, chem } from '../lib/format';
+
+const fp = impact.footprint_kgCO2_per_kg;
+const max = fp[2].v;
+const bars = [
+  { name: 'OLEACARB, <em>hard carbon</em> de hueso', note: 'estimación del equipo pendiente de ACV', v: fp[0].v, d: 2, cls: 'f-ole' },
+  { name: '<em>Hard carbon</em> de coco', note: '', v: fp[1].v, d: 1, cls: 'f-coco' },
+  { name: 'Grafito sintético', note: '', v: fp[2].v, d: 1, cls: 'f-graf' }
+];
+const C = impact.conesa;
+const conesa = [
+  { n: C.moderados, k: 'moderados', cls: 'c-mod' }, { n: C.compatibles, k: 'compatibles', cls: 'c-comp' },
+  { n: C.positivos, k: 'positivos', cls: 'c-pos' }
+];
+const TAG: Record<string, string> = { Producto: 't-prod', Coproducto: 't-prod', Subproducto: 't-sub', 'Energía': 't-en', Valorizable: 't-sub', 'Emisión': 't-em' };
+---
+<section id="impacto" class="sec on-paper imp" aria-labelledby="impacto-h">
+  <div class="wrap">
+    <div class="imp-top g12">
+      <p class="imp-big" aria-hidden="true">{num(fp[0].v, 2)}</p>
+      <div class="imp-head">
+        <SectionHead n="10" name="Impacto" id="impacto" title={`${num(fp[0].v, 2)}&#8239;kg de CO<sub>2</sub> fósil por kilo de ánodo`} />
+        <p class="prose">La planta se calienta con sus propios gases y produce casi tres cuartas partes de su electricidad, así que el <em>hard carbon</em> de hueso arrastra muy pocas emisiones fósiles: unas {num(Math.round(footprintRatio.coco))} veces menos que el de coco y unas {num(Math.round(footprintRatio.grafito / 10) * 10)} menos que el grafito sintético.</p>
+      </div>
+    </div>
+
+    <figure class="fp" aria-labelledby="fp-cap">
+      <figcaption id="fp-cap" class="mono fp-k">kg de CO<sub>2</sub> fósil por kg de material · escala lineal</figcaption>
+      <ul class="fp-bars" role="list">
+        {bars.map(b => (
+          <li class={b.cls}>
+            <p class="fp-l"><span set:html={b.name} />{b.note && <span class="fp-n"> · {b.note}</span>}</p>
+            <span class="fp-track" aria-hidden="true"><span class="fp-fill" style={`--w:${(b.v / max * 100).toFixed(3)}%`}></span></span>
+            <b class="fp-v num">{num(b.v, b.d)}</b>
+          </li>
+        ))}
+      </ul>
+      <p class="src">OLEACARB: alcances 1 y 2 más el transporte del hueso, estimación del equipo pendiente de análisis de ciclo de vida. Coco y grafito: <a href="https://pubs.rsc.org/en/content/articlepdf/2025/ee/d5ee00415b">Voß et al., <em>Energy &amp; Environmental Science</em>, 2025</a>.</p>
+    </figure>
+
+    <div class="imp-grid">
+      <div class="conesa-b">
+        <h3>{C.total} interacciones valoradas, ninguna severa ni crítica</h3>
+        <div class="conesa" role="img" aria-label={`Matriz de impactos: ${C.moderados} moderados, ${C.compatibles} compatibles y ${C.positivos} positivos; ${C.severos} severos y ${C.criticos} críticos.`}>
+          {conesa.map(c => <span class={c.cls} style={`flex:${c.n}`}><b class="num">{c.n}</b> {c.k}</span>)}
+        </div>
+        <p class="src">{C.metodo}. Severos: {C.severos}. Críticos: {C.criticos}.</p>
+        <dl class="imp-kv">
+          <div><dt>CO<sub>2</sub> fijado al año en el carbono del producto</dt><dd class="num">{num(impact.co2_fijado_t)}{THIN}t</dd></div>
+          <div><dt>camiones al año en total (hueso, producto y reactivos)</dt><dd class="num">{num(impact.camiones_ano_total)}</dd></div>
+        </dl>
+      </div>
+      <div class="dest-b">
+        <h3>Qué pasa con cada corriente</h3>
+        <ol class="dest" role="list">
+          {impact.destinos.map(d => (
+            <li><span class="d-s" set:html={chem(d.stream)} /><span class="d-t" set:html={chem(d.text)} /><span class={`tag ${TAG[d.tag]}`}>{d.tag}</span></li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  @layer sections {
+    .imp { overflow: hidden; }
+    .imp-top { align-items: end; margin-bottom: clamp(24px, 4vw, 48px); }
+    .imp-big {
+      grid-column: 1 / 7; margin: 0 0 0 calc(-1 * var(--side) - .04em);
+      font: 600 clamp(140px, 24vw, 360px)/.8 var(--f-serif); font-variation-settings: 'opsz' 60; letter-spacing: -.05em;
+      color: var(--olive-d); white-space: nowrap;
+    }
+    .imp-head { grid-column: 7 / 13; }
+    .imp-head :global(.sec-head) { grid-template-columns: minmax(0, 1fr); margin-bottom: 18px; }
+    .imp-head :global(.sec-idx), .imp-head :global(.sec-head h2) { grid-column: 1 / -1; grid-row: auto; }
+    .imp-head :global(.sec-idx) { display: flex; gap: 10px; align-items: baseline; border: 0; padding: 0; }
+    .imp-head :global(.sec-idx b) { display: inline; font-size: 13px; margin: 0; }
+    .imp-head :global(h2) { font-size: clamp(30px, 3.4vw, 46px); }
+    .imp-head .prose { font-size: 17px; max-width: 46ch; }
+
+    .fp { margin: 0 0 clamp(48px, 6vw, 80px); padding: 22px 0; border-top: 2px solid var(--ink); border-bottom: 1px solid var(--rule); }
+    .fp-k { font-size: 12.5px; color: var(--muted); margin-bottom: 14px; }
+    .fp-bars { display: grid; gap: 16px; margin: 0 0 14px; }
+    .fp-bars li { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'l v' 't t'; gap: 6px 16px; align-items: baseline; }
+    .fp-l { grid-area: l; font-size: 15.5px; }
+    .fp-n { color: var(--muted); font-size: 14px; }
+    .fp-v { grid-area: v; font: 600 28px var(--f-serif); }
+    .fp-track { grid-area: t; display: block; height: 18px; background: var(--rule-2); }
+    .fp-fill { display: block; height: 100%; width: var(--w); min-width: 3px; transform-origin: 0 50%; transition: transform 300ms var(--ease-out); }
+    :global(.js) .fp:not(.is-in) .fp-fill { transform: scaleX(0); }
+    .f-ole .fp-fill { background: var(--olive); } .f-coco .fp-fill { background: var(--ochre); transition-delay: 120ms; } .f-graf .fp-fill { background: var(--terra); transition-delay: 240ms; }
+    .f-ole .fp-v { color: var(--olive-d); }
+
+    .imp-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(28px, 5vw, 72px); }
+    .imp-grid h3 { font-size: clamp(22px, 2vw, 28px); margin-bottom: 16px; }
+    .conesa { display: flex; height: 52px; margin-bottom: 10px; }
+    .conesa span { display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 14px; color: var(--ink); padding: 0 6px; white-space: nowrap; overflow: hidden; }
+    .conesa b { font: 600 20px var(--f-serif); }
+    .c-mod { background: var(--ochre-p); border: 1px solid var(--ochre); }
+    .c-comp { background: var(--rule-2); border: 1px solid var(--muted); border-left: 0; }
+    .c-pos { background: var(--olive); color: var(--surface) !important; border: 1px solid var(--olive); }
+    .imp-kv { display: grid; gap: 0; margin: 28px 0 0; border-top: 1px solid var(--ink); }
+    .imp-kv div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--rule); align-items: baseline; }
+    .imp-kv dt { color: var(--muted); font-size: 15px; }
+    .imp-kv dd { margin: 0; font: 600 24px var(--f-serif); white-space: nowrap; }
+    .dest { display: grid; margin: 0; border-top: 2px solid var(--ink); }
+    .dest li { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 's g' 't g'; gap: 2px 14px; padding: 12px 0; border-bottom: 1px solid var(--rule); align-items: center; }
+    .d-s { grid-area: s; font-weight: 600; }
+    .d-t { grid-area: t; color: var(--muted); font-size: 14.5px; }
+    .dest .tag { grid-area: g; }
+    .t-prod { background: var(--olive-p); color: var(--olive-d); }
+    .t-sub { background: var(--rule-2); }
+    .t-en { background: var(--ochre-p); }
+    .t-em { background: var(--terra-p); }
+    @media (max-width: 900px) {
+      .imp-big { font-size: clamp(130px, 44vw, 220px); margin-bottom: 18px; }
+      .imp-grid { grid-template-columns: minmax(0, 1fr); }
+      .conesa span { font-size: 12.5px; }
+      .imp-kv div { flex-direction: column; gap: 2px; }
+    }
+  }
+</style>

@@ -1,0 +1,535 @@
+{
+ "nota": "Actividades del CPM de la memoria (duración y fechas en meses desde enero de 2027; crit = camino crítico) y fases con su capital acumulado.",
+ "activities": [
+  {
+   "id": "A",
+   "name": "Constitución de la sociedad y acuerdos de la Fase 0",
+   "d": 1,
+   "pred": [],
+   "phase": 0,
+   "es": 0,
+   "ef": 1,
+   "ls": 0,
+   "lf": 1,
+   "slack": 0,
+   "crit": true
+  },
+  {
+   "id": "B",
+   "name": "Ensayos de laboratorio con la UJA y CIC energiGUNE",
+   "d": 10,
+   "pred": [
+    [
+     "A",
+     0
+    ]
+   ],
+   "phase": 0,
+   "es": 1,
+   "ef": 11,
+   "ls": 2,
+   "lf": 12,
+   "slack": 1,
+   "crit": false
+  },
+  {
+   "id": "C",
+   "name": "Ingeniería conceptual (± 30 %)",
+   "d": 6,
+   "pred": [
+    [
+     "A",
+     0
+    ]
+   ],
+   "phase": 0,
+   "es": 1,
+   "ef": 7,
+   "ls": 3,
+   "lf": 9,
+   "slack": 2,
+   "crit": false
+  },
+  {
+   "id": "D",
+   "name": "Preacuerdo con El Tejar: suelo, hueso y servicios",
+   "d": 7,
+   "pred": [
+    [
+     "A",
+     0
+    ]
+   ],
+   "phase": 0,
+   "es": 1,
+   "ef": 8,
+   "ls": 5,
+   "lf": 12,
+   "slack": 4,
+   "crit": false
+  },
+  {
+   "id": "E",
+   "name": "Cartas de intención de clientes",
+   "d": 9,
+   "pred": [
+    [
+     "A",
+     2
+    ]
+   ],
+   "phase": 0,
+   "es": 3,
+   "ef": 12,
+   "ls": 3,
+   "lf": 12,
+   "slack": 0,
+   "crit": true
+  },
+  {
+   "id": "F",
+   "name": "Consulta previa ambiental y solicitud de IER",
+   "d": 3,
+   "pred": [
+    [
+     "C",
+     0
+    ]
+   ],
+   "phase": 0,
+   "es": 7,
+   "ef": 10,
+   "ls": 9,
+   "lf": 12,
+   "slack": 2,
+   "crit": false
+  },
+  {
+   "id": "H1",
+   "name": "Hito 1 · decisión de continuar",
+   "d": 0,
+   "pred": [
+    [
+     "B",
+     0
+    ],
+    [
+     "D",
+     0
+    ],
+    [
+     "E",
+     0
+    ],
+    [
+     "F",
+     0
+    ]
+   ],
+   "phase": 0,
+   "es": 12,
+   "ef": 12,
+   "ls": 12,
+   "lf": 12,
+   "slack": 0,
+   "crit": true
+  },
+  {
+   "id": "G",
+   "name": "Ensayos de escalado y muestras en maquila (5–20 t)",
+   "d": 18,
+   "pred": [
+    [
+     "H1",
+     0
+    ]
+   ],
+   "phase": 1,
+   "es": 12,
+   "ef": 30,
+   "ls": 13,
+   "lf": 31,
+   "slack": 1,
+   "crit": false
+  },
+  {
+   "id": "I",
+   "name": "Homologación con fabricantes de celdas",
+   "d": 18,
+   "pred": [
+    [
+     "H1",
+     6
+    ]
+   ],
+   "phase": 1,
+   "es": 18,
+   "ef": 36,
+   "ls": 19,
+   "lf": 37,
+   "slack": 1,
+   "crit": false
+  },
+  {
+   "id": "J",
+   "name": "Ingeniería básica (FEED)",
+   "d": 12,
+   "pred": [
+    [
+     "H1",
+     0
+    ]
+   ],
+   "phase": 1,
+   "es": 12,
+   "ef": 24,
+   "ls": 13,
+   "lf": 25,
+   "slack": 1,
+   "crit": false
+  },
+  {
+   "id": "K",
+   "name": "Estudio de impacto ambiental y proyecto para la AAI",
+   "d": 4,
+   "pred": [
+    [
+     "H1",
+     3
+    ]
+   ],
+   "phase": 1,
+   "es": 15,
+   "ef": 19,
+   "ls": 15,
+   "lf": 19,
+   "slack": 0,
+   "crit": true
+  },
+  {
+   "id": "L",
+   "name": "Tramitación de la AAI (con EIA ordinaria)",
+   "d": 18,
+   "pred": [
+    [
+     "K",
+     0
+    ]
+   ],
+   "phase": 1,
+   "es": 19,
+   "ef": 37,
+   "ls": 19,
+   "lf": 37,
+   "slack": 0,
+   "crit": true
+  },
+  {
+   "id": "M",
+   "name": "Solicitud de acceso y conexión eléctrica",
+   "d": 15,
+   "pred": [
+    [
+     "H1",
+     3
+    ]
+   ],
+   "phase": 1,
+   "es": 15,
+   "ef": 30,
+   "ls": 40,
+   "lf": 55,
+   "slack": 25,
+   "crit": false
+  },
+  {
+   "id": "N",
+   "name": "Contratos de venta y de suministro de hueso",
+   "d": 12,
+   "pred": [
+    [
+     "G",
+     -6
+    ]
+   ],
+   "phase": 1,
+   "es": 24,
+   "ef": 36,
+   "ls": 25,
+   "lf": 37,
+   "slack": 1,
+   "crit": false
+  },
+  {
+   "id": "O",
+   "name": "Financiación: préstamo y resolución de ayudas",
+   "d": 12,
+   "pred": [
+    [
+     "J",
+     0
+    ]
+   ],
+   "phase": 1,
+   "es": 24,
+   "ef": 36,
+   "ls": 25,
+   "lf": 37,
+   "slack": 1,
+   "crit": false
+  },
+  {
+   "id": "H2",
+   "name": "Hito 2 · decisión de invertir en la planta",
+   "d": 0,
+   "pred": [
+    [
+     "N",
+     0
+    ],
+    [
+     "O",
+     0
+    ],
+    [
+     "J",
+     0
+    ],
+    [
+     "I",
+     0
+    ]
+   ],
+   "phase": 1,
+   "es": 36,
+   "ef": 36,
+   "ls": 37,
+   "lf": 37,
+   "slack": 1,
+   "crit": false
+  },
+  {
+   "id": "P",
+   "name": "Ingeniería de detalle y compras",
+   "d": 12,
+   "pred": [
+    [
+     "H2",
+     0
+    ]
+   ],
+   "phase": 2,
+   "es": 36,
+   "ef": 48,
+   "ls": 37,
+   "lf": 49,
+   "slack": 1,
+   "crit": false
+  },
+  {
+   "id": "Q",
+   "name": "Licencia de obras",
+   "d": 3,
+   "pred": [
+    [
+     "L",
+     0
+    ],
+    [
+     "H2",
+     0
+    ]
+   ],
+   "phase": 2,
+   "es": 37,
+   "ef": 40,
+   "ls": 37,
+   "lf": 40,
+   "slack": 0,
+   "crit": true
+  },
+  {
+   "id": "R",
+   "name": "Obra civil y edificación",
+   "d": 12,
+   "pred": [
+    [
+     "Q",
+     0
+    ]
+   ],
+   "phase": 2,
+   "es": 40,
+   "ef": 52,
+   "ls": 40,
+   "lf": 52,
+   "slack": 0,
+   "crit": true
+  },
+  {
+   "id": "S",
+   "name": "Fabricación y entrega de equipos (hornos: 14 meses)",
+   "d": 14,
+   "pred": [
+    [
+     "H2",
+     1
+    ]
+   ],
+   "phase": 2,
+   "es": 37,
+   "ef": 51,
+   "ls": 41,
+   "lf": 55,
+   "slack": 4,
+   "crit": false
+  },
+  {
+   "id": "T",
+   "name": "Montaje mecánico, eléctrico y de instrumentación",
+   "d": 9,
+   "pred": [
+    [
+     "R",
+     -6
+    ],
+    [
+     "P",
+     -3
+    ]
+   ],
+   "phase": 2,
+   "es": 46,
+   "ef": 55,
+   "ls": 46,
+   "lf": 55,
+   "slack": 0,
+   "crit": true
+  },
+  {
+   "id": "U",
+   "name": "Pruebas en frío y precomisionado",
+   "d": 2,
+   "pred": [
+    [
+     "T",
+     0
+    ],
+    [
+     "S",
+     0
+    ],
+    [
+     "M",
+     0
+    ]
+   ],
+   "phase": 2,
+   "es": 55,
+   "ef": 57,
+   "ls": 55,
+   "lf": 57,
+   "slack": 0,
+   "crit": true
+  },
+  {
+   "id": "V",
+   "name": "Puesta en marcha en caliente y pruebas de rendimiento",
+   "d": 3,
+   "pred": [
+    [
+     "U",
+     0
+    ]
+   ],
+   "phase": 2,
+   "es": 57,
+   "ef": 60,
+   "ls": 57,
+   "lf": 60,
+   "slack": 0,
+   "crit": true
+  },
+  {
+   "id": "X",
+   "name": "Arranque comercial",
+   "d": 0,
+   "pred": [
+    [
+     "V",
+     0
+    ]
+   ],
+   "phase": 3,
+   "es": 60,
+   "ef": 60,
+   "ls": 60,
+   "lf": 60,
+   "slack": 0,
+   "crit": true
+  },
+  {
+   "id": "Y",
+   "name": "Rampa de producción (50 % → 80 % → 100 %)",
+   "d": 24,
+   "pred": [
+    [
+     "X",
+     0
+    ]
+   ],
+   "phase": 3,
+   "es": 60,
+   "ef": 84,
+   "ls": 60,
+   "lf": 84,
+   "slack": 0,
+   "crit": true
+  }
+ ],
+ "phases": [
+  {
+   "id": 0,
+   "name": "Fase 0 · Constitución y laboratorio",
+   "years": "2027",
+   "capital_Meur": 0.6,
+   "cumulative_Meur": 0.6
+  },
+  {
+   "id": 1,
+   "name": "Fase 1 · Planta de ensayo y muestras a clientes",
+   "years": "2028-2029",
+   "capital_Meur": 3.1,
+   "cumulative_Meur": 3.7
+  },
+  {
+   "id": 2,
+   "name": "Fase 2 · Ingeniería, obra y montaje",
+   "years": "2030-2031",
+   "capital_Meur": 61.6,
+   "cumulative_Meur": 65.3
+  },
+  {
+   "id": 3,
+   "name": "Arranque y rampa (50 %, 80 %, 100 %)",
+   "years": "2032-2034"
+  }
+ ],
+ "milestones": [
+  {
+   "name": "Hito 1",
+   "date": "2027-12",
+   "text": "Rendimiento ≥ 15 % sobre hueso seco, ≥ 330 mAh/g e ICE ≥ 88 % en laboratorio; cartas de intención a ≥ 7 €/kg; preacuerdo con El Tejar. Si se cumple, se pasa a la Fase 1 (3,1 M€)."
+  },
+  {
+   "name": "Hito 2",
+   "date": "2029-12",
+   "text": "Contratos firmes por ≥ 1.500 t/año a ≥ 7 €/kg; AAI encarrilada; acuerdo con El Tejar firmado; préstamo y ayudas resueltos. Es la decisión de construir."
+  },
+  {
+   "name": "Arranque",
+   "date": "2032-01",
+   "text": "Primer lote comercial"
+  }
+ ]
+}

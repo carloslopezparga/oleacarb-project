@@ -1,0 +1,30 @@
+---
+import SectionHead from '../components/SectionHead.astro';
+import Cajetin from '../components/Cajetin.astro';
+import Simulator from '../components/Simulator.svelte';
+import { economics } from '../lib/data';
+import type { SimState } from '../lib/sim';
+import type { MCConfig } from '../lib/montecarlo';
+
+const E = economics;
+const presets = E.presets_simulador as { name: string; v: SimState }[];
+// Solo lo necesario para el cliente: sin los 8.000 VAN de muestra de la memoria.
+const mc = { n: E.montecarlo.n, hoy: E.montecarlo.hoy, condicionado_al_hito_2: E.montecarlo.condicionado_al_hito_2, comunes: E.montecarlo.comunes as unknown as MCConfig['comunes'],
+  resultados: { hoy: { p_pos: E.montecarlo.resultados.hoy.p_pos }, condicionado: { p_pos: E.montecarlo.resultados.condicionado.p_pos } } };
+const tornado = E.tornado_C.rows.map(r => ({ label: r.label, key: r.key, lo: r.lo, hi: r.hi, fmt: r.fmt }));
+---
+<section id="simulador" class="sec sheet on-paper simu" aria-labelledby="simulador-h">
+  <div class="wrap">
+    <SectionHead n="09" name="Simulador" id="simulador" title="¿Cuándo crea valor la planta?"
+      lede="Es el mismo modelo de la memoria, en euros constantes de 2026, con una tasa real del 8&#8239;% y flujos de 2027 a 2051. A 7&#8239;€/kg y un 15&#8239;% de rendimiento la planta queda en el umbral: VAN de −0,2&#8239;M€ y TIR del 7,9&#8239;%. Con un 30&#8239;% de ayuda regional pasa a +9,4&#8239;M€." />
+    <Simulator client:visible presets={presets} sliders={E.sliders} tornado={tornado} mc={mc} initial={presets[1].v} />
+    <p class="src simu-foot">Modelo revisado de la memoria (capítulo 15 y anexos A y C). Sin financiación: el préstamo no cambia el VAN del proyecto. Las ayudas se tratan como fondos propios no reembolsables.</p>
+    <Cajetin code="E-01" title="Modelo económico" scale="M€ de 2026" />
+  </div>
+</section>
+
+<style>
+  @layer sections {
+    .simu-foot { margin-top: 28px; max-width: 80ch; }
+  }
+</style>

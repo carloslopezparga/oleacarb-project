@@ -1,0 +1,390 @@
+---
+import { tonne, tonneKWh, process } from '../lib/data';
+import { num, THIN } from '../lib/format';
+
+/* ------------ pasos (process.json → por_tonelada y temperaturas_C, caso de diseño 14 %) ------------ */
+const T = tonne.T;
+const steps = [
+  { n: 1, name: 'Recepción', kg: tonne.tras_recepcion, t: T.recepcion, tLabel: `${T.recepcion}${THIN}°C`,
+    what: `Criba y separador magnético. Salen ${num(tonne.rechazos, 1)}${THIN}kg de rechazos a árido.`, out: [['p-gray', `${num(tonne.rechazos, 1)}${THIN}kg de piedras y metales → árido`]] },
+  { n: 2, name: 'Secado', kg: tonne.a_pirolisis, t: 100, tLabel: `aire a ${T.aire_secado}${THIN}°C`,
+    what: `Se evaporan ${num(tonne.agua, 1)}${THIN}kg de agua con calor residual del ORC.`, out: [['p-ion', `${num(tonne.agua, 1)}${THIN}kg de agua → vapor`]] },
+  { n: 3, name: 'Pirólisis', kg: tonne.carbonizado, t: T.pirolisis, tLabel: `${num(T.pirolisis)}${THIN}°C`,
+    what: `${num(tonne.volatiles, 1)}${THIN}kg pasan a volátiles, que van al oxidador y calientan toda la planta. Queda carbonizado.`, out: [['p-ochre', `${num(tonne.volatiles, 1)}${THIN}kg de volátiles → oxidador`]] },
+  { n: 4, name: 'Lavado ácido', kg: tonne.lavado, t: T.lavado_acido, tLabel: `${T.lavado_acido}${THIN}°C`,
+    what: `El HCl 2${THIN}M retira ${num(tonne.minerales, 1)}${THIN}kg de minerales, que salen como sales.`, out: [['p-gray', `${num(tonne.minerales, 1)}${THIN}kg de minerales → sales`]] },
+  { n: 5, name: 'Carbonización', kg: tonne.c1300, t: T.carbonizacion, tLabel: `${num(T.carbonizacion)}${THIN}°C`,
+    what: `${num(tonne.gases_carb, 1)}${THIN}kg de gases van al oxidador y nace la microestructura.`, out: [['p-ochre', `${num(tonne.gases_carb, 1)}${THIN}kg de gases → oxidador`]],
+    micro: `Así guarda la energía el ánodo: el sodio se aloja entre láminas desordenadas, separadas ${num(process.microestructura.interlaminar_nm, 2)}${THIN}nm, y en poros cerrados.` },
+  { n: 6, name: 'Molienda', kg: tonne.hc, t: T.salida_hornos, tLabel: `${T.salida_hornos}${THIN}°C`,
+    what: `Salen ${num(tonne.finos, 1)}${THIN}kg de finos, que se activan y dan ${num(tonne.carbon_activo, 1)}${THIN}kg de carbón activo.`, out: [['p-olive', `${num(tonne.finos, 1)}${THIN}kg de finos → ${num(tonne.carbon_activo, 1)}${THIN}kg de carbón activo`]] },
+  { n: 7, name: 'Envasado', kg: tonne.hc, t: T.producto, tLabel: `${T.producto}${THIN}°C`,
+    what: `Lote de 10${THIN}t con certificado: ≥${THIN}330${THIN}mAh/g e ICE ≥${THIN}88${THIN}%.`, out: [], product: true }
+];
+const final = { what: `${num(tonne.hc, 1)}${THIN}kg dan para unos ${num(tonneKWh.lo)}–${num(tonneKWh.hi)}${THIN}kWh de celdas de sodio (a 1,2–1,5${THIN}kg/kWh).` };
+
+/* ------------ geometría del escenario (viewBox 800 × 800) ------------ */
+const CX = 400, CY = 380, K = 5;                 // almendra de 90·K de alto a 1.000 kg
+const ALMOND = 'M0,-45 C31,-23 31,23 0,45 C-31,23 -31,-23 0,-45 Z';
+function mulberry32(a: number) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const rnd = mulberry32(7);
+const r = (a: number, b: number) => a + (b - a) * rnd();
+
+// Escala por raíz cúbica de la masa, para que el encogimiento se perciba (124,6 kg → 0,50).
+const scaleOf = (kg: number) => Math.cbrt(kg / 1000);
+
+// Partículas de cada salida: salen del hueso y abandonan el cuadro en la dirección de su corriente.
+const groups = [
+  { step: 1, n: 7, cls: 'p-gray', shape: 'sq', dir: [0.15, 1] },
+  { step: 2, n: 18, cls: 'p-ion', shape: 'c', dir: [0.1, -1] },
+  { step: 3, n: 40, cls: 'p-ochre', shape: 'c', dir: [1, -0.55] },
+  { step: 4, n: 6, cls: 'p-gray', shape: 'c', dir: [-0.35, 1] },
+  { step: 5, n: 12, cls: 'p-ochre', shape: 'c', dir: [1, -0.35] },
+  { step: 6, n: 12, cls: 'p-olive', shape: 'c', dir: [-1, 0.25] }
+];
+const particles = groups.flatMap(g => {
+  const L = Math.hypot(g.dir[0], g.dir[1]), ux = g.dir[0] / L, uy = g.dir[1] / L;
+  return Array.from({ length: g.n }, (_, i) => {
+    const sc = scaleOf(steps[g.step - 1].kg);
+    const a = r(0, Math.PI * 2), rr = r(0, 26) * K * sc;
+    const x0 = CX + Math.cos(a) * rr * 0.6, y0 = CY + Math.sin(a) * rr;
+    const dist = r(520, 760), side = r(-170, 170);
+    const x1 = x0 + ux * dist - uy * side, y1 = y0 + uy * dist + ux * side;
+    return { step: g.step, i, cls: g.cls, sq: g.shape === 'sq', x0, y0, dx: x1 - x0, dy: y1 - y0, size: g.shape === 'sq' ? r(7, 12) : r(3, 6.5) };
+  });
+});
+
+// Grietas de la pirólisis, en coordenadas de la almendra (sin girar, alto 90).
+const cracks = ['M-4,-34 L3,-22 L-3,-12 L5,-1 L-1,10 L4,22', 'M3,-22 L13,-18 L18,-8', 'M-3,-12 L-14,-6 L-17,4', 'M-1,10 L-11,17 L-12,27', 'M5,-1 L14,6'];
+
+// Hexágonos (anillos de carbono) dentro de la almendra en la carbonización, como en la marca.
+const hexes: string[] = [];
+for (let j = -6; j <= 6; j++) for (let i = -4; i <= 4; i++) {
+  const hr = 5.2, x = i * hr * Math.sqrt(3) + (j % 2 ? hr * Math.sqrt(3) / 2 : 0), y = j * hr * 1.5;
+  const pts = Array.from({ length: 6 }, (_, k) => { const an = (60 * k + 30) * Math.PI / 180; return `${(x + hr * .9 * Math.cos(an)).toFixed(2)},${(y + hr * .9 * Math.sin(an)).toFixed(2)}`; }).join(' ');
+  hexes.push(pts);
+}
+
+// Polvo de la molienda (gira con la almendra)
+const powder = Array.from({ length: 90 }, () => {
+  // montón de polvo: más denso abajo
+  const a = r(Math.PI, Math.PI * 2), rr = Math.sqrt(rnd()) * 120;
+  return { x: CX + Math.cos(a) * rr, y: CY + 70 + Math.sin(a) * rr * 0.55, r: r(2.4, 5) };
+});
+
+// Fondo del escenario: retícula hexagonal muy tenue, como el fondo del vídeo
+// tesela del patrón: los hexágonos que tocan la celda de 58,9 × 102, en sus dos filas
+const hexTile: [number, number][] = [];
+for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) {
+  hexTile.push([20 + i * 34 * Math.sqrt(3), 20 + j * 102], [20 + 34 * Math.sqrt(3) / 2 + i * 34 * Math.sqrt(3), 71 + j * 102]);
+}
+const bgHex: string[] = [Array.from({ length: 6 }, (_, k) => { const an = (60 * k + 30) * Math.PI / 180; return `${(34 * Math.cos(an)).toFixed(1)},${(34 * Math.sin(an)).toFixed(1)}`; }).join(' ')];
+
+// Rollo de la celda visto desde arriba: espiral de Arquímedes aplanada en la elipse de la tapa
+const spiralPts: string[] = [];
+for (let th = 0; th <= Math.PI * 2 * 5.2; th += 0.12) {
+  const rr = 4 + th * 2.4;
+  spiralPts.push(`${(rr * Math.cos(th)).toFixed(1)},${(rr * Math.sin(th) * 0.27).toFixed(1)}`);
+}
+
+/* ------------ microestructura (lente) ------------ */
+// Láminas cortas y curvadas en «castillo de naipes», separadas 0,38 nm (aquí 11 unidades), y poros cerrados.
+const GAP = 11;
+const pores = [[250, 260, 46, 30, 20], [540, 250, 38, 26, -25], [300, 520, 40, 28, 35], [560, 500, 50, 32, -10], [420, 395, 30, 20, 60]];
+const sheets: { d: string; hi?: boolean }[] = [];
+const sheetIons: [number, number][] = [];
+function insidePore(x: number, y: number) { return pores.some(([px, py, rx, ry]) => ((x - px) / (rx + 18)) ** 2 + ((y - py) / (ry + 18)) ** 2 < 1); }
+for (let k = 0; k < 120 && sheets.length < 150; k++) {
+  const x = r(120, 680), y = r(110, 660);
+  if (insidePore(x, y) || Math.hypot(x - 400, y - 160) < 70) continue;
+  const n = Math.floor(r(2, 5)), len = r(34, 70), rot = r(0, 180), bend = r(-10, 10);
+  for (let m = 0; m < n; m++) {
+    const off = (m - (n - 1) / 2) * GAP;
+    const c = Math.cos(rot * Math.PI / 180), s = Math.sin(rot * Math.PI / 180);
+    const P = (u: number, v: number) => `${(x + u * c - v * s).toFixed(1)},${(y + u * s + v * c).toFixed(1)}`;
+    sheets.push({ d: `M${P(-len / 2, off)} Q${P(0, off + bend)} ${P(len / 2, off)}` });
+    if (m < n - 1 && rnd() < 0.28) sheetIons.push([x - (off + GAP / 2) * s, y + (off + GAP / 2) * c]);
+  }
+}
+const poreArcs = pores.map(([px, py, rx, ry, rot]) => {
+  // cada poro: tres o cuatro láminas curvas que lo cierran
+  const segs: string[] = [];
+  const nseg = 4;
+  for (let q = 0; q < nseg; q++) {
+    const a0 = (q / nseg) * 360 + 8, a1 = ((q + 1) / nseg) * 360 - 8;
+    const pt = (a: number) => { const t = a * Math.PI / 180, rr = rot * Math.PI / 180; const ex = rx * Math.cos(t), ey = ry * Math.sin(t); return `${(px + ex * Math.cos(rr) - ey * Math.sin(rr)).toFixed(1)},${(py + ex * Math.sin(rr) + ey * Math.cos(rr)).toFixed(1)}`; };
+    segs.push(`M${pt(a0)} A${rx},${ry} ${rot} 0 1 ${pt(a1)}`);
+  }
+  return { segs, px, py };
+});
+// Iones Na⁺ que entran: en poros y entre láminas
+const ionTargets = [...pores.map(([px, py]) => [px, py] as [number, number]), ...pores.map(([px, py, rx]) => [px + rx * 0.35, py - 4] as [number, number]), ...sheetIons.slice(0, 16)];
+const ions = ionTargets.map(([x, y], i) => ({ x, y, sx: 860 + r(0, 120), sy: r(80, 720), i }));
+// La pareja de láminas acotada (0,38 nm), arriba en el centro
+const hiY = 150, hiX = 400;
+
+/* ------------ celda final ------------ */
+const FOIL = { x: 150, y: 600, w: 500, h: 14 };
+---
+<section id="viaje" class="viaje on-char chapter" aria-labelledby="viaje-h">
+  <div class="vpin">
+    <div class="vhead">
+      <p class="sec-idx"><b>04</b> / Una tonelada</p>
+      <h2 id="viaje-h">Una tonelada de hueso, siete paradas</h2>
+    </div>
+
+    <div class="vmass" aria-hidden="true">
+      <span class="vlabel mono">masa</span>
+      <span class="vtrack"><span class="vfill vfill-mass"></span><span class="vmark" style={`--y:${(tonne.hc / 1000 * 100).toFixed(2)}%`}></span></span>
+      <span class="vread num"><b class="kg">1.000</b><small>{THIN}kg</small></span>
+    </div>
+
+    <div class="vstage">
+      <svg class="vsvg" viewBox="0 0 800 800" role="img" aria-label={`Ilustración: un hueso de aceituna en forma de almendra que encoge y pasa de ocre a negro a lo largo de las siete etapas, suelta partículas de cada salida y termina convertido en la microestructura del hard carbon y en el recubrimiento del ánodo de una celda.`}>
+        <defs>
+          <clipPath id="lens"><circle class="lens-c" cx={CX} cy={CY} r="0" /></clipPath>
+          <clipPath id="alm-clip"><path d={ALMOND} /></clipPath>
+          <pattern id="bghex" width={34 * Math.sqrt(3)} height="102" patternUnits="userSpaceOnUse">{hexTile.map(([x, y]) => <polygon points={bgHex[0]} transform={`translate(${x.toFixed(1)} ${y.toFixed(1)})`} />)}</pattern>
+          <radialGradient id="heat" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#D6A54A" stop-opacity=".55" /><stop offset="1" stop-color="#D6A54A" stop-opacity="0" /></radialGradient>
+        </defs>
+        <rect class="bghex" x="0" y="0" width="800" height="800" fill="url(#bghex)" />
+        <circle class="heat" cx={CX} cy={CY} r="300" fill="url(#heat)" opacity="0" />
+        <g class="parts">
+          {particles.map(p => p.sq
+            ? <rect class={`pt ${p.cls}`} data-step={p.step} data-dx={p.dx.toFixed(1)} data-dy={p.dy.toFixed(1)} x={(p.x0 - p.size / 2).toFixed(1)} y={(p.y0 - p.size / 2).toFixed(1)} width={p.size.toFixed(1)} height={p.size.toFixed(1)} transform={`rotate(${(p.i * 37) % 90} ${p.x0.toFixed(1)} ${p.y0.toFixed(1)})`} />
+            : <circle class={`pt ${p.cls}`} data-step={p.step} data-dx={p.dx.toFixed(1)} data-dy={p.dy.toFixed(1)} cx={p.x0.toFixed(1)} cy={p.y0.toFixed(1)} r={p.size.toFixed(1)} />)}
+        </g>
+        <g class="bone" transform={`translate(${CX} ${CY}) scale(${K})`} data-cx={CX} data-cy={CY} data-k={K}>
+          <g transform="rotate(-32)">
+            <path class="alm" d={ALMOND} />
+            <g clip-path="url(#alm-clip)" class="hexes">
+              <path d={hexes.map(pts => 'M' + pts.replace(/ /g, 'L') + 'Z').join('')} />
+            </g>
+            <g class="cracks">{cracks.map(d => <path d={d} pathLength="1" />)}</g>
+            <path class="alm-rim" d={ALMOND} />
+          </g>
+        </g>
+        <g class="powder"><path d={powder.map(p => `M${(p.x - p.r).toFixed(1)},${p.y.toFixed(1)}a${p.r.toFixed(1)},${p.r.toFixed(1)} 0 1,0 ${(2 * p.r).toFixed(1)},0a${p.r.toFixed(1)},${p.r.toFixed(1)} 0 1,0 ${(-2 * p.r).toFixed(1)},0`).join('')} /></g>
+
+        <g class="micro" clip-path="url(#lens)">
+          <rect x="0" y="0" width="800" height="800" class="micro-bg" />
+          <path d={sheets.map(s => s.d).join(' ')} class="sheet-l" />
+          <path d={poreArcs.flatMap(p => p.segs).join(' ')} class="pore-l" />
+          <path d={`M${hiX - 70},${hiY} Q${hiX},${hiY - 8} ${hiX + 70},${hiY}`} class="sheet-hi" />
+          <path d={`M${hiX - 70},${hiY + GAP * 3} Q${hiX},${hiY + GAP * 3 - 8} ${hiX + 70},${hiY + GAP * 3}`} class="sheet-hi" />
+          <g class="cota-nm">
+            <line x1={hiX + 86} y1={hiY - 4} x2={hiX + 86} y2={hiY + GAP * 3 - 4} />
+            <line x1={hiX + 78} y1={hiY - 4} x2={hiX + 94} y2={hiY - 4} />
+            <line x1={hiX + 78} y1={hiY + GAP * 3 - 4} x2={hiX + 94} y2={hiY + GAP * 3 - 4} />
+            <text x={hiX + 104} y={hiY + GAP * 1.5 + 6}>0,38{THIN}nm</text>
+          </g>
+          {ions.map(o => <circle class="na" cx={o.x.toFixed(1)} cy={o.y.toFixed(1)} r="7" data-sx={(o.sx - o.x).toFixed(1)} data-sy={(o.sy - o.y).toFixed(1)} />)}
+          <circle class="lens-ring" cx={CX} cy={CY} r="0" />
+        </g>
+
+        <g class="cell">
+          <rect x="70" y="70" width="660" height="660" class="cell-sheet" />
+          <text x="100" y="124" class="cell-k">Detalle A · ánodo</text>
+          <g class="foil-g">
+            <rect x={FOIL.x} y={FOIL.y - 26} width={FOIL.w} height={FOIL.h + 52} class="coat" />
+            <rect x={FOIL.x} y={FOIL.y} width={FOIL.w} height={FOIL.h} class="foil" />
+            <text x={FOIL.x} y={FOIL.y + 84} class="cell-t">aluminio + <tspan font-style="italic">hard carbon</tspan></text>
+          </g>
+          <g class="roll" transform="translate(400 300)">
+            <path class="can" d="M-90,-100 L-90,130 A90,24 0 0 0 90,130 L90,-100" />
+            <ellipse class="can" cx="0" cy="-100" rx="90" ry="24" />
+            <rect x="-16" y="-138" width="32" height="14" class="term" />
+            <polyline class="spiral" pathLength="1" transform="translate(0 -100)" points={spiralPts.join(' ')} />
+            <circle class="na" r="9" cx="128" cy="-40" />
+            <text x="144" y="-31" class="na-t">Na<tspan dy="-12" font-size="22">+</tspan></text>
+          </g>
+        </g>
+      </svg>
+    </div>
+
+    <div class="vthermo" aria-hidden="true">
+      <span class="vlabel mono">°C</span>
+      <span class="vtrack"><span class="vfill vfill-t"></span></span>
+      <span class="vread num"><b class="tc">20</b><small>{THIN}°C</small></span>
+    </div>
+
+    <ol class="vsteps" role="list">
+      <li class="vstep is-intro" data-i="0">
+        <p class="lede">Sigue 1.000{THIN}kg de hueso tal como llega de la almazara, con un 11{THIN}% de humedad. Al final quedan {num(tonne.hc, 1)}{THIN}kg de <em>hard carbon</em>; el resto es calor, electricidad, carbón activo y sales.</p>
+        <p class="vhint mono" aria-hidden="true">Desplázate para avanzar ↓</p>
+      </li>
+      {steps.map(s => (
+        <li class="vstep" data-i={s.n}>
+          <p class="vn mono">Paso {s.n} de 7</p>
+          <h3>{s.name}</h3>
+          <p class="vwhat">{s.what}</p>
+          <dl class="vkv">
+            <div><dt>siguen</dt><dd class="num">{s.product ? <strong>{num(s.kg, 1)}{THIN}kg de <em>hard carbon</em></strong> : <>{num(s.kg, 1)}{THIN}kg{s.n === 3 ? ' de carbonizado' : ''}</>}</dd></div>
+            <div><dt>temperatura</dt><dd>{s.tLabel}</dd></div>
+          </dl>
+          {s.out.length > 0 && <p class="vout">{s.out.map(([c, t]) => <span><i class={c}></i>{t}</span>)}</p>}
+          {s.micro && <p class="vmicro">{s.micro}</p>}
+        </li>
+      ))}
+      <li class="vstep" data-i="8">
+        <p class="vn mono">Final</p>
+        <h3>La celda</h3>
+        <p class="vwhat">{final.what}</p>
+        <p class="vmicro">El polvo se extiende sobre una lámina de aluminio que se enrolla dentro de la celda: es el ánodo.</p>
+      </li>
+    </ol>
+
+    <nav class="vrail" aria-label="Pasos del viaje">
+      {['Inicio', ...steps.map(s => s.name), 'Celda'].map((name, i) => (
+        <button type="button" data-go={i} aria-label={i === 0 ? 'Inicio del viaje' : i === 8 ? 'Final: la celda' : `Paso ${i}: ${name}`}>
+          <span class="mono">{i === 0 ? '0' : i === 8 ? '·' : i}</span><em>{name}</em>
+        </button>
+      ))}
+    </nav>
+  </div>
+</section>
+
+<style>
+  @layer sections {
+    .viaje { --stage-bg: var(--char); }
+    .vpin {
+      position: relative; height: calc(100svh - var(--header-h)); min-height: 560px; overflow: hidden;
+      display: grid;
+      grid-template-columns: [a] minmax(300px, 4.2fr) [b] 72px [c] minmax(0, 6fr) [d] 72px [e];
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      column-gap: 20px; padding: clamp(20px, 3vh, 36px) max(var(--side), calc((100vw - var(--maxw)) / 2)) 14px;
+    }
+    .vhead { grid-column: a / b; grid-row: 1; }
+    .vhead .sec-idx { display: flex; gap: 10px; align-items: baseline; border: 0; padding: 0; margin-bottom: 12px; }
+    .vhead .sec-idx b { display: inline; font-size: 13px; margin: 0; }
+    .vhead h2 { font-size: clamp(30px, 3.2vw, 46px); max-width: 14ch; }
+    .vsteps { grid-column: a / b; grid-row: 2; position: relative; margin: 24px 0 0; padding: 0; list-style: none; }
+    .vstep { position: absolute; inset: 0 0 auto 0; display: grid; gap: 12px; align-content: start; }
+    .vstep:not([data-i="0"]) { opacity: 0; visibility: hidden; }
+    .vstep { transition: opacity var(--t-mid) var(--ease-out), visibility var(--t-mid); }
+    .is-pinned .vstep:not(.is-on) { opacity: 0; visibility: hidden; }
+    .vstep.is-on { opacity: 1; visibility: visible; }
+    .vstep h3 { font-size: clamp(28px, 2.6vw, 40px); color: var(--char-ink); }
+    .vn { font-size: 13px; color: var(--olive-l); }
+    .vwhat { font-size: 18px; line-height: 1.5; max-width: 36ch; color: var(--char-ink); }
+    .vkv { display: flex; flex-wrap: wrap; gap: 6px 28px; margin: 4px 0 0; }
+    .vkv div { display: grid; }
+    .vkv dt { font: 500 12px var(--f-mono); color: var(--char-muted); }
+    .vkv dd { margin: 0; font: 600 22px/1.25 var(--f-serif); color: var(--char-ink); }
+    .vkv dd strong { color: var(--olive-l); font-weight: 600; }
+    .vout { display: grid; gap: 6px; font-size: 15px; color: var(--char-muted); }
+    .vout span { display: flex; align-items: center; gap: 8px; }
+    .vout i { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+    .vmicro { font: italic 400 17px/1.5 var(--f-serif); color: var(--char-ink); max-width: 36ch; border-left: 2px solid var(--ion); padding-left: 12px; }
+    .vhint { font-size: 13px; color: var(--char-muted); }
+    i.p-gray { background: var(--char-muted); } i.p-ion { background: var(--ion); } i.p-ochre { background: var(--ochre-l); } i.p-olive { background: var(--olive-l); }
+
+    .vmass { grid-column: b / c; grid-row: 1 / 3; }
+    .vthermo { grid-column: d / e; grid-row: 1 / 3; }
+    .vmass, .vthermo { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; justify-items: center; gap: 8px; padding-block: 8px 4px; }
+    .vlabel { font-size: 12px; color: var(--char-muted); }
+    .vtrack { position: relative; width: 10px; height: 100%; background: var(--char-2); border: 1px solid var(--char-rule); }
+    .vfill { position: absolute; left: 0; right: 0; bottom: 0; height: 100%; transform-origin: 50% 100%; }
+    .vfill-mass { background: var(--olive-l); }
+    .vfill-t { background: var(--ochre-l); transform: scaleY(.0154); }
+    .vmark { position: absolute; left: -6px; right: -6px; bottom: var(--y); border-top: 1px dashed var(--char-ink); }
+    .vread { display: grid; justify-items: center; text-align: center; color: var(--char-ink); line-height: 1.1; }
+    .vread b { font: 600 22px var(--f-serif); font-variant-numeric: tabular-nums; }
+    .vread small { font: 500 12px var(--f-mono); color: var(--char-muted); }
+
+    .vstage { grid-column: c / d; grid-row: 1 / 3; position: relative; min-height: 0; display: grid; place-items: center; overflow: hidden; }
+    .vsvg { width: 100%; height: 100%; max-height: 100%; }
+
+    .vrail { grid-column: a / e; grid-row: 3; display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); border-top: 1px solid var(--char-rule); margin-top: 10px; }
+    .vrail button {
+      min-height: 44px; background: none; border: 0; color: var(--char-muted); display: flex; align-items: center; justify-content: center; gap: 8px;
+      font: 500 13px var(--f-sans); position: relative; padding: 6px 4px 0;
+    }
+    .vrail button em { font-style: normal; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .vrail button .mono { font-size: 12px; }
+    .vrail button::before { content: ""; position: absolute; left: 0; right: 0; top: -1px; height: 2px; background: transparent; }
+    .vrail button.is-on { color: var(--char-ink); }
+    .vrail button.is-on::before { background: var(--ion); }
+    .vrail button.is-done::before { background: var(--olive-l); }
+
+    /* SVG */
+    .alm { fill: #B9862C; }
+    .spiral { stroke-dasharray: 1; stroke-dashoffset: 1; }
+    .alm-rim { fill: none; stroke: var(--char-muted); stroke-width: .5; opacity: .5; }
+    .hexes path { fill: none; stroke: var(--olive-l); stroke-width: .35; opacity: .75; }
+    .hexes { opacity: 0; }
+    .cracks path { fill: none; stroke: var(--ochre-l); stroke-width: 1.1; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+    .pt { opacity: 0; }
+    .pt.p-gray { fill: var(--char-muted); } .pt.p-ion { fill: var(--ion); } .pt.p-ochre { fill: var(--ochre-l); } .pt.p-olive { fill: var(--olive-l); }
+    .powder path { fill: #0E1010; stroke: var(--char-muted); stroke-width: 1.2; }
+    .bghex { opacity: .07; }
+    #bghex polygon { fill: none; stroke: var(--olive-m); stroke-width: 1; }
+    .powder { opacity: 0; }
+    .micro-bg { fill: var(--char-2); }
+    .sheet-l { fill: none; stroke: var(--char-muted); stroke-width: 2.4; stroke-linecap: round; opacity: .75; }
+    .pore-l { fill: none; stroke: var(--olive-l); stroke-width: 2.6; stroke-linecap: round; }
+    .sheet-hi { fill: none; stroke: var(--char-ink); stroke-width: 3.2; stroke-linecap: round; }
+    .cota-nm line { stroke: var(--ion); stroke-width: 1.6; }
+    .cota-nm text { font: 500 30px var(--f-mono); fill: var(--ion); }
+    .na { fill: var(--ion); }
+    .lens-ring { fill: none; stroke: var(--char-ink); stroke-width: 2; }
+    .micro { opacity: 1; }
+    .cell { opacity: 0; }
+    .cell-sheet { fill: var(--paper); }
+    .cell-k { font: 500 26px var(--f-mono); fill: var(--muted); }
+    .cell-t { font: 500 30px var(--f-sans); fill: var(--ink); }
+    .coat { fill: #0E1010; }
+    .foil { fill: #A9B0A4; stroke: var(--ink); stroke-width: 1; }
+    .can { fill: var(--surface); stroke: var(--ink); stroke-width: 3; }
+    .term { fill: var(--ink); }
+    .spiral { fill: none; stroke: #0E1010; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+    .roll .na { fill: var(--ion-d); }
+    .na-t { font: 600 34px var(--f-serif); fill: var(--ink); }
+
+    @media (max-width: 900px) {
+      .vpin {
+        grid-template-columns: [a] 40px [c] minmax(0, 1fr) [d] 40px [e];
+        grid-template-rows: auto minmax(0, 1fr) auto auto;
+        column-gap: 8px; padding: 14px 16px 6px; min-height: 0;
+      }
+      .vhead { grid-column: a / e; }
+      .vhead .sec-idx { margin-bottom: 6px; }
+      .vhead h2 { font-size: 24px; max-width: none; }
+      .vmass { grid-column: a / c; grid-row: 2; }
+      .vthermo { grid-column: d / e; grid-row: 2; }
+      .vstage { grid-column: c / d; grid-row: 2; }
+      .vsteps { grid-column: a / e; grid-row: 3; height: clamp(196px, 31svh, 250px); margin-top: 6px; border-top: 1px solid var(--char-rule); padding-top: 10px; }
+      .vstep { gap: 6px; }
+      .vstep h3 { font-size: 24px; }
+      .vwhat { font-size: 15px; max-width: none; }
+      .vkv dd { font-size: 18px; }
+      .vout { font-size: 13px; }
+      .vmicro { font-size: 14px; line-height: 1.4; max-width: none; }
+      .vstep .lede { font-size: 16px; }
+      .vrail { grid-column: a / e; grid-row: 4; margin-top: 4px; }
+      .vrail button em { display: none; }
+      .vread b { font-size: 16px; }
+      .vmass, .vthermo { padding-block: 4px 0; }
+      .cota-nm text { font-size: 44px; }
+      .cell-k { font-size: 36px; }
+      .cell-t { font-size: 40px; }
+      .vn { display: none; }
+    }
+
+    /* Movimiento reducido: siete bloques estáticos y la ilustración final fija */
+    @media (prefers-reduced-motion: reduce) {
+      .vpin { height: auto; min-height: 0; display: block; overflow: visible; padding-block: clamp(72px, 10vw, 120px); }
+      .vmass, .vthermo, .vrail, .vhint { display: none; }
+      .vstage { max-width: 560px; margin: 32px 0; }
+      .vsvg { height: auto; }
+      .bone, .parts, .powder, .heat { display: none; }
+      .micro { display: none; }
+      .cell { opacity: 1; }
+      .spiral { stroke-dashoffset: 0; }
+      .vsteps { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px 28px; margin-top: 32px; }
+      .vstep, .vstep:not([data-i="0"]) { position: static; opacity: 1; visibility: visible; border-top: 1px solid var(--char-rule); padding-top: 14px; }
+      .vstep.is-intro { grid-column: 1 / -1; border-top: 0; padding-top: 0; }
+      .vn { display: block !important; }
+    }
+  }
+</style>

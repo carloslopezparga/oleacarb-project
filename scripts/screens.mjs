@@ -6,7 +6,7 @@ import { mkdirSync } from 'node:fs';
 const BASE = process.argv[2] || 'http://localhost:4321';
 const OUT = 'docs/screens';
 mkdirSync(OUT, { recursive: true });
-const IDS = ['inicio', 'reto', 'territorio', 'proceso', 'planta', 'balances', 'calendario', 'simulador', 'impacto', 'video', 'equipo', 'fuentes'];
+const IDS = ['inicio', 'reto', 'territorio', 'proceso', 'planta', 'balances', 'calendario', 'simulador', 'impacto', 'video', 'fuentes'];
 const shot = (p, name, opts = {}) => p.screenshot({ path: `${OUT}/${name}.jpg`, type: 'jpeg', quality: 72, ...opts });
 
 async function sweep(p) {

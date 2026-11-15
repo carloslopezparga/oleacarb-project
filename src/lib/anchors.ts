@@ -2,7 +2,7 @@
 import { getLenis, reduced, ScrollTrigger } from './motion';
 
 export const SECTION_IDS = ['inicio', 'reto', 'territorio', 'viaje', 'proceso', 'planta', 'balances',
-  'calendario', 'simulador', 'impacto', 'video', 'equipo', 'fuentes'] as const;
+  'calendario', 'simulador', 'impacto', 'video', 'fuentes'] as const;
 
 export function headerHeight(): number {
   const h = document.querySelector<HTMLElement>('.site-head');

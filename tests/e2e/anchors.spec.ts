@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 // Anclas de BRIEF §2. #proceso, #planta y #simulador van impresas en QR.
-const IDS = ['inicio', 'reto', 'territorio', 'viaje', 'proceso', 'planta', 'balances', 'calendario', 'simulador', 'impacto', 'video', 'equipo', 'fuentes'];
+const IDS = ['inicio', 'reto', 'territorio', 'viaje', 'proceso', 'planta', 'balances', 'calendario', 'simulador', 'impacto', 'video', 'fuentes'];
 
 for (const id of IDS) {
   test(`#${id} en carga en frío deja su titular visible bajo la cabecera`, async ({ page }) => {

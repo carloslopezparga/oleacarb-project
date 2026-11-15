@@ -15,12 +15,13 @@ const SOURCES = [
   ['El Español · Invertia (2026)', 'El biochar se pone de moda en España (Carboliva)', '23-08-2026', 'https://www.elespanol.com/invertia/20260823/biochar-pone-moda-espana-afronta-reto-incrementar-toneladas-produccion/1003744359818_0.html'],
   ['Voß, T. et al. (2025)', 'Energy and carbon footprint of hard carbon and graphite anode production. Energy & Environmental Science, 18, 8104', '2025', 'https://pubs.rsc.org/en/content/articlepdf/2025/ee/d5ee00415b'],
   ['Recio-Ruiz, R. et al. (2025)', 'Olive stone pyrolysis and char properties. Biomass and Bioenergy, 196, 107676', '2025', 'https://riuma.uma.es/bitstreams/b2a1b6a5-6ace-411f-80bf-ee83b4cf410b/download'],
-  ['OLEACARB (2026)', 'Memoria del proyecto: modelo revisado, capítulos 4–16 y anexos A–H. Fuente de todas las cifras de planta y economía', '2026', '']
+  ['OLEACARB (2026)', 'Memoria del proyecto: modelo revisado, capítulos 4–16 y anexos A–H. Fuente de todas las cifras de planta y economía', '2026', ''],
+  ['Claude Code y repositorios de GitHub (2026)', 'Herramientas con las que hemos creado el contenido de esta web. La información la hemos ido contrastando con investigaciones hechas con Claude', '2026', 'https://claude.com/claude-code']
 ];
 ---
 <section id="fuentes" class="sec on-char chapter fuentes" aria-labelledby="fuentes-h">
   <div class="wrap">
-    <SectionHead n="13" name="Fuentes" id="fuentes" title="Fuentes" />
+    <SectionHead n="12" name="Fuentes" id="fuentes" title="Fuentes" />
     <ol class="src-list" role="list">
       {SOURCES.map(([a, t, d, u], i) => (
         <li>
@@ -34,6 +35,7 @@ const SOURCES = [
         <Logo />
         <p>Cifras del modelo revisado de la memoria del proyecto, en euros constantes de 2026. Estimación de estudios previos (±&#8239;30&#8239;%).</p>
         <p>Foto de portada: Veinticuatro de Jahén, <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" rel="license noopener">CC BY-SA 4.0</a>, virada a duotono.</p>
+        <p>Hemos creado el contenido de esta web con ayuda de Claude Code y de repositorios de GitHub, y hemos ido contrastando la información con investigaciones hechas con Claude.</p>
       </div>
       <div class="foot-b">
         <p class="mono">Proyectos (55000037) · GITI · ETSII · Universidad Politécnica de Madrid · Grupo T1 · noviembre de 2026</p>
@@ -48,7 +50,7 @@ const SOURCES = [
 </section>
 <style>
   @layer sections {
-    .fuentes { padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px)); }
+    .fuentes { padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--char-rule); }
     .src-list { columns: 2 420px; column-gap: calc(var(--gutter) * 2); margin: 0; }
     .src-list li { break-inside: avoid; display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 8px; padding: 10px 0; border-top: 1px solid var(--char-rule); font-size: 14.5px; color: var(--char-muted); }
     .src-list b { color: var(--char-ink); font-weight: 600; }

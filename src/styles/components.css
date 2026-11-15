@@ -36,7 +36,7 @@
   /* Las secciones posteriores al viaje no se maquetan hasta que se acercan a la pantalla (el primer pintado no espera
      a miles de nodos SVG). No afecta a los fijados de GSAP, que están antes; «auto» recuerda el alto real.
      #planta queda fuera: su ficha y su maqueta usan position: fixed, que la contención anclaría a la sección. */
-  #proceso, #balances, #calendario, #simulador, #impacto, #video, #equipo, #fuentes {
+  #proceso, #balances, #calendario, #simulador, #impacto, #video, #fuentes {
     content-visibility: auto;
     contain-intrinsic-size: auto 1600px;
   }

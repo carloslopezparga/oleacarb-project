@@ -18,6 +18,7 @@ export function initPlanta(): void {
     // unidades de plano por píxel de pantalla: los rótulos mantienen su tamaño al acercar
     const px = svg.getBoundingClientRect().width || 600;
     svg.style.setProperty('--upx', (vb.w / px).toFixed(4));
+    svg.classList.toggle('dense', vb.w / px > 0.45);   // plano muy reducido: se ocultan los rótulos largos
   };
   const clamp = () => {
     vb.x = Math.min(Math.max(vb.x, base.x), base.x + base.w - vb.w);

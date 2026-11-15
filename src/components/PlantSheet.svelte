@@ -22,12 +22,18 @@
       const { id, quiet } = (e as CustomEvent<{ id: string; quiet?: boolean }>).detail;
       if (!zones.some(z => z.id === id)) return;
       sel = id;
-      if (isMobile() && !quiet) { open = true; queueMicrotask(() => closeBtn?.focus({ preventScroll: true })); }
+      if (isMobile() && !quiet) {
+        open = true;
+        window.dispatchEvent(new CustomEvent('sheet:open', { detail: panel }));
+        queueMicrotask(() => closeBtn?.focus({ preventScroll: true }));
+      }
     };
     const onClose = () => { open = false; };
+    const onOther = (e: Event) => { if ((e as CustomEvent<HTMLElement>).detail !== panel) open = false; };
     window.addEventListener('plant:select', onSel);
     window.addEventListener('plant:close', onClose);
-    return () => { window.removeEventListener('plant:select', onSel); window.removeEventListener('plant:close', onClose); };
+    window.addEventListener('sheet:open', onOther);
+    return () => { window.removeEventListener('plant:select', onSel); window.removeEventListener('plant:close', onClose); window.removeEventListener('sheet:open', onOther); };
   });
 
   function close() {

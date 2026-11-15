@@ -4,11 +4,12 @@ import Cajetin from '../components/Cajetin.astro';
 import Simulator from '../components/Simulator.svelte';
 import { economics } from '../lib/data';
 import type { SimState } from '../lib/sim';
+import type { MCConfig } from '../lib/montecarlo';
 
 const E = economics;
 const presets = E.presets_simulador as { name: string; v: SimState }[];
 // Solo lo necesario para el cliente: sin los 8.000 VAN de muestra de la memoria.
-const mc = { n: E.montecarlo.n, hoy: E.montecarlo.hoy, condicionado_al_hito_2: E.montecarlo.condicionado_al_hito_2, comunes: E.montecarlo.comunes,
+const mc = { n: E.montecarlo.n, hoy: E.montecarlo.hoy, condicionado_al_hito_2: E.montecarlo.condicionado_al_hito_2, comunes: E.montecarlo.comunes as unknown as MCConfig['comunes'],
   resultados: { hoy: { p_pos: E.montecarlo.resultados.hoy.p_pos }, condicionado: { p_pos: E.montecarlo.resultados.condicionado.p_pos } } };
 const tornado = E.tornado_C.rows.map(r => ({ label: r.label, key: r.key, lo: r.lo, hi: r.hi, fmt: r.fmt }));
 ---

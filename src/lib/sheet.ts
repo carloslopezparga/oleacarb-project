@@ -10,6 +10,8 @@ export class BottomSheet {
     this.body = el.querySelector<HTMLElement>('.bs-body') ?? el;
     this.onClose = onClose;
     el.querySelector('.bs-close')?.addEventListener('click', () => this.close());
+    // Solo una hoja abierta a la vez
+    window.addEventListener('sheet:open', (e) => { if ((e as CustomEvent<HTMLElement>).detail !== el) this.close(); });
     el.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.stopPropagation(); this.close(); } });
     const grab = el.querySelector<HTMLElement>('.grab');
     if (grab) {
@@ -38,6 +40,7 @@ export class BottomSheet {
       if (typeof html === 'string') this.body.innerHTML = html; else this.body.replaceChildren(html);
     }
     if (!this.isOpen) this.lastFocus = document.activeElement as HTMLElement | null;
+    window.dispatchEvent(new CustomEvent('sheet:open', { detail: this.el }));
     this.el.classList.add('is-open');
     this.body.scrollTop = 0; this.el.scrollTop = 0;
     requestAnimationFrame(() => this.el.querySelector<HTMLElement>('.bs-close')?.focus({ preventScroll: true }));

@@ -2,7 +2,7 @@
 import SectionHead from '../components/SectionHead.astro';
 import Cajetin from '../components/Cajetin.astro';
 import Pfd from '../components/Pfd.astro';
-import { desktop, mobile, STREAM_KIND } from '../lib/pfd';
+import { desktop, mobile } from '../lib/pfd';
 import { process, stageEquipment } from '../lib/data';
 import { num, THIN, chem } from '../lib/format';
 const ST = process.stages;
@@ -142,14 +142,13 @@ const kindName = { olive: 'materia y producto', ochre: 'calor y gases', ion: 'ag
     .eq-body span { color: var(--muted); }
     .eq-kw { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
 
-    .pfd-sheet .bs-body { padding-top: 6px; }
-    .pfd-sheet .spanel { display: grid; grid-template-columns: minmax(0, 1fr); padding: 0; border: 0; }
-    .pfd-sheet .sp-eq li { grid-template-columns: 84px minmax(0, 1fr); }
-    .pfd-sheet .eq-kw { grid-column: 2; }
-    .pfd-sheet .ficha-m b { display: block; font: 600 20px var(--f-serif); margin: 4px 0 10px; }
-    .pfd-sheet .ficha-m dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; }
-    .pfd-sheet .ficha-m dt { color: var(--muted); }
-    .pfd-sheet .ficha-m dd { margin: 0; font-variant-numeric: tabular-nums; }
+    :global(.pfd-sheet .bs-body) { padding-top: 6px; }
+    :global(.pfd-sheet .spanel) { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; padding: 0; border: 0; background: none; }
+    :global(.pfd-sheet .ficha-m b) { display: block; font: 600 20px var(--f-serif); margin: 4px 0 10px; }
+    :global(.pfd-sheet .ficha-m .fn) { font: 500 12px var(--f-mono); color: var(--muted); }
+    :global(.pfd-sheet .ficha-m dl) { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; }
+    :global(.pfd-sheet .ficha-m dt) { color: var(--muted); }
+    :global(.pfd-sheet .ficha-m dd) { margin: 0; font-variant-numeric: tabular-nums; }
 
     @media (max-width: 900px) {
       .spanel { grid-template-columns: minmax(0, 1fr); }

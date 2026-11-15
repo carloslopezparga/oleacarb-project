@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import fixture from '../src/data/model.test.json';
-import { run, breakeven, BASE } from '../src/lib/model';
+import { run, breakeven, BASE, type Overrides } from '../src/lib/model';
 import { withAidRule } from '../src/lib/sim';
 import { num, signed, unit, pct, meur, MINUS, THIN } from '../src/lib/format';
 
@@ -22,7 +22,7 @@ describe('modelo económico (11 casos de data/model.test.json)', () => {
 
   for (const c of fixture.cases) {
     it(c.name, () => {
-      const over = withAidRule(c.input as Record<string, number>);
+      const over = withAidRule(c.input as unknown as Overrides);
       const r = run(over);
       const e = c.expected;
       close(r.npv, e.npv, 'npv');

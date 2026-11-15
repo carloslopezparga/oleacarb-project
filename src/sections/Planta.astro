@@ -56,7 +56,7 @@ const ROUTE_IDS = new Set(plant.route.map(r => r.zone));   // en estas naves el 
             <rect x={plant.green[0]} y={plant.green[1]} width={plant.green[2]} height={plant.green[3]} class="green" />
             {plant.roads.map(([x, y, w, h]) => <rect x={x} y={y} width={w} height={h} class="road" />)}
             <line x1={plant.conveyor.desde[0]} y1={plant.conveyor.desde[1]} x2={plant.conveyor.hasta[0]} y2={plant.conveyor.hasta[1]} class="conv" />
-            <text x={plant.conveyor.hasta[0] - 2.5} y="9" class="lbl lbl-s" text-anchor="end">cinta desde El Tejar</text>
+            <text x={plant.conveyor.hasta[0] - 2.5} y="9" class="lbl lbl-s cinta" text-anchor="end">cinta desde El Tejar</text>
             <!-- zonas -->
             {plant.zones.map(z => (
               <g class={`zone cat-${CATK[z.cat]} t-${z.type}`} data-id={z.id} data-cat={CATK[z.cat]} tabindex="0" role="button" aria-label={`${z.id}: ${z.name}`}>
@@ -112,7 +112,7 @@ const ROUTE_IDS = new Set(plant.route.map(r => r.zone));   // en estas naves el 
           <div class="p3d-card" aria-live="polite" hidden></div>
         </div>
         <figcaption class="pl-cap">
-          <p class="src">Parcela de {num(sup.parcel)}{THIN}m² · {num(sup.built)}{THIN}m² construidos · {num(sup.foot)}{THIN}m² de ocupación ({num(occ, 1)}{THIN}%). Alturas supuestas a falta del proyecto de estructuras. Línea azul: ruta del material, del 1 al 7.</p>
+          <p class="src">Parcela de {num(sup.parcel)}{THIN}m² · {num(sup.built)}{THIN}m² construidos · {num(sup.foot)}{THIN}m² de ocupación ({num(occ, 1)}{THIN}%). Alturas supuestas a falta del proyecto de estructuras. Línea azul: ruta del material, del 1 al 7; línea ocre: cinta de hueso desde El Tejar.</p>
           <p class="src pl-help"><span class="h-fine">Rueda (tras hacer clic en el plano), botones o + y − para acercar · arrastra para moverte.</span><span class="h-touch">Pellizca con dos dedos para acercar y moverte, o usa los botones.</span></p>
         </figcaption>
       </figure>
@@ -164,6 +164,7 @@ const ROUTE_IDS = new Set(plant.route.map(r => r.zone));   // en estas naves el 
     .t-exterior .zid { fill: var(--muted); }
     .lbl { font-family: var(--f-cond); font-weight: 500; fill: var(--muted); font-size: calc(12px * var(--upx)); }
     .lbl-n { fill: var(--ink); }
+    .plan.dense .cinta { display: none; }
     .lbl-c { font-family: var(--f-mono); fill: var(--ink); font-size: calc(11.5px * var(--upx)); }
     .acc { font-size: calc(11px * var(--upx)); }
     .cotas line { stroke: var(--ink); stroke-width: .35; }
@@ -195,6 +196,7 @@ const ROUTE_IDS = new Set(plant.route.map(r => r.zone));   // en estas naves el 
     .p3d-btns { display: flex; gap: 8px; }
     .p3d-canvas { position: relative; min-height: 0; touch-action: none; }
     .p3d-canvas :global(canvas) { display: block; width: 100%; height: 100%; }
+    .p3d-card[hidden] { display: none; }
     .p3d-card { position: absolute; left: 16px; bottom: 16px; max-width: min(360px, calc(100% - 32px)); background: var(--char); border: 1px solid var(--ion); padding: 14px 16px; display: grid; gap: 4px; }
     .p3d-card :global(.mono) { font-size: 12.5px; color: var(--ion); }
     .p3d-card :global(b) { font: 600 20px var(--f-serif); }

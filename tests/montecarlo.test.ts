@@ -3,7 +3,7 @@ import econ from '../src/data/economics.json';
 import { runBatch, type MCConfig, type Tri } from '../src/lib/montecarlo';
 
 const mc = econ.montecarlo;
-const comunes = mc.comunes as MCConfig['comunes'];
+const comunes = mc.comunes as unknown as MCConfig['comunes'];
 const hoy: MCConfig = { modo: { price_hc: mc.hoy.price_hc as Tri, yield_hc: mc.hoy.yield_hc as Tri }, comunes };
 const cond: MCConfig = { modo: { price_hc: mc.condicionado_al_hito_2.price_hc as Tri, yield_hc: mc.condicionado_al_hito_2.yield_hc as Tri }, comunes };
 const pPos = (xs: number[]) => xs.filter(v => v > 0).length / xs.length;

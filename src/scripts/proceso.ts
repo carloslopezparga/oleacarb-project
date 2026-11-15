@@ -19,6 +19,8 @@ export function initProceso(): void {
   if (!sec) return;
   const mq = matchMedia('(max-width: 760px)');
   const sheetEl = sec.querySelector<HTMLElement>('.pfd-sheet')!;
+  // La hoja inferior va al <body>: dentro de la sección, content-visibility la anclaría a ella y no a la pantalla.
+  document.body.appendChild(sheetEl);
   const sheet = new BottomSheet(sheetEl, () => { sec.querySelectorAll('.st.is-on').forEach(e => e.classList.remove('is-on')); });
   const wrap = sec.querySelector<HTMLElement>('.pfd-wrap')!;
   const ficha = sec.querySelector<HTMLElement>('.ficha')!;

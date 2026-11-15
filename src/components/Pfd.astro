@@ -1,0 +1,149 @@
+---
+/* Diagrama de flujo del proceso, vivo. Mismo componente para el escritorio y para el móvil (vertical). */
+import { type Layout, STREAM_KIND, streams, flowStyle, toD, badgeAt } from '../lib/pfd';
+import { process, balances } from '../lib/data';
+import { num, THIN } from '../lib/format';
+interface Props { L: Layout; variant: 'desk' | 'mob' }
+const { L, variant } = Astro.props;
+const mob = variant === 'mob';
+const ST = process.stages;
+const heatGWh = balances.energy.links[0][2] as number;      // 66,0 GWh de calor útil en aceite térmico
+const orcGWh = balances.energy.electricidad.orc_MWh / 1000; // 7,96 GWh eléctricos
+const fs = mob ? 13.5 : 15;
+const label = (s: typeof process.streams[number]) =>
+  `Corriente ${s.id}: ${s.name}. ${num(s.ta)} toneladas al año, ${num(s.th, 2)} t/h, ${s.T} °C, de ${s.frm} a ${s.to}.`;
+---
+<svg class={`pfd pfd-${variant}`} viewBox={`0 0 ${L.w} ${L.h}`} role="group"
+  aria-label={mob ? 'Diagrama de flujo del proceso, versión vertical' : 'Diagrama de flujo del proceso'}>
+  <defs>
+    <marker id={`ah-${variant}`} viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" class="ah" /></marker>
+    <marker id={`ahq-${variant}`} viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" class="ahq" /></marker>
+  </defs>
+
+  <!-- bucle de energía: el calor vuelve a secado, pirólisis y activación -->
+  <g class="loop" aria-hidden="true">
+    {L.loop.map(pts => <path d={toD(pts)} marker-end={`url(#ahq-${variant})`} />)}
+  </g>
+
+  <!-- conexiones sin número -->
+  <g class="plain" aria-hidden="true">{L.plain.map(pts => <path d={toD(pts)} marker-end={`url(#ah-${variant})`} />)}</g>
+
+  <!-- corrientes numeradas -->
+  {L.paths.map(p => {
+    const s = streams[p.id]; const f = flowStyle(s.ta); const d = toD(p.pts); const [bx, by] = badgeAt(p);
+    return (
+      <g class={`st k-${STREAM_KIND[p.id]}`} data-s={p.id} tabindex="0" role="button" aria-label={label(s)}
+        style={`--w:${f.width.toFixed(2)};--dw:${f.dot.toFixed(2)};--dur:${f.dur.toFixed(3)}s`}>
+        <path d={d} class="hit" />
+        <path d={d} class="base" marker-end={`url(#ah-${variant})`} />
+        <path d={d} class="dots" />
+        <g class="badge" transform={`translate(${bx} ${by})`}><circle r={mob ? 10.5 : 11.5} /><text y="4.2">{p.id}</text></g>
+      </g>
+    );
+  })}
+
+  <!-- etapas -->
+  {L.stages.map(s => (
+    <g class="stage" data-i={s.i} tabindex="0" role="button" aria-label={`Etapa ${s.i + 1}: ${ST[s.i].title}. Abrir su panel.`}>
+      <rect x={s.x} y={s.y} width={s.w} height={s.h} class="sbox" />
+      <circle cx={s.x + 18} cy={s.y + 20} r="10.5" class="snum" />
+      <text x={s.x + 18} y={s.y + 24.5} class="snum-t">{s.i + 1}</text>
+      <text x={s.x + 34} y={s.y + 25} class="sname" font-size={fs + 1}>{ST[s.i].short === 'Lavado' ? 'Lavado ácido' : ST[s.i].short}</text>
+      <text x={s.x + 12} y={s.y + s.h - 13} class="ssub" font-size={mob ? 12 : 12.5}>{s.sub}</text>
+    </g>
+  ))}
+
+  <!-- producto y coproducto -->
+  <g class="prod">
+    <rect x={L.hc.x} y={L.hc.y} width={L.hc.w} height={L.hc.h} class="hcbox" />
+    <text x={L.hc.x + L.hc.w / 2} y={L.hc.y + (mob ? 22 : 25)} class="hc-t" font-size={fs + 2}>Hard carbon</text>
+    <text x={L.hc.x + L.hc.w / 2} y={L.hc.y + (mob ? 40 : 44)} class="hc-s" font-size={fs - 2}>{num(streams['13'].ta)}{THIN}t/año</text>
+    {!mob && <>
+      <rect x={L.ca.x} y={L.ca.y} width={L.ca.w} height={L.ca.h} class="cabox" />
+      <text x={L.ca.x + L.ca.w / 2} y={L.ca.y + 23} class="ca-t" font-size={fs}>Carbón activo</text>
+      <text x={L.ca.x + L.ca.w / 2} y={L.ca.y + 41} class="ca-s" font-size={fs - 2}>{num(streams['15'].ta)}{THIN}t/año</text>
+    </>}
+  </g>
+  <g class="act">
+    <rect x={L.act.x} y={L.act.y} width={L.act.w} height={L.act.h} />
+    <text x={L.act.x + L.act.w / 2} y={L.act.y + (mob ? 24 : 24)} font-size={fs - 1} class="act-t">Activación</text>
+    {!mob && <text x={L.act.x + L.act.w / 2} y={L.act.y + 42} font-size={12} class="act-s">vapor · 850–900{THIN}°C</text>}
+  </g>
+  <g class="energy">
+    <rect x={L.energy.x} y={L.energy.y} width={L.energy.w} height={L.energy.h} />
+    {mob ? <>
+      <text x={L.energy.x + 14} y={L.energy.y + 23} font-size={14} class="en-t">Oxidador térmico, caldera y ORC</text>
+      <text x={L.energy.x + 14} y={L.energy.y + 43} font-size={12.5} class="en-s">el calor vuelve a secado, pirólisis y activación</text>
+    </> : <>
+      <text x={L.energy.x + 14} y={L.energy.y + 25} font-size={15} class="en-t">Oxidador térmico,</text>
+      <text x={L.energy.x + 14} y={L.energy.y + 44} font-size={15} class="en-t">caldera y ORC</text>
+      <text x={L.energy.x + 14} y={L.energy.y + 68} font-size={13} class="en-s">{num(heatGWh)}{THIN}GWh/año de calor</text>
+      <text x={L.energy.x + 14} y={L.energy.y + 86} font-size={13} class="en-s">{num(orcGWh, 2)}{THIN}GWh/año eléctricos</text>
+    </>}
+  </g>
+  {!mob && <>
+    <text x={L.loopLabel.x} y={L.loopLabel.y} class="loop-t" font-size="13">↺ el calor vuelve a secado,</text>
+    <text x={L.loopLabel.x + 12} y={L.loopLabel.y + 27} class="loop-t" font-size="13">pirólisis y activación</text>
+  </>}
+  {L.terms.map(t => <text x={t.x} y={t.y} text-anchor={t.anchor} class="term" font-size={mob ? 13 : 13.5}>{t.text}</text>)}
+</svg>
+
+<style>
+  @layer sections {
+    .pfd { width: 100%; height: auto; }
+    .pfd-mob { display: none; max-width: 420px; margin-inline: auto; }
+    @media (max-width: 760px) {
+      .pfd-desk { display: none; }
+      .pfd-mob { display: block; }
+    }
+    .pfd .ah { fill: var(--muted); }
+    .pfd .ahq { fill: var(--ochre); }
+
+    .st { cursor: pointer; outline: none; --c: var(--olive); }
+    .st.k-gray { --c: var(--muted); } .st.k-ion { --c: var(--ion-d); } .st.k-ochre { --c: var(--ochre); } .st.k-terra { --c: var(--terra); }
+    .st .hit { fill: none; stroke: transparent; stroke-width: 22; }
+    .st .base { fill: none; stroke: var(--c); stroke-width: var(--w); opacity: .55; stroke-linejoin: round; }
+    .st .dots { fill: none; stroke: var(--c); stroke-width: var(--dw); stroke-linecap: round; stroke-dasharray: 0 16; animation: pfd-flow var(--dur) linear infinite; }
+    @keyframes pfd-flow { to { stroke-dashoffset: -16; } }
+    .st .badge circle { fill: var(--surface); stroke: var(--c); stroke-width: 1.6; }
+    .st .badge text { font: 500 12px var(--f-mono); text-anchor: middle; fill: var(--ink); }
+    .st:hover .base, .st.is-on .base { opacity: 1; }
+    .st:hover .badge circle, .st.is-on .badge circle, .st:focus-visible .badge circle { fill: var(--ink); stroke: var(--ink); }
+    .st:hover .badge text, .st.is-on .badge text, .st:focus-visible .badge text { fill: var(--surface); }
+    .st:focus-visible .base { opacity: 1; stroke-width: calc(var(--w) + 2px); }
+
+    .stage { cursor: pointer; outline: none; }
+    .sbox { fill: var(--surface); stroke: var(--olive); stroke-width: 1.4; transition: fill var(--t-fast) var(--ease-out); }
+    .snum { fill: var(--olive); }
+    .snum-t { font: 600 12.5px var(--f-mono); fill: var(--surface); text-anchor: middle; }
+    .sname { font-family: var(--f-cond); font-weight: 600; fill: var(--ink); }
+    .ssub { font-family: var(--f-cond); font-weight: 500; fill: var(--muted); }
+    .stage:hover .sbox { fill: var(--olive-p); }
+    .stage.is-on .sbox { fill: var(--olive-p); stroke: var(--ink); stroke-width: 2.4; }
+    .stage:focus-visible .sbox { stroke: var(--ion-d); stroke-width: 3; }
+
+    .hcbox { fill: var(--olive-d); }
+    .hc-t { font-family: var(--f-serif); font-weight: 600; fill: var(--paper); text-anchor: middle; }
+    .hc-s { font-family: var(--f-mono); fill: var(--olive-p); text-anchor: middle; }
+    .cabox { fill: var(--olive-p); stroke: var(--olive); stroke-width: 1.2; }
+    .ca-t { font-family: var(--f-cond); font-weight: 600; fill: var(--ink); text-anchor: middle; }
+    .ca-s { font-family: var(--f-mono); fill: var(--olive-d); text-anchor: middle; }
+    .act rect { fill: var(--surface); stroke: var(--olive); stroke-width: 1.2; stroke-dasharray: 5 3; }
+    .act-t { font-family: var(--f-cond); font-weight: 600; fill: var(--ink); text-anchor: middle; }
+    .act-s { font-family: var(--f-mono); fill: var(--muted); text-anchor: middle; }
+    .energy rect { fill: var(--ochre-p); stroke: var(--ochre); stroke-width: 1.4; }
+    .en-t { font-family: var(--f-cond); font-weight: 600; fill: var(--ink); }
+    .en-s { font-family: var(--f-cond); font-weight: 500; fill: var(--ink); }
+    .loop path { fill: none; stroke: var(--ochre); stroke-width: 2; stroke-dasharray: 7 5; animation: pfd-loop 1.4s linear infinite; }
+    @keyframes pfd-loop { to { stroke-dashoffset: -24; } }
+    .loop-t { font-family: var(--f-cond); font-style: italic; font-weight: 500; fill: var(--ink); }
+    .plain path { fill: none; stroke: var(--olive); stroke-width: 2; }
+    .term { font-family: var(--f-cond); font-weight: 500; fill: var(--muted); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .st .dots { display: none; }
+      .st .base { opacity: 1; }
+      .loop path { animation: none; }
+    }
+  }
+</style>

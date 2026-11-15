@@ -1,0 +1,199 @@
+---
+import SectionHead from '../components/SectionHead.astro';
+import Cajetin from '../components/Cajetin.astro';
+import { geoMercator, geoPath, geoCircle, geoDistance } from 'd3-geo';
+import { feature } from 'topojson-client';
+import type { Topology, GeometryCollection } from 'topojson-specification';
+import type { Feature, FeatureCollection, Geometry } from 'geojson';
+import provincesTopo from 'es-atlas/es/provinces.json';
+import { territory, impact, supplyTowns, supplyTotal } from '../lib/data';
+import { num, THIN } from '../lib/format';
+
+const topo = provincesTopo as unknown as Topology<{ provinces: GeometryCollection<{ name: string }> }>;
+const provs = feature(topo, topo.objects.provinces) as FeatureCollection<Geometry, { name: string }>;
+const jaen = provs.features.find(f => String(f.id) === '23') as Feature<Geometry, { name: string }>;
+const P = territory.planta;
+const R_EARTH = 6371;
+
+interface MapSpec { w: number; h: number; pad: number; fs: number; small: boolean }
+function buildMap({ w, h, pad, fs, small }: MapSpec) {
+  // Encuadre: el anillo de 50 km y todos los orígenes; el contorno provincial se recorta en el marco.
+  const ring50 = geoCircle().center([P.lon, P.lat]).radius(50 / R_EARTH * 180 / Math.PI)();
+  const extra = { type: 'MultiPoint' as const, coordinates: supplyTowns.map(t => [t.lon, t.lat]) };
+  const proj = geoMercator().fitExtent([[pad, pad], [w - pad, h - pad]], { type: 'GeometryCollection', geometries: [ring50, extra] } as unknown as Feature);
+  const path = geoPath(proj);
+  const pt = (lon: number, lat: number) => proj([lon, lat]) as [number, number];
+  const [px, py] = pt(P.lon, P.lat);
+  const neigh = provs.features.filter(f => ['14', '18', '13', '02', '04', '41', '29'].includes(String(f.id))).map(f => path(f) || '');
+  const rings = territory.anillos_km.map(km => ({ km, d: path(geoCircle().center([P.lon, P.lat]).radius(km / R_EARTH * 180 / Math.PI)()) || '' }));
+  // Escala gráfica: píxeles por km a la latitud de la planta (25 km hacia el este).
+  const dLon = 25 / (111.32 * Math.cos(P.lat * Math.PI / 180));
+  const kmPx = (pt(P.lon + dLon, P.lat)[0] - px) / 25;
+  const arcs = supplyTowns.filter(t => t.name !== 'Mancha Real').map(t => {
+    const [x, y] = pt(t.lon, t.lat);
+    const mx = (x + px) / 2, my = (y + py) / 2, dx = px - x, dy = py - y, L = Math.hypot(dx, dy);
+    const k = 0.16;  // combadura del arco
+    const cxp = mx - dy / L * L * k, cyp = my + dx / L * L * k;
+    const km = geoDistance([t.lon, t.lat], [P.lon, P.lat]) * R_EARTH;
+    return { ...t, x, y, d: `M${x.toFixed(1)},${y.toFixed(1)} Q${cxp.toFixed(1)},${cyp.toFixed(1)} ${px.toFixed(1)},${py.toFixed(1)}`, sw: 1 + t.supply_t / 1000 * (small ? 0.8 : 1.05), km };
+  });
+  const refs = Object.entries(territory.referencias).map(([name, txt]) => {
+    const t = (territory.towns as Record<string, { lat: number; lon: number }>)[name];
+    const [x, y] = pt(t.lon, t.lat);
+    return { name, txt, x, y };
+  });
+  const tejar = territory.towns['Mancha Real'].supply_t as number;
+  return { w, h, fs, small, outline: path(jaen) || '', neigh, rings, kmPx, arcs, refs, px, py, tejarR: Math.sqrt(tejar) * (small ? 0.1 : 0.13) };
+}
+const big = buildMap({ w: 820, h: 640, pad: 34, fs: 14, small: false });
+const sm = buildMap({ w: 360, h: 360, pad: 14, fs: 13, small: true });
+const maps = [big, sm];
+
+// Posición de las etiquetas para que no se pisen (ajustes a mano sobre el mapa).
+const LBL: Record<string, [number, number, 'start' | 'end' | 'middle']> = {
+  'Jaén': [-10, 5, 'end'], 'Baeza': [-9, -9, 'end'], 'Úbeda': [10, -6, 'start'], 'Bailén': [-10, -6, 'end'],
+  'Villanueva del Arzobispo': [-4, -12, 'end'], 'Puente del Obispo': [-9, 14, 'end'], 'Linares': [9, 5, 'start']
+};
+const camionesHueso = impact.camiones_hueso_ano;   // (24.157 − 6.000) / 25 = 726
+const camionesTotal = impact.camiones_ano_total;   // + producto / 20 t + 40 de reactivos = 917
+---
+<section id="territorio" class="sec sheet on-paper terr" aria-labelledby="territorio-h">
+  <div class="wrap">
+    <div class="terr-grid g12">
+      <div class="terr-text">
+        <SectionHead n="03" name="Territorio" id="territorio" title="Hueso de seis municipios, a&nbsp;44&#8239;km de media" />
+        <div class="prose">
+          <p>El plan de suministro reparte {num(supplyTotal)}{THIN}t/año entre seis orígenes. La cuarta parte llega de la extractora de El Tejar, la parcela vecina, por una cinta y sin camiones; el resto, en camiones de 25{THIN}t: {num(camionesHueso)} al año, {num(camionesTotal)} contando producto y reactivos.</p>
+          <p>Jaén genera entre 159.000 y 289.000{THIN}t de hueso al año; la planta compra entre el 8 y el 15{THIN}%. Estar junto a El Tejar, con suelo, una cuarta parte del hueso por cinta y servicios compartidos, vale unos 6{THIN}M€ de VAN frente a una parcela aislada.</p>
+        </div>
+        <div class="cota" aria-hidden="true"><span class="cota-l"></span><span class="cota-t mono">44{THIN}km de media por carretera · 36{THIN}km en línea recta</span></div>
+      </div>
+
+      <figure class="terr-map field">
+        {maps.map(m => (
+          <svg class={m.small ? 'map-sm' : 'map-lg'} viewBox={`0 0 ${m.w} ${m.h}`} role="img"
+            aria-label={`Mapa de la provincia de Jaén con la planta en Mancha Real, anillos de 25 y 50 km y los arcos de suministro de hueso desde ${supplyTowns.map(t => t.name).join(', ')}.`}>
+            <defs><clipPath id={`clip-${m.w}`}><rect width={m.w} height={m.h} /></clipPath></defs>
+            <g clip-path={`url(#clip-${m.w})`}>
+              {m.neigh.map(d => <path d={d} class="neigh" />)}
+              <path d={m.outline} class="prov" />
+              {m.rings.map(r => <path d={r.d} class="ring" />)}
+              {m.arcs.map((a, i) => (
+                <g class="arc" style={`--i:${i}`}>
+                  <path d={a.d} class="arc-base" stroke-width={a.sw} pathLength="1" />
+                  <path d={a.d} class="arc-flow" stroke-width={Math.max(1.4, a.sw * 0.42)} />
+                </g>
+              ))}
+              <circle cx={m.px} cy={m.py} r={m.tejarR} class="tejar" />
+              {m.refs.map(r => (
+                <g class="ref">
+                  <rect x={r.x - 4} y={r.y - 4} width="8" height="8" />
+                  <text x={r.x + (LBL[r.name]?.[0] ?? 8)} y={r.y + (LBL[r.name]?.[1] ?? 4)} text-anchor={LBL[r.name]?.[2] ?? 'start'} font-size={m.fs}>
+                    {r.name === 'Linares' ? 'Linares · plan B' : 'Carboliva'}
+                  </text>
+                </g>
+              ))}
+              {m.arcs.map(a => (
+                <g class="town">
+                  <circle cx={a.x} cy={a.y} r={m.small ? 3.5 : 4.5} />
+                  <text x={a.x + LBL[a.name][0]} y={a.y + LBL[a.name][1]} text-anchor={LBL[a.name][2]} font-size={m.fs}>
+                    {m.small && a.name === 'Villanueva del Arzobispo' ? 'Villanueva del Arz.' : a.name}{!m.small && <tspan class="tq"> · {num(a.supply_t)}{THIN}t</tspan>}
+                  </text>
+                </g>
+              ))}
+              <g class="plant">
+                <circle cx={m.px} cy={m.py} r={m.small ? 9 : 12} class="halo" />
+                <circle cx={m.px} cy={m.py} r={m.small ? 4.5 : 6} class="dot" />
+                <text x={m.px + (m.small ? 10 : 16)} y={m.py + (m.small ? 22 : 30)} font-size={m.fs + 1} class="pl">OLEACARB · Mancha Real</text>
+                {!m.small && <text x={m.px + 16} y={m.py + 48} font-size={m.fs - 0.5} class="pl2">El Tejar: {num(territory.towns['Mancha Real'].supply_t as number)}{THIN}t/año por cinta</text>}
+              </g>
+              {m.rings.map(r => {
+                const rr = r.km * m.kmPx;
+                return <text x={m.px + rr * 0.71 + 4} y={m.py + rr * 0.71 + 12} class="ring-l" font-size={m.fs - 1}>{r.km}{THIN}km</text>;
+              })}
+            </g>
+            <g class="scale" transform={`translate(${m.small ? 12 : 28},${m.h - (m.small ? 16 : 30)})`}>
+              <rect width={m.kmPx * 12.5} height="5" class="s1" /><rect x={m.kmPx * 12.5} width={m.kmPx * 12.5} height="5" class="s2" />
+              <text y="-6" font-size={m.fs - 1}>0</text><text x={m.kmPx * 25} y="-6" font-size={m.fs - 1} text-anchor="middle">25{THIN}km</text>
+            </g>
+            <g class="north" transform={`translate(${m.w - (m.small ? 22 : 36)},${m.small ? 26 : 40})`}>
+              <path d="M0,-16 L6,6 L0,1 L-6,6 Z" /><text y="22" text-anchor="middle" font-size={m.fs - 1}>N</text>
+            </g>
+          </svg>
+        ))}
+        <figcaption class="src">Contorno: es-atlas (IGN). Arcos con grosor proporcional a las t/año de hueso. Carboliva, en Puente del Obispo, piroliza hueso a unos 20{THIN}km (≈{THIN}33{THIN}% de carbonizado); Linares es el plan B, en el Parque Empresarial Santana.</figcaption>
+      </figure>
+    </div>
+
+    <table class="dtable towns">
+      <caption>Plan de suministro de hueso, t/año (camiones de 25{THIN}t)</caption>
+      <thead><tr><th scope="col">Origen</th><th scope="col">Llega en</th><th scope="col" class="n">t/año</th><th scope="col" class="n">Cuota</th></tr></thead>
+      <tbody>
+        {supplyTowns.map(t => (
+          <tr>
+            <th scope="row">{t.name === 'Mancha Real' ? 'El Tejar (Mancha Real)' : t.name}</th>
+            <td>{t.name === 'Mancha Real' ? 'cinta' : 'camión'}</td>
+            <td class="n">{num(t.supply_t)}</td>
+            <td class="n">{num(t.supply_t / supplyTotal * 100, 0)}{THIN}%</td>
+          </tr>
+        ))}
+      </tbody>
+      <tfoot><tr><th scope="row">Total</th><td></td><td class="n">{num(supplyTotal)}</td><td class="n">100{THIN}%</td></tr></tfoot>
+    </table>
+    <Cajetin code="G-00" title="Situación y suministro" scale="escala gráfica" />
+  </div>
+</section>
+
+<style>
+  @layer sections {
+    .terr-grid { align-items: start; }
+    .terr-text { grid-column: 1 / 6; position: relative; }
+    .terr-text :global(.sec-head) { grid-template-columns: minmax(0, 1fr); }
+    .terr-text :global(.sec-idx), .terr-text :global(.sec-head h2) { grid-column: 1 / -1; grid-row: auto; }
+    .terr-text :global(.sec-idx) { display: flex; gap: 10px; align-items: baseline; border-top: 0; padding-top: 0; }
+    .terr-text :global(.sec-idx b) { display: inline; font-size: 13px; margin: 0; }
+    .terr-text :global(.sec-head h2) { font-size: clamp(34px, 4.2vw, 56px); }
+    .prose p { max-width: 46ch; }
+    .terr-map { grid-column: 6 / 13; margin-right: calc(-1 * var(--side) + 12px); padding: 12px; }
+    .map-sm { display: none; }
+    .terr-map svg { width: 100%; height: auto; }
+    .neigh { fill: none; stroke: var(--rule); stroke-width: 1; }
+    .prov { fill: var(--paper); stroke: var(--ink); stroke-width: 1.4; }
+    .ring { fill: none; stroke: var(--olive); stroke-width: 1; stroke-dasharray: 4 5; }
+    .ring-l { font-family: var(--f-mono); fill: var(--olive-d); }
+    .arc-base { fill: none; stroke: var(--olive-m); stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 0; transition: stroke-dashoffset 900ms var(--ease-out); transition-delay: calc(var(--i) * 120ms); opacity: .85; }
+    :global(.js) .terr-map:not(.is-in) .arc-base { stroke-dashoffset: 1; }
+    .arc-flow { fill: none; stroke: var(--olive-d); stroke-linecap: round; stroke-dasharray: 0 14; opacity: 0; }
+    .terr-map.is-in .arc-flow { opacity: .9; animation: flow-in 1.6s linear infinite; animation-delay: 1s; transition: opacity 300ms 900ms; }
+    @keyframes flow-in { to { stroke-dashoffset: -14; } }
+    .tejar { fill: var(--olive-p); stroke: var(--olive); stroke-width: 1.2; }
+    .town circle { fill: var(--surface); stroke: var(--olive-d); stroke-width: 1.6; }
+    .town text, .ref text, .plant text, .scale text, .north text { font-family: var(--f-cond); font-weight: 500; fill: var(--ink); paint-order: stroke; stroke: var(--paper); stroke-width: 3px; stroke-linejoin: round; }
+    .town .tq { fill: var(--muted); font-family: var(--f-mono); font-weight: 400; }
+    .ref rect { fill: var(--surface); stroke: var(--muted); stroke-width: 1.2; }
+    .ref text { fill: var(--muted); }
+    .plant .halo { fill: none; stroke: var(--ion-d); stroke-width: 1.5; }
+    .plant .dot { fill: var(--ion-d); }
+    .plant .pl { font-weight: 600; }
+    .plant .pl2 { fill: var(--olive-d); }
+    .scale .s1 { fill: var(--ink); } .scale .s2 { fill: var(--surface); stroke: var(--ink); stroke-width: 1; }
+    .north path { fill: var(--ink); }
+    .terr-map .src { margin-top: 10px; }
+
+    .cota { position: relative; margin-top: 40px; width: calc(100% + var(--gutter) + 13px); pointer-events: none; }
+    .cota-l { display: block; height: 11px; border-left: 1px solid var(--ink); border-right: 1px solid var(--ink); position: relative; }
+    .cota-l::after { content: ""; position: absolute; left: 0; right: 0; top: 5px; border-top: 1px solid var(--ink); }
+    .cota-t { display: inline-block; margin-top: 6px; font-size: 12px; background: var(--paper); padding-right: 8px; }
+
+    .towns { margin-top: 48px; max-width: 640px; }
+    .towns tfoot th, .towns tfoot td { font-weight: 600; border-bottom: 0; border-top: 1px solid var(--ink); }
+
+    @media (max-width: 900px) {
+      .terr-map { margin-right: 0; padding: 6px; margin-top: 8px; }
+      .map-lg { display: none; }
+      .map-sm { display: block; }
+      .cota { width: 100%; margin-top: 28px; }
+    }
+    @media (prefers-reduced-motion: reduce) { .arc-flow { display: none; } }
+  }
+</style>

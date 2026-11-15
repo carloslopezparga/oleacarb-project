@@ -1,0 +1,40 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../sections/Hero.astro';
+import Reto from '../sections/Reto.astro';
+import Territorio from '../sections/Territorio.astro';
+import Viaje from '../sections/Viaje.astro';
+import Proceso from '../sections/Proceso.astro';
+import Planta from '../sections/Planta.astro';
+---
+<Base title="OLEACARB · Del hueso de aceituna al ánodo de las baterías de sodio"
+  description="Planta en Mancha Real (Jaén) que convierte hueso de aceituna en hard carbon para el ánodo de las baterías de ion-sodio. Proceso, planta, balances y simulador financiero en vivo.">
+  <main id="main">
+    <Hero />
+    <Reto />
+    <Territorio />
+    <Viaje />
+    <Proceso />
+    <Planta />
+  </main>
+</Base>
+
+<script>
+  import { initMotion } from '../lib/motion';
+  import { settleInitialHash, bindAnchorLinks, bindSectionKeys } from '../lib/anchors';
+  import { initHero } from '../scripts/hero';
+  import { initInView } from '../scripts/inview';
+  import { initViaje } from '../scripts/viaje';
+  import { initProceso } from '../scripts/proceso';
+  import { initPlanta } from '../scripts/planta';
+
+  initMotion();
+  bindAnchorLinks();
+  bindSectionKeys();
+  initHero();
+  initInView();
+  initViaje();
+  initProceso();
+  initPlanta();
+  settleInitialHash();
+</script>

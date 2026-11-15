@@ -1,0 +1,121 @@
+---
+import { Picture } from 'astro:assets';
+import hero from '../assets/hero-olivar.jpg';
+import poster from '../assets/poster.jpg';
+import { key, territory } from '../lib/data';
+import { num, THIN } from '../lib/format';
+import { VIDEO } from '../config';
+
+// key-figures.json: 3.225 t (15 %), 3.010 t (14 %), 61,6 M€, 55 empleos, 72,95 % → 73 %, 0 t, 2 %
+const figs = [
+  { v: key.hc_t_objetivo_15, d: 0, u: 't/año', t: `de <em>hard carbon</em> con un 15${THIN}% de rendimiento (${num(key.hc_t_diseno_14)}${THIN}t con el 14${THIN}% de diseño)` },
+  { v: key.capex_planta_Meur, d: 1, u: 'M€', t: `de inversión en la planta (±${THIN}30${THIN}%)` },
+  { v: key.empleos_directos, d: 0, u: '', t: 'empleos directos (tres turnos, cinco equipos)' },
+  { v: Math.round(key.electricidad_propia_pct), d: 0, u: '%', t: 'de la electricidad, producida en la propia planta' },
+  { v: key.vertedero_t, d: 0, u: 't', t: `a vertedero (un ${key.rechazos_a_arido_pct}${THIN}% de rechazos va a árido)` }
+];
+const lat = num(territory.planta.lat, 2), lon = num(Math.abs(territory.planta.lon), 2);
+---
+<section id="inicio" class="hero on-char chapter" aria-labelledby="inicio-h">
+  <div class="hero-bg" aria-hidden="true">
+    <Picture src={hero} formats={['avif', 'webp']} widths={[640, 960, 1280, 1600]} sizes="100vw"
+      alt="" loading="eager" fetchpriority="high" decoding="async" class="hero-img" />
+  </div>
+  <canvas class="hero-canvas" aria-hidden="true"></canvas>
+  <div class="wrap hero-in">
+    <p class="hero-loc mono">Mancha Real (Jaén) · {lat}° N · {lon}° O<span class="alt"> · 760 m</span></p>
+    <h1 id="inicio-h">Del hueso de aceituna al <em>ánodo</em> de las baterías de sodio</h1>
+    <p class="hero-lede">Una planta en Mancha Real que compra cada año {num(key.hueso_recibido_t)}{THIN}t de hueso a las almazaras y extractoras de Jaén y lo convierte en <em>hard carbon</em>, el material que guarda los iones de sodio en el ánodo. Lo que no acaba en la batería da calor, electricidad, carbón activo y sales.</p>
+    <div class="hero-cta">
+      <a class="btn btn--ion" href="#viaje">Sigue una tonelada
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1v11M2 7l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      </a>
+      <a class="vthumb" href="/video" aria-label={`Ver el vídeo: la planta en 79 segundos, duración ${VIDEO.duration}`}>
+        <span class="vthumb-img">
+          <Picture src={poster} formats={['avif', 'webp']} widths={[160, 320]} sizes="112px" alt="" loading="lazy" decoding="async" />
+          <svg class="vthumb-play" width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="11" fill="#15191A" opacity=".75"/><path d="M8.5 6.5v9l7-4.5z" fill="#EEF0E7"/></svg>
+        </span>
+        <span class="vthumb-t">La planta en 79 segundos<span class="mono">{VIDEO.duration}</span></span>
+      </a>
+    </div>
+    <ul class="figs" role="list">
+      {figs.map(f => (
+        <li>
+          <b class="fig-n num">
+            <span class="cnt" data-to={f.v} data-d={f.d}><span class="ghost">{num(f.v, f.d)}</span><span class="live" aria-hidden="true">{num(f.v, f.d)}</span></span>{f.u && <small>{f.u}</small>}
+          </b>
+          <span class="fig-t" set:html={f.t} />
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  @layer sections {
+    .hero { position: relative; min-height: max(100svh, 680px); display: flex; overflow: hidden; }
+    .hero-bg { position: absolute; inset: -6% 0 -6% 0; z-index: -2; }
+    .hero-bg :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: 60% 45%; }
+    .hero-bg::after {
+      content: ""; position: absolute; inset: 0;
+      background:
+        linear-gradient(90deg, rgba(21,25,26,.94) 0%, rgba(21,25,26,.82) 36%, rgba(21,25,26,.35) 70%, rgba(21,25,26,.25) 100%),
+        linear-gradient(0deg, rgba(21,25,26,.95) 0%, rgba(21,25,26,0) 38%);
+    }
+    .hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+    .hero-in {
+      position: relative; display: flex; flex-direction: column; justify-content: flex-end;
+      padding-top: calc(var(--header-h) + clamp(28px, 6vh, 80px)); padding-bottom: 24px; gap: 24px;
+    }
+    .hero-loc { font-size: 13px; color: var(--char-muted); }
+    .hero h1 {
+      font-size: clamp(42px, 5.9vw, 88px); line-height: 1.0; max-width: 12.5ch; color: var(--char-ink);
+      letter-spacing: -.02em;
+    }
+    .hero h1 em { font-style: italic; font-weight: 500; color: var(--olive-l); }
+    .hero-lede { max-width: 58ch; font: 400 clamp(17px, 1.5vw, 20px)/1.55 var(--f-serif); font-variation-settings: 'opsz' 18; color: var(--char-ink); }
+    .hero-lede em { font-style: italic; }
+    .hero-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; }
+    .hero-cta .btn { min-height: 52px; padding: 0 22px; font-size: 16px; }
+    .vthumb { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; color: var(--char-ink); min-height: 44px; }
+    .vthumb-img { position: relative; width: 112px; aspect-ratio: 16 / 9; overflow: hidden; border: 1px solid var(--char-rule); flex: none; }
+    .vthumb-img :global(img) { width: 100%; height: 100%; object-fit: cover; }
+    .vthumb-play { position: absolute; left: 50%; top: 50%; translate: -50% -50%; }
+    .vthumb-t { display: grid; font-size: 15px; line-height: 1.35; }
+    .vthumb-t .mono { font-size: 13px; color: var(--char-muted); }
+    .vthumb:hover .vthumb-t { text-decoration: underline; text-underline-offset: 3px; }
+
+    .figs {
+      display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin: clamp(4px, 2vh, 24px) 0 0; padding: 0;
+      border-top: 1px solid var(--char-rule);
+    }
+    .figs li { padding: 18px 18px 6px 0; }
+    .figs li + li { padding-left: 18px; border-left: 1px solid var(--char-rule); }
+    .fig-n { display: flex; align-items: baseline; gap: 6px; font: 600 clamp(30px, 3.3vw, 46px)/1 var(--f-serif); color: var(--char-ink); font-variation-settings: 'opsz' 60; }
+    .fig-n small { font: 500 14px var(--f-sans); color: var(--char-muted); }
+    .fig-t { display: block; margin-top: 8px; font-size: 14px; line-height: 1.4; color: var(--char-muted); }
+    .cnt { position: relative; display: inline-block; }
+    .cnt .ghost { visibility: hidden; }
+    .cnt .live { position: absolute; inset: 0; text-align: right; white-space: nowrap; }
+    :global(.js) .cnt:not(.run) .live { opacity: 0; animation: cnt-show 1ms 3s forwards; }
+    @keyframes cnt-show { to { opacity: 1; } }
+
+    :global(.js) .hero h1:not(.split) { visibility: hidden; animation: h1-show 1ms 2.5s forwards; }
+    @keyframes h1-show { to { visibility: visible; } }
+
+    @media (max-width: 900px) {
+      .hero-bg::after {
+        background: linear-gradient(180deg, rgba(21,25,26,.5) 0%, rgba(21,25,26,.62) 30%, rgba(21,25,26,.9) 62%, var(--char) 92%);
+      }
+      .hero-bg :global(img) { object-position: 62% 40%; }
+      .figs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .figs li, .figs li + li { padding: 16px 12px 12px 0; border-left: 0; border-bottom: 1px solid var(--char-rule); }
+      .figs li:nth-child(even) { padding-left: 16px; border-left: 1px solid var(--char-rule); }
+      .figs li:last-child { grid-column: 1 / -1; border-bottom: 0; }
+    }
+    @media (max-width: 420px) {
+      .hero-cta .btn { width: 100%; }
+      .hero-loc .alt { display: none; }
+    }
+  }
+</style>

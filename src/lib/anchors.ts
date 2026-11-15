@@ -16,6 +16,8 @@ export function scrollToId(id: string, immediate = false): void {
   const off = id === 'inicio' ? 0 : headerHeight();
   const lenis = getLenis();
   if (lenis) {
+    // Lenis guarda el alto de la página: tras montar los fijados de GSAP hay que recalcularlo.
+    lenis.resize();
     lenis.scrollTo(el, { offset: -off, immediate: immediate || reduced, force: true, duration: 1.1 });
   } else {
     const y = Math.max(0, el.getBoundingClientRect().top + window.scrollY - off);

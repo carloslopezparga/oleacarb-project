@@ -41,6 +41,7 @@ export function initHero(): void {
 
   let W = 0, H = 0, dpr = 1, cx = 0, cy = 0, s = 1;
   let hexes: { p: Path2D; d: number }[] = [];
+  let cache: HTMLCanvasElement | null = null;
   let almond: Path2D = new Path2D();
   let maxD = 1;
   const ions: Ion[] = [];
@@ -53,7 +54,7 @@ export function initHero(): void {
 
   function layout() {
     const r = hero!.getBoundingClientRect();
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     W = r.width; H = r.height;
     canvas!.width = Math.round(W * dpr); canvas!.height = Math.round(H * dpr);
     const mobile = W < 900;
@@ -74,6 +75,14 @@ export function initHero(): void {
       }
     }
     maxD = Math.max(1, ...hexes.map(h => h.d));
+    // El teselado se pinta una sola vez en un lienzo aparte; cada fotograma solo lo copia.
+    cache = document.createElement('canvas');
+    cache.width = canvas!.width; cache.height = canvas!.height;
+    const cx2 = cache.getContext('2d')!;
+    cx2.setTransform(dpr, 0, 0, dpr, 0, 0);
+    cx2.save(); cx2.clip(almond); cx2.lineWidth = 1; cx2.strokeStyle = C.olive; cx2.globalAlpha = 0.28;
+    for (const h of hexes) cx2.stroke(h.p);
+    cx2.restore();
     const n = mobile ? 9 : 30;
     if (ions.length !== n) {
       ions.length = 0;
@@ -88,18 +97,15 @@ export function initHero(): void {
     ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx!.clearRect(0, 0, W, H);
     const k = reduced ? 1 : Math.min(1, t / 2.2);
-    // teselado dentro de la almendra, que crece desde el centro
-    ctx!.save();
-    ctx!.clip(almond);
-    ctx!.lineWidth = 1;
-    ctx!.strokeStyle = C.olive;
-    for (const h of hexes) {
-      const show = reduced ? 1 : Math.max(0, Math.min(1, (t - 0.3 - h.d / maxD * 1.6) / 0.5));
-      if (show <= 0) continue;
-      ctx!.globalAlpha = 0.28 * show;
-      ctx!.stroke(h.p);
+    // teselado dentro de la almendra, que se revela desde el centro (círculo creciente sobre la copia en caché)
+    if (cache) {
+      const rev = reduced ? 1 : Math.min(1, Math.max(0, (t - 0.3) / 1.9));
+      if (rev >= 1) ctx!.drawImage(cache, 0, 0, W, H);
+      else if (rev > 0) {
+        ctx!.save(); ctx!.beginPath(); ctx!.arc(cx, cy, maxD * (1 - Math.pow(1 - rev, 2)) + 1, 0, 6.2832); ctx!.clip();
+        ctx!.drawImage(cache, 0, 0, W, H); ctx!.restore();
+      }
     }
-    ctx!.restore();
     // contorno de la almendra
     ctx!.globalAlpha = 0.85;
     ctx!.strokeStyle = C.oliveL;
@@ -159,15 +165,23 @@ export function initHero(): void {
   let rz = 0;
   window.addEventListener('resize', () => { clearTimeout(rz); rz = window.setTimeout(() => { layout(); if (reduced) draw(performance.now()); }, 150); });
 
-  // Titular por líneas
+  // Titular por líneas. Solo se parte cuando ya está su fuente (redonda 600 y cursiva 500 de Source Serif),
+  // para no rehacer las líneas después y mover la entradilla. Si la fuente tarda más de 1 s, el titular aparece sin animación.
   const h1 = hero.querySelector<HTMLElement>('h1');
   if (h1) {
-    if (reduced) h1.classList.add('split');
+    const show = () => h1.classList.add('split');
+    if (reduced) show();
     else {
-      document.fonts.ready.then(() => {
+      const fontsIn = Promise.all([
+        document.fonts.load('600 48px "Source Serif 4"', 'Del hueso'),
+        document.fonts.load('italic 500 48px "Source Serif 4"', 'ánodo')
+      ]).then(() => true, () => false);
+      Promise.race([fontsIn, new Promise<boolean>(r => setTimeout(() => r(false), 1000))]).then((ok) => {
+        if (!ok || h1.classList.contains('split')) { show(); return; }
         const split = SplitText.create(h1, { type: 'lines', mask: 'lines', linesClass: 'ln' });
-        h1.classList.add('split');
-        gsap.from(split.lines, { yPercent: 108, duration: 1.05, ease: 'expo.out', stagger: 0.09, delay: 0.05 });
+        show();
+        gsap.from(split.lines, { yPercent: 108, duration: 1.0, ease: 'expo.out', stagger: 0.08, delay: 0.02,
+          onComplete: () => split.revert() });
       });
     }
   }

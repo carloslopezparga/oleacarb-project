@@ -34,7 +34,7 @@ import Fuentes from '../sections/Fuentes.astro';
 </Base>
 
 <script>
-  import { initMotion } from '../lib/motion';
+  import { initMotion, whenNear } from '../lib/motion';
   import { settleInitialHash, bindAnchorLinks, bindSectionKeys } from '../lib/anchors';
   import { initHero } from '../scripts/hero';
   import { initInView } from '../scripts/inview';
@@ -48,7 +48,13 @@ import Fuentes from '../sections/Fuentes.astro';
   initHero();
   initInView();
   initViaje();
-  initProceso();
-  initPlanta();
+  // Proceso y planta solo se activan cuando se acercan a la pantalla (o si el QR apunta a ellas).
+  const lazy = (id: string, fn: () => void) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (location.hash === '#' + id) fn(); else whenNear(el, fn, '900px 0px');
+  };
+  lazy('proceso', initProceso);
+  lazy('planta', initPlanta);
   settleInitialHash();
 </script>

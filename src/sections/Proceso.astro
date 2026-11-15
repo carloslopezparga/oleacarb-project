@@ -38,7 +38,7 @@ const kindName = { olive: 'materia y producto', ochre: 'calor y gases', ion: 'ag
     </div>
     <div class="stage-panels">
       {ST.map((s, i) => (
-        <article class="spanel" id={`panel-st-${i}`} role="tabpanel" aria-labelledby={`tab-st-${i}`} data-i={i} hidden={i !== 0}>
+        <div class="spanel" id={`panel-st-${i}`} role="tabpanel" aria-labelledby={`tab-st-${i}`} data-i={i} hidden={i !== 0}>
           <div class="sp-main">
             <p class="sp-n mono">Etapa {i + 1} de 7</p>
             <h3 set:html={chem(s.title)} />
@@ -64,7 +64,7 @@ const kindName = { olive: 'materia y producto', ochre: 'calor y gases', ion: 'ag
               ))}
             </ul>
           </div>
-        </article>
+        </div>
       ))}
     </div>
 

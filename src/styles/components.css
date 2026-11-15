@@ -33,6 +33,13 @@
     .sec-idx b { display: inline; font-size: 13px; margin: 0; }
   }
 
+  /* Las secciones posteriores al viaje no se maquetan hasta que se acercan a la pantalla (el primer pintado no espera
+     a miles de nodos SVG). No afecta a los fijados de GSAP, que están antes; «auto» recuerda el alto real. */
+  #proceso, #planta, #balances, #calendario, #simulador, #impacto, #video, #equipo, #fuentes {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 1600px;
+  }
+
   /* ---------- capítulos de carbón ---------- */
   .chapter { position: relative; isolation: isolate; }
   .chapter::before {

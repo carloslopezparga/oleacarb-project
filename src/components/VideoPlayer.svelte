@@ -2,7 +2,7 @@
   /* Reproductor del vídeo con controles en la identidad. Detrás va el <video> nativo.
      720p en pantallas de menos de 1.000 px o con ahorro de datos; 1080p en el resto, si el archivo existe (HEAD). */
   import { onMount } from 'svelte';
-  let { sd, hd, poster, label, duration = 79 }: { sd: string; hd: string; poster: string; label: string; duration?: number } = $props();
+  let { sd, hd, poster, posterSm, label, duration = 79, eager = false }: { sd: string; hd: string; poster: string; posterSm: string; label: string; duration?: number; eager?: boolean } = $props();
 
   let video: HTMLVideoElement | undefined = $state();
   let wrap: HTMLDivElement | undefined = $state();
@@ -21,7 +21,11 @@
     if (window.innerWidth >= 1000 && !conn?.saveData) {
       try { const res = await fetch(hd, { method: 'HEAD' }); if (res.ok) src = hd; } catch { /* sin 1080p: se queda el de 720p */ }
     }
-    if (video) { video.src = src; video.controls = false; ready = true; }
+    if (video) {
+      // En la portada el póster no se pide hasta que el reproductor se acerca a la pantalla.
+      video.poster = window.innerWidth < 1000 ? posterSm : poster;
+      video.src = src; video.controls = false; ready = true;
+    }
   });
 
   function toggle() {
@@ -41,10 +45,13 @@
 
 <div class="vp" class:is-ready={ready} class:is-playing={playing} bind:this={wrap}>
   <!-- svelte-ignore a11y_media_has_caption -->
-  <video bind:this={video} {poster} preload="metadata" playsinline controls aria-label={label}
+  <video bind:this={video} poster={eager ? posterSm : undefined} preload="metadata" playsinline controls aria-label={label}
     onplay={() => (playing = true)} onpause={() => (playing = false)} onended={() => (playing = false)}
     ontimeupdate={() => (t = video?.currentTime ?? 0)} onloadedmetadata={() => (dur = video?.duration || duration)}
     onclick={() => ready && toggle()}></video>
+  {#if !ready && !eager}
+    <img class="vp-ph" src={posterSm} srcset={`${posterSm} 768w, ${poster} 1280w`} sizes="(max-width: 1000px) 100vw, 1240px" alt="" loading="lazy" decoding="async" />
+  {/if}
   {#if ready && !started}
     <button type="button" class="vp-big" onclick={toggle} aria-label="Reproducir el vídeo">
       <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><path d="M11 7v20l17-10z" fill="currentColor" /></svg>
@@ -73,6 +80,7 @@
 <style>
   .vp { position: relative; background: #000; aspect-ratio: 16 / 9; width: 100%; --focus: var(--ion); }
   .vp video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #000; }
+  .vp-ph { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
   .vp:fullscreen { aspect-ratio: auto; }
   .vp-big {
     position: absolute; left: 50%; top: 50%; translate: -50% -50%; display: inline-flex; align-items: center; gap: 12px;

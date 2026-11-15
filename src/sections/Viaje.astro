@@ -73,11 +73,12 @@ const powder = Array.from({ length: 90 }, () => {
 });
 
 // Fondo del escenario: retícula hexagonal muy tenue, como el fondo del vídeo
-const bgHex: string[] = [];
-for (let j = 0; j < 20; j++) for (let i = 0; i < 16; i++) {
-  const hr = 34, x = i * hr * Math.sqrt(3) + (j % 2 ? hr * Math.sqrt(3) / 2 : 0) - 20, y = j * hr * 1.5 - 20;
-  bgHex.push(Array.from({ length: 6 }, (_, k) => { const an = (60 * k + 30) * Math.PI / 180; return `${(x + hr * Math.cos(an)).toFixed(1)},${(y + hr * Math.sin(an)).toFixed(1)}`; }).join(' '));
+// tesela del patrón: los hexágonos que tocan la celda de 58,9 × 102, en sus dos filas
+const hexTile: [number, number][] = [];
+for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) {
+  hexTile.push([20 + i * 34 * Math.sqrt(3), 20 + j * 102], [20 + 34 * Math.sqrt(3) / 2 + i * 34 * Math.sqrt(3), 71 + j * 102]);
 }
+const bgHex: string[] = [Array.from({ length: 6 }, (_, k) => { const an = (60 * k + 30) * Math.PI / 180; return `${(34 * Math.cos(an)).toFixed(1)},${(34 * Math.sin(an)).toFixed(1)}`; }).join(' ')];
 
 // Rollo de la celda visto desde arriba: espiral de Arquímedes aplanada en la elipse de la tapa
 const spiralPts: string[] = [];
@@ -143,9 +144,10 @@ const FOIL = { x: 150, y: 600, w: 500, h: 14 };
         <defs>
           <clipPath id="lens"><circle class="lens-c" cx={CX} cy={CY} r="0" /></clipPath>
           <clipPath id="alm-clip"><path d={ALMOND} /></clipPath>
+          <pattern id="bghex" width={34 * Math.sqrt(3)} height="102" patternUnits="userSpaceOnUse">{hexTile.map(([x, y]) => <polygon points={bgHex[0]} transform={`translate(${x.toFixed(1)} ${y.toFixed(1)})`} />)}</pattern>
           <radialGradient id="heat" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#D6A54A" stop-opacity=".55" /><stop offset="1" stop-color="#D6A54A" stop-opacity="0" /></radialGradient>
         </defs>
-        <g class="bghex">{bgHex.map(pts => <polygon points={pts} />)}</g>
+        <rect class="bghex" x="0" y="0" width="800" height="800" fill="url(#bghex)" />
         <circle class="heat" cx={CX} cy={CY} r="300" fill="url(#heat)" opacity="0" />
         <g class="parts">
           {particles.map(p => p.sq
@@ -156,18 +158,18 @@ const FOIL = { x: 150, y: 600, w: 500, h: 14 };
           <g transform="rotate(-32)">
             <path class="alm" d={ALMOND} />
             <g clip-path="url(#alm-clip)" class="hexes">
-              {hexes.map(pts => <polygon points={pts} />)}
+              <path d={hexes.map(pts => 'M' + pts.replace(/ /g, 'L') + 'Z').join('')} />
             </g>
             <g class="cracks">{cracks.map(d => <path d={d} pathLength="1" />)}</g>
             <path class="alm-rim" d={ALMOND} />
           </g>
         </g>
-        <g class="powder">{powder.map(p => <circle cx={p.x.toFixed(1)} cy={p.y.toFixed(1)} r={p.r.toFixed(1)} />)}</g>
+        <g class="powder"><path d={powder.map(p => `M${(p.x - p.r).toFixed(1)},${p.y.toFixed(1)}a${p.r.toFixed(1)},${p.r.toFixed(1)} 0 1,0 ${(2 * p.r).toFixed(1)},0a${p.r.toFixed(1)},${p.r.toFixed(1)} 0 1,0 ${(-2 * p.r).toFixed(1)},0`).join('')} /></g>
 
         <g class="micro" clip-path="url(#lens)">
           <rect x="0" y="0" width="800" height="800" class="micro-bg" />
-          {sheets.map(s => <path d={s.d} class="sheet-l" />)}
-          {poreArcs.map(p => p.segs.map(d => <path d={d} class="pore-l" />))}
+          <path d={sheets.map(s => s.d).join(' ')} class="sheet-l" />
+          <path d={poreArcs.flatMap(p => p.segs).join(' ')} class="pore-l" />
           <path d={`M${hiX - 70},${hiY} Q${hiX},${hiY - 8} ${hiX + 70},${hiY}`} class="sheet-hi" />
           <path d={`M${hiX - 70},${hiY + GAP * 3} Q${hiX},${hiY + GAP * 3 - 8} ${hiX + 70},${hiY + GAP * 3}`} class="sheet-hi" />
           <g class="cota-nm">
@@ -309,13 +311,14 @@ const FOIL = { x: 150, y: 600, w: 500, h: 14 };
     .alm { fill: #B9862C; }
     .spiral { stroke-dasharray: 1; stroke-dashoffset: 1; }
     .alm-rim { fill: none; stroke: var(--char-muted); stroke-width: .5; opacity: .5; }
-    .hexes polygon { fill: none; stroke: var(--olive-l); stroke-width: .35; opacity: .75; }
+    .hexes path { fill: none; stroke: var(--olive-l); stroke-width: .35; opacity: .75; }
     .hexes { opacity: 0; }
     .cracks path { fill: none; stroke: var(--ochre-l); stroke-width: 1.1; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
     .pt { opacity: 0; }
     .pt.p-gray { fill: var(--char-muted); } .pt.p-ion { fill: var(--ion); } .pt.p-ochre { fill: var(--ochre-l); } .pt.p-olive { fill: var(--olive-l); }
-    .powder circle { fill: #0E1010; stroke: var(--char-muted); stroke-width: 1.2; }
-    .bghex polygon { fill: none; stroke: var(--olive-m); stroke-width: 1; opacity: .07; }
+    .powder path { fill: #0E1010; stroke: var(--char-muted); stroke-width: 1.2; }
+    .bghex { opacity: .07; }
+    #bghex polygon { fill: none; stroke: var(--olive-m); stroke-width: 1; }
     .powder { opacity: 0; }
     .micro-bg { fill: var(--char-2); }
     .sheet-l { fill: none; stroke: var(--char-muted); stroke-width: 2.4; stroke-linecap: round; opacity: .75; }

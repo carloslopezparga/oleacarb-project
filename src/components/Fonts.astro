@@ -43,7 +43,36 @@ const css = [
   `@font-face{font-family:'IBM Plex Sans Condensed';font-style:normal;font-weight:500;font-display:swap;src:url(${f18}) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF;}`,
   `@font-face{font-family:'IBM Plex Sans Condensed';font-style:normal;font-weight:600;font-display:swap;src:url(${f19}) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF;}`
 ].join('');
+
+// Fuentes de reserva con las métricas ajustadas a las web (calculadas con fontTools sobre los woff2 y las Liberation,
+// que comparten métricas con Times New Roman, Arial y Courier New): evitan saltos de maquetación al cargar.
+const SERIF = "local('Times New Roman'),local('Times'),local('Liberation Serif')";
+const SERIF_B = "local('Times New Roman Bold'),local('Times-Bold'),local('TimesNewRomanPS-BoldMT'),local('Liberation Serif Bold')";
+const SERIF_I = "local('Times New Roman Italic'),local('Times-Italic'),local('TimesNewRomanPS-ItalicMT'),local('Liberation Serif Italic')";
+const SANS = "local('Arial'),local('ArialMT'),local('Helvetica'),local('Liberation Sans')";
+const SANS_B = "local('Arial Bold'),local('Arial-BoldMT'),local('Helvetica Bold'),local('Liberation Sans Bold')";
+const SANS_I = "local('Arial Italic'),local('Arial-ItalicMT'),local('Helvetica Oblique'),local('Liberation Sans Italic')";
+const ff = (fam: string, style: string, weight: number, src: string, sa: number, asc: number, desc: number) =>
+  `@font-face{font-family:'${fam}';font-style:${style};font-weight:${weight};src:${src};size-adjust:${sa}%;ascent-override:${asc}%;descent-override:${desc}%;line-gap-override:0%}`;
+const fallbacks = [
+  // Source Serif 4: medido sobre la entradilla de la portada (opsz 18) y el titular (opsz 60)
+  ff('Source Serif Fallback', 'normal', 400, SERIF, 112.9, 91.7, 29.7),
+  ff('Source Serif Fallback', 'normal', 500, SERIF, 108, 95.9, 31.0),
+  ff('Source Serif Fallback', 'normal', 600, SERIF_B, 96.5, 107.4, 34.7),
+  ff('Source Serif Fallback', 'italic', 400, SERIF_I, 104.6, 99.0, 32.0),
+  ff('Source Serif Fallback', 'italic', 500, SERIF_I, 97.8, 105.9, 34.3),
+  ff('Source Serif Fallback', 'italic', 600, SERIF_I, 95.4, 108.6, 35.1),
+  ff('Plex Sans Fallback', 'normal', 400, SANS, 99.9, 102.6, 27.5),
+  ff('Plex Sans Fallback', 'normal', 500, SANS, 101, 101.5, 27.2),
+  ff('Plex Sans Fallback', 'normal', 600, SANS_B, 96.2, 106.5, 28.6),
+  ff('Plex Sans Fallback', 'italic', 400, SANS_I, 99.5, 103.0, 27.6),
+  ff('Plex Mono Fallback', 'normal', 400, "local('Courier New'),local('Courier'),local('Liberation Mono')", 100, 102.5, 27.5),
+  ff('Plex Mono Fallback', 'normal', 500, "local('Courier New'),local('Courier'),local('Liberation Mono')", 100, 102.5, 27.5)
+].join('');
 ---
-<link rel="preload" href={f0} as="font" type="font/woff2" crossorigin />
-<link rel="preload" href={f2} as="font" type="font/woff2" crossorigin />
-<style is:inline set:html={css}></style>
+<style is:inline set:html={fallbacks}></style>
+<!-- Las fuentes web se activan tras el primer fotograma: el primer pintado usa las de reserva (con métricas ajustadas)
+     y no espera a ~400 kB de woff2. Sin JavaScript se activan desde el <noscript>. -->
+<style is:inline id="font-faces" media="not all" set:html={css}></style>
+<noscript><style is:inline set:html={css}></style></noscript>
+<script is:inline>requestAnimationFrame(function(){setTimeout(function(){var s=document.getElementById('font-faces');if(s)s.media='all';},0);});</script>

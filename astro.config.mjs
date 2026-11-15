@@ -8,7 +8,7 @@ export default defineConfig({
   site: SITE_URL,
   output: 'static',
   trailingSlash: 'ignore',
-  build: { format: 'file', inlineStylesheets: 'auto' },
+  build: { format: 'file', inlineStylesheets: 'always' },
   integrations: [svelte()],
   devToolbar: { enabled: false },
   vite: {

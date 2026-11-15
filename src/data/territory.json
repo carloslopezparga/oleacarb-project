@@ -1,0 +1,78 @@
+{
+ "nota": "Plan de suministro de hueso (t/año) y coordenadas (lat, lon). El Tejar aporta el 25 % por cinta desde la parcela vecina; el resto llega en camiones de 25 t. Distancia media por carretera 44 km (36 km en línea recta según el equipo). Parcela: 37,79° N, 3,61° O, unos 760 m de altitud.",
+ "planta": {
+  "name": "OLEACARB · Mancha Real",
+  "lat": 37.79,
+  "lon": -3.61
+ },
+ "towns": {
+  "Jaén": {
+   "lat": 37.7796,
+   "lon": -3.7849,
+   "supply_t": 4000
+  },
+  "Mancha Real": {
+   "lat": 37.7864,
+   "lon": -3.6125,
+   "supply_t": 6000
+  },
+  "Baeza": {
+   "lat": 37.9939,
+   "lon": -3.4708,
+   "supply_t": 4000
+  },
+  "Úbeda": {
+   "lat": 38.0133,
+   "lon": -3.3705,
+   "supply_t": 3000
+  },
+  "Bailén": {
+   "lat": 38.0937,
+   "lon": -3.7765,
+   "supply_t": 4000
+  },
+  "Linares": {
+   "lat": 38.0951,
+   "lon": -3.6359,
+   "supply_t": null
+  },
+  "Villanueva del Arzobispo": {
+   "lat": 38.1686,
+   "lon": -3.0097,
+   "supply_t": 3000
+  },
+  "Mengíbar": {
+   "lat": 37.9692,
+   "lon": -3.8086,
+   "supply_t": null
+  },
+  "Puente del Obispo": {
+   "lat": 37.956,
+   "lon": -3.493,
+   "supply_t": null
+  },
+  "Martos": {
+   "lat": 37.721,
+   "lon": -3.9707,
+   "supply_t": null
+  },
+  "Torres": {
+   "lat": 37.7853,
+   "lon": -3.5094,
+   "supply_t": null
+  },
+  "Pegalajar": {
+   "lat": 37.738,
+   "lon": -3.649,
+   "supply_t": null
+  }
+ },
+ "referencias": {
+  "Puente del Obispo": "Carboliva piroliza hueso a unos 20 km (≈ 33 % de carbonizado)",
+  "Linares": "Plan B: Parque Empresarial Santana"
+ },
+ "anillos_km": [
+  25,
+  50
+ ]
+}

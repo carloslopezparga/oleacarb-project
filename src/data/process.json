@@ -1,0 +1,647 @@
+{
+ "nota": "Etapas del proceso (textos ya revisados), corrientes numeradas del PFD (t/año, t/h, °C) y lista de equipos.",
+ "stages": [
+  {
+   "short": "Recepción",
+   "title": "Recepción, limpieza y almacenamiento",
+   "cond": "3,0 t/h · 4 silos de 1.000 m³ · 33 días de autonomía",
+   "text": "El hueso de El Tejar llega por cinta desde la extractora y el resto en camiones de 25 t desde Jaén, Baeza, Úbeda, Bailén y Villanueva del Arzobispo. Cada camión se pesa, se muestrea y se analiza con un espectrómetro NIR antes de aceptarlo. Una criba rotativa y un separador magnético retiran piedras, finos y metales.",
+   "kv": [
+    [
+     "Entra",
+     "24.157 t/año de hueso (11 % de humedad)"
+    ],
+    [
+     "Sale",
+     "23.674 t/año de hueso limpio"
+    ],
+    [
+     "Rechazos",
+     "483 t/año → árido"
+    ],
+    [
+     "Equipos",
+     "TO-101, CR-101, SI-101/104, AN-101"
+    ]
+   ]
+  },
+  {
+   "short": "Secado",
+   "title": "Secado a baja temperatura",
+   "cond": "11 % → menos del 2 % · aire a 90–110 °C",
+   "text": "Un secadero de banda usa el agua caliente del condensador del ciclo ORC, un calor que de otra forma se perdería. Secar antes de pirolizar evita que el vapor diluya los gases combustibles y estabiliza la temperatura de los tambores.",
+   "kv": [
+    [
+     "Agua evaporada",
+     "2.604 t/año"
+    ],
+    [
+     "Calor",
+     "≈ 0,45 MW de calor residual"
+    ],
+    [
+     "Equipo",
+     "SE-201, banda de 3 × 14 m"
+    ]
+   ]
+  },
+  {
+   "short": "Pirólisis",
+   "title": "Pirólisis a 550 °C",
+   "cond": "2 tambores rotatorios indirectos · N₂ · 45 min",
+   "text": "El hueso pierde casi el 80 % de su masa en forma de gases y alquitranes, que van calientes al oxidador térmico. Queda un carbonizado que conserva la forma del hueso. Suponemos un 20,5 % de rendimiento, por debajo del 30–38 % que publican la bibliografía y plantas como Carboliva.",
+   "kv": [
+    [
+     "Entra",
+     "21.070 t/año de hueso seco"
+    ],
+    [
+     "Carbonizado",
+     "4.319 t/año"
+    ],
+    [
+     "Volátiles",
+     "16.751 t/año → oxidador"
+    ],
+    [
+     "Equipos",
+     "PI-301/302, Ø 1,8 × 14 m"
+    ]
+   ]
+  },
+  {
+   "short": "Lavado",
+   "title": "Lavado ácido",
+   "cond": "HCl 2 M · 6 h · líquido/sólido 8 L/kg",
+   "text": "Las cenizas del hueso son ricas en calcio y potasio, que estropean la eficiencia del ánodo. Usamos ácido clorhídrico y no sulfúrico porque con sulfúrico se formaría yeso insoluble dentro de los poros. Un filtro prensa separa el sólido y un secadero de paletas lo deja listo para el horno.",
+   "kv": [
+    [
+     "Minerales retirados",
+     "130 t/año → sales"
+    ],
+    [
+     "HCl al 33 %",
+     "≈ 437 t/año"
+    ],
+    [
+     "Equipos",
+     "R-401/404 (4 × 15 m³), FP-401/402, SE-401"
+    ]
+   ]
+  },
+  {
+   "short": "Carbonización",
+   "title": "Carbonización a 1.300 °C",
+   "cond": "2 hornos de empuje eléctricos · N₂ · 5 °C/min y 2 h de meseta",
+   "text": "Es la etapa que crea el material: a 1.300 °C el carbono se ordena en láminas desordenadas, separadas unos 0,38 nm, con microporos cerrados donde se alojan los iones de sodio. Las gacetas de grafito recorren cada horno en unas once horas.",
+   "kv": [
+    [
+     "Entra",
+     "4.190 t/año"
+    ],
+    [
+     "Sale",
+     "3.478 t/año"
+    ],
+    [
+     "Gases",
+     "712 t/año → oxidador"
+    ],
+    [
+     "Electricidad",
+     "1,98 kWh por kg de producto"
+    ]
+   ]
+  },
+  {
+   "short": "Molienda",
+   "title": "Molienda y clasificación",
+   "cond": "Molinos de chorro con clasificador · D50 de 5 a 10 µm",
+   "text": "El carbón se microniza con aire comprimido. Un clasificador retira las partículas de menos de 1 µm, que penalizan la eficiencia del primer ciclo, y un separador magnético deja el hierro por debajo de 20 ppm. Los finos no se tiran: se activan con vapor.",
+   "kv": [
+    [
+     "Hard carbon",
+     "3.010 t/año (14 % del hueso seco)"
+    ],
+    [
+     "Finos",
+     "468 t/año → activación"
+    ],
+    [
+     "Carbón activo",
+     "192 t/año"
+    ],
+    [
+     "Equipos",
+     "MO-601, MC-601/602, CL-601"
+    ]
+   ]
+  },
+  {
+   "short": "Envasado",
+   "title": "Envasado y control de lote",
+   "cond": "Lotes de 10 t · big bags en N₂ · sala limpia ISO 8",
+   "text": "Cada lote sale con su certificado: granulometría, superficie BET, cenizas, metales y, sobre una muestra, la capacidad y la eficiencia del primer ciclo medidas en celdas de botón. El sistema de ejecución de fabricación guarda el origen del hueso y las recetas de cada horno.",
+   "kv": [
+    [
+     "Especificación",
+     "≥ 330 mAh/g · ICE ≥ 88 %"
+    ],
+    [
+     "Cenizas · hierro",
+     "≤ 0,2 % · < 20 ppm"
+    ],
+    [
+     "Laboratorio",
+     "64 canales de ciclado y caja de guantes"
+    ]
+   ]
+  }
+ ],
+ "streams": [
+  {
+   "id": "1",
+   "name": "Hueso recibido (tal cual, 11 % de humedad)",
+   "ta": 24157.303371,
+   "th": 3.019663,
+   "T": 20,
+   "frm": "Proveedores y El Tejar",
+   "to": "Recepción"
+  },
+  {
+   "id": "2",
+   "name": "Rechazos de cribado (piedras, metales, finos)",
+   "ta": 483.146067,
+   "th": 0.060393,
+   "T": 20,
+   "frm": "Recepción",
+   "to": "Gestor autorizado / áridos"
+  },
+  {
+   "id": "3",
+   "name": "Hueso limpio a secadero",
+   "ta": 23674.157303,
+   "th": 2.95927,
+   "T": 20,
+   "frm": "Recepción",
+   "to": "Secadero"
+  },
+  {
+   "id": "4",
+   "name": "Vapor de agua del secado",
+   "ta": 2604.157303,
+   "th": 0.32552,
+   "T": 70,
+   "frm": "Secadero",
+   "to": "Atmósfera (filtro de mangas)"
+  },
+  {
+   "id": "5",
+   "name": "Hueso seco a pirólisis",
+   "ta": 21070.0,
+   "th": 2.63375,
+   "T": 60,
+   "frm": "Secadero",
+   "to": "Pirólisis"
+  },
+  {
+   "id": "6",
+   "name": "Volátiles de pirólisis (gas + alquitranes)",
+   "ta": 16750.65,
+   "th": 2.093831,
+   "T": 550,
+   "frm": "Pirólisis",
+   "to": "Oxidador térmico"
+  },
+  {
+   "id": "7",
+   "name": "Carbonizado de pirólisis",
+   "ta": 4319.35,
+   "th": 0.539919,
+   "T": 550,
+   "frm": "Pirólisis",
+   "to": "Lavado ácido"
+  },
+  {
+   "id": "8",
+   "name": "HCl al 33 % de reposición",
+   "ta": 450.0,
+   "th": 0.05625,
+   "T": 20,
+   "frm": "Depósitos APQ",
+   "to": "Lavado ácido"
+  },
+  {
+   "id": "9",
+   "name": "Minerales disueltos (K, Ca, Mg…)",
+   "ta": 129.5805,
+   "th": 0.016198,
+   "T": 40,
+   "frm": "Lavado ácido",
+   "to": "Neutralización y sales"
+  },
+  {
+   "id": "10",
+   "name": "Carbonizado lavado y seco",
+   "ta": 4189.7695,
+   "th": 0.523721,
+   "T": 120,
+   "frm": "Secadero de paletas",
+   "to": "Carbonización"
+  },
+  {
+   "id": "11",
+   "name": "Gases de carbonización (CO, H₂, CH₄, alquitranes)",
+   "ta": 712.260815,
+   "th": 0.089033,
+   "T": 600,
+   "frm": "Hornos de empuje",
+   "to": "Oxidador térmico"
+  },
+  {
+   "id": "12",
+   "name": "Carbón a 1.300 °C, enfriado",
+   "ta": 3477.508685,
+   "th": 0.434689,
+   "T": 40,
+   "frm": "Hornos de empuje",
+   "to": "Molienda"
+  },
+  {
+   "id": "13",
+   "name": "Hard carbon (producto)",
+   "ta": 3010.0,
+   "th": 0.37625,
+   "T": 30,
+   "frm": "Envasado",
+   "to": "Clientes"
+  },
+  {
+   "id": "14",
+   "name": "Finos de molienda y clasificación",
+   "ta": 467.508685,
+   "th": 0.058439,
+   "T": 30,
+   "frm": "Clasificador",
+   "to": "Activación"
+  },
+  {
+   "id": "15",
+   "name": "Carbón activo (coproducto)",
+   "ta": 191.678561,
+   "th": 0.02396,
+   "T": 30,
+   "frm": "Activación",
+   "to": "Clientes"
+  },
+  {
+   "id": "16",
+   "name": "Gases de activación",
+   "ta": 275.830124,
+   "th": 0.034479,
+   "T": 850,
+   "frm": "Activación",
+   "to": "Oxidador térmico"
+  }
+ ],
+ "equipment": [
+  {
+   "area": "100",
+   "tag": "SI-101/104",
+   "name": "Silos de hueso",
+   "n": 4,
+   "spec": "1.000 m³ útiles c/u (Ø 10,5 × 11,5 m + tolva); 33 días de consumo (2.184 t)",
+   "kw": 15,
+   "mat": "Acero galvanizado",
+   "calc": "24.157 t/año ÷ 365 × 33 d = 2.184 t; ÷ 0,68 t/m³ = 3.212 m³ → 4 × 1.000 m³"
+  },
+  {
+   "area": "100",
+   "tag": "TO-101",
+   "name": "Tolva de descarga de camiones",
+   "n": 1,
+   "spec": "40 m³, parrilla 50 mm, extractor de cadenas 10 t/h",
+   "kw": 15,
+   "mat": "Acero S275 + antidesgaste",
+   "calc": "Descarga de un camión de 25 t en < 15 min"
+  },
+  {
+   "area": "100",
+   "tag": "CR-101",
+   "name": "Criba rotativa (trómel) y separador magnético",
+   "n": 1,
+   "spec": "10 t/h; malla 2 y 12 mm; overband + detector de metales",
+   "kw": 11,
+   "mat": "Acero inoxidable",
+   "calc": "3,3 × caudal medio (3,02 t/h) para trabajar en un turno de descarga"
+  },
+  {
+   "area": "100",
+   "tag": "AN-101",
+   "name": "Analizador NIR en línea y muestreador",
+   "n": 1,
+   "spec": "Humedad, cenizas y extractivos lote a lote",
+   "kw": 2,
+   "mat": "—",
+   "calc": "—"
+  },
+  {
+   "area": "200",
+   "tag": "SE-201",
+   "name": "Secadero de banda de baja temperatura",
+   "n": 1,
+   "spec": "3,02 t/h; evapora 0,33 t/h; banda de 3 × 14 m; aire a 90–110 °C",
+   "kw": 55,
+   "mat": "Acero inoxidable",
+   "calc": "Q = 415 kW (ṁ·λ + calor sensible, η = 0,75); área = 326 kg/h ÷ 10 kg/m²·h = 33 m²"
+  },
+  {
+   "area": "300",
+   "tag": "PI-301/302",
+   "name": "Tambores rotatorios de pirólisis (calentamiento indirecto)",
+   "n": 2,
+   "spec": "1,32 t/h de hueso seco c/u; 550 °C; 45 min; Ø 1,8 × 14 m (13 m calentados); sellos con N₂",
+   "kw": 45,
+   "mat": "Acero refractario AISI 310",
+   "calc": "Q = 1317 kg/h × 1,2 MJ/kg = 439 kW; flujo de pared 6 kW/m² → 73 m² → Ø 1,8 m × 13 m = 74 m²"
+  },
+  {
+   "area": "300",
+   "tag": "EN-301/302",
+   "name": "Enfriadores de carbonizado (tornillo encamisado)",
+   "n": 2,
+   "spec": "0,27 t/h c/u; de 550 a < 60 °C; agua de refrigeración",
+   "kw": 11,
+   "mat": "AISI 316",
+   "calc": "—"
+  },
+  {
+   "area": "300",
+   "tag": "OX-301",
+   "name": "Oxidador térmico de gases",
+   "n": 1,
+   "spec": "9,7 MW de combustible medio (diseño 12 MW); ≥ 1.000 °C; ≥ 2 s; Ø 3,2 × 6 m; quemadores bajo NOx",
+   "kw": 110,
+   "mat": "Acero con refractario",
+   "calc": "Humos ≈ 10.481 Nm³/h → 14,1 m³/s a 1.050 °C × 2 s = 28 m³ útiles"
+  },
+  {
+   "area": "300",
+   "tag": "CA-301",
+   "name": "Caldera de recuperación de aceite térmico",
+   "n": 1,
+   "spec": "10 MWt; aceite a 320/250 °C; calor útil medio 8,2 MW",
+   "kw": 90,
+   "mat": "Acero al carbono",
+   "calc": "66 GWh/año ÷ 8.000 h = 8,25 MW"
+  },
+  {
+   "area": "300",
+   "tag": "DN-301",
+   "name": "Depuración de humos (SNCR + filtro de mangas) y chimenea",
+   "n": 1,
+   "spec": "≈ 12.000 Nm³/h; urea; mangas PTFE; chimenea de 30 m con muestreo",
+   "kw": 75,
+   "mat": "Acero / PTFE",
+   "calc": "RD 1042/2017 (combustión mediana)"
+  },
+  {
+   "area": "300",
+   "tag": "ORC-301",
+   "name": "Ciclo orgánico de Rankine (ORC)",
+   "n": 1,
+   "spec": "1,0 MWe netos; 6,1 MWt de entrada; condensación a 80/60 °C",
+   "kw": 0,
+   "mat": "—",
+   "calc": "7,96 GWh ÷ 49,0 GWh = 16 % de rendimiento eléctrico"
+  },
+  {
+   "area": "400",
+   "tag": "R-401/404",
+   "name": "Reactores agitados de lavado ácido",
+   "n": 4,
+   "spec": "15 m³ c/u; HCl 2 M; 6 h + 2 h de carga y descarga; 1,08 t de carbonizado por lote; L/S = 8",
+   "kw": 22,
+   "mat": "PRFV / acero ebonitado",
+   "calc": "0,54 t/h × 2 h = 1,08 t/lote; × 8 m³/t = 8,6 m³ útiles → 15 m³ nominales"
+  },
+  {
+   "area": "400",
+   "tag": "FP-401/402",
+   "name": "Filtros prensa de membrana",
+   "n": 2,
+   "spec": "≈ 150 m², placas 1.200 × 1.200; lavado y soplado de torta; ciclo de 2 h",
+   "kw": 15,
+   "mat": "PP / acero revestido",
+   "calc": "Torta ≈ 2,2 t húmeda por lote (50 % de humedad)"
+  },
+  {
+   "area": "400",
+   "tag": "SE-401",
+   "name": "Secadero de paletas (aceite térmico)",
+   "n": 1,
+   "spec": "0,52 t/h de carbonizado seco; evapora 0,52 t/h; 40 m² de intercambio",
+   "kw": 37,
+   "mat": "AISI 316L",
+   "calc": "Q = 524 kg/h × 2,6 MJ/kg ÷ 0,8 = 473 kW; U·ΔT ≈ 15 kW/m² → 32 m²"
+  },
+  {
+   "area": "400",
+   "tag": "TK-401/402",
+   "name": "Depósitos de HCl al 33 % (APQ)",
+   "n": 2,
+   "spec": "30 m³ c/u en cubeto; consumo ≈ 437 t/año (≈ 1,6 meses de reserva)",
+   "kw": 0,
+   "mat": "PRFV",
+   "calc": "96 t/año de HCl puro estequiométrico × 1,5 = 144 t → ÷ 0,33"
+  },
+  {
+   "area": "400",
+   "tag": "NE-401",
+   "name": "Neutralización con cal y concentración de salmuera",
+   "n": 1,
+   "spec": "Reactor de 10 m³ + evaporador de doble efecto 0,5 m³/h; ≈ 274 t/año de sales",
+   "kw": 45,
+   "mat": "AISI 316L / PRFV",
+   "calc": "Ca(OH)₂ ≈ 53 t/año para el ácido en exceso"
+  },
+  {
+   "area": "500",
+   "tag": "HE-501/502",
+   "name": "Hornos de empuje eléctricos a 1.300 °C",
+   "n": 2,
+   "spec": "262 kg/h de entrada y 217 kg/h de salida c/u; N₂; 4 filas × 2 pisos; ≈ 30 m; 1,0 MW instalados c/u",
+   "kw": 1000,
+   "mat": "Refractario alúmina / grafito",
+   "calc": "Ciclo = 4,3 h de rampa + 2 h de meseta + 4,7 h de enfriamiento = 11,0 h; 31 gacetas/h → avance 1,62 m/h → 18 m útiles"
+  },
+  {
+   "area": "500",
+   "tag": "RB-501",
+   "name": "Célula robotizada de llenado y vaciado de gacetas",
+   "n": 1,
+   "spec": "62 gacetas/h; gacetas de grafito 400 × 400 × 120 mm (≈ 8,5 kg)",
+   "kw": 40,
+   "mat": "—",
+   "calc": "—"
+  },
+  {
+   "area": "500",
+   "tag": "N2-501",
+   "name": "Generadores de N₂ por PSA y respaldo líquido",
+   "n": 2,
+   "spec": "200 Nm³/h c/u al 99,99 %; depósito de N₂ líquido de 30 m³",
+   "kw": 60,
+   "mat": "—",
+   "calc": "2 hornos × 125 Nm³/h + sellos y envasado 50 Nm³/h = 300 Nm³/h; 0,3 kWh/Nm³"
+  },
+  {
+   "area": "600",
+   "tag": "MO-601",
+   "name": "Premolino de púas",
+   "n": 1,
+   "spec": "0,43 t/h a < 150 µm",
+   "kw": 22,
+   "mat": "AISI 316 endurecido",
+   "calc": "—"
+  },
+  {
+   "area": "600",
+   "tag": "MC-601/602",
+   "name": "Molinos de chorro de lecho fluidizado con clasificador",
+   "n": 2,
+   "spec": "217 kg/h c/u; D50 5–10 µm; aire a 6 bar",
+   "kw": 30,
+   "mat": "Revestimiento cerámico",
+   "calc": "435 kg/h × 4 Nm³/kg = 1.739 Nm³/h de aire"
+  },
+  {
+   "area": "600",
+   "tag": "CP-601/602",
+   "name": "Compresores de tornillo exentos de aceite",
+   "n": 2,
+   "spec": "1.800 Nm³/h a 7 bar c/u (uno en reserva)",
+   "kw": 200,
+   "mat": "—",
+   "calc": "0,11 kWh/Nm³ × 1.750 Nm³/h ≈ 190 kW"
+  },
+  {
+   "area": "600",
+   "tag": "CL-601",
+   "name": "Clasificador de corte fino, tamiz de seguridad y desferrizador",
+   "n": 1,
+   "spec": "Corte < 1 µm; tamiz ultrasónico de 45 µm; separador magnético de 12.000 G",
+   "kw": 20,
+   "mat": "AISI 316L",
+   "calc": "Fe < 20 ppm"
+  },
+  {
+   "area": "600",
+   "tag": "EV-601",
+   "name": "Homogeneizador de lotes y envasadora en N₂",
+   "n": 1,
+   "spec": "Lotes de 10 t; big bag de 500 kg y bidón de 100 kg; paletizado robotizado",
+   "kw": 35,
+   "mat": "AISI 316L",
+   "calc": "—"
+  },
+  {
+   "area": "700",
+   "tag": "AC-701",
+   "name": "Horno rotatorio de activación con vapor",
+   "n": 1,
+   "spec": "58 kg/h de finos; 850–900 °C; Ø 0,9 × 8 m; vapor ≈ 2 kg/kg",
+   "kw": 40,
+   "mat": "AISI 310",
+   "calc": "468 t/año × 41 % = 192 t/año de carbón activo"
+  },
+  {
+   "area": "800",
+   "tag": "CT-801",
+   "name": "Centro de seccionamiento y transformación",
+   "n": 1,
+   "spec": "20 kV; 2 × 2.000 kVA; grupo electrógeno de emergencia 500 kVA",
+   "kw": 0,
+   "mat": "—",
+   "calc": "Punta ≈ 2,4 MW"
+  },
+  {
+   "area": "800",
+   "tag": "FV-801",
+   "name": "Fotovoltaica de autoconsumo en cubierta",
+   "n": 1,
+   "spec": "0,8 MWp sobre ≈ 6.000 m² de cubierta",
+   "kw": 0,
+   "mat": "—",
+   "calc": "0,8 MWp × 1.650 kWh/kWp = 1,32 GWh/año"
+  },
+  {
+   "area": "800",
+   "tag": "GN-801",
+   "name": "Planta satélite de GNL (respaldo y arranques)",
+   "n": 1,
+   "spec": "Depósito de 60 m³ y vaporizadores",
+   "kw": 0,
+   "mat": "—",
+   "calc": "≈ 1.000 MWh/año"
+  },
+  {
+   "area": "800",
+   "tag": "RF-801",
+   "name": "Aerorrefrigeradores y torre de refrigeración",
+   "n": 1,
+   "spec": "Disipación del condensador del ORC y de los enfriadores",
+   "kw": 120,
+   "mat": "—",
+   "calc": "—"
+  },
+  {
+   "area": "900",
+   "tag": "LB-901",
+   "name": "Laboratorio de calidad y ensayo electroquímico",
+   "n": 1,
+   "spec": "Granulometría láser, BET, DRX, ICP-OES, CHNS, TGA; caja de guantes con Ar; 64 canales de ciclado",
+   "kw": 60,
+   "mat": "—",
+   "calc": "—"
+  }
+ ],
+ "por_tonelada": {
+  "nota": "Lo que pasa con 1.000 kg de hueso tal como llega (11 % de humedad), caso de diseño 14 %. kg.",
+  "agua_evaporada": 107.8,
+  "rechazos": 20.0,
+  "a_pirolisis": 872.2,
+  "volatiles": 693.399,
+  "carbonizado": 178.801,
+  "minerales": 5.36403,
+  "lavado": 173.43697,
+  "gases_carbonizacion": 29.484285,
+  "carbonizado_1300": 143.952685,
+  "hard_carbon": 124.6,
+  "finos": 19.352685,
+  "carbon_activo": 7.934601,
+  "temperaturas_C": {
+   "nota": "De la tabla de corrientes y las condiciones de cada etapa",
+   "recepcion": 20,
+   "aire_secado": "90–110",
+   "salida_secadero": 60,
+   "pirolisis": 550,
+   "lavado_acido": 40,
+   "secado_carbonizado": 120,
+   "carbonizacion": 1300,
+   "salida_hornos": 40,
+   "producto": 30,
+   "activacion": "850–900"
+  }
+ },
+ "microestructura": {
+  "nota": "Para la ilustración del material. Datos de la memoria (cap. 8).",
+  "interlaminar_nm": 0.38,
+  "capacidad_mAh_g": ">= 330",
+  "ice_pct": ">= 88",
+  "d50_um": "5-10",
+  "cenizas_pct": "<= 0,2",
+  "hierro_ppm": "< 20",
+  "texto": "A 1.300 °C el carbono se ordena en láminas desordenadas, separadas unos 0,38 nm, con microporos cerrados donde se alojan los iones de sodio."
+ }
+}

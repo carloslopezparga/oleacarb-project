@@ -1,0 +1,578 @@
+{
+ "nota": "Coordenadas en metros sobre la parcela de 200 × 200 m; origen arriba a la izquierda, x hacia el este, y hacia el sur (norte arriba). Alturas supuestas en la memoria a falta del proyecto de estructuras (plano G-06): N2 14 m, N4 y N5 12 m, N1 y N3 10 m, N6 9 m, silos 16 m, chimenea 30 m. SI son 4 silos de Ø 10,5 m dentro de su recuadro. Al norte (y de −20 a −4) está la extractora de El Tejar, existente.",
+ "parcel": {
+  "w": 200,
+  "h": 200
+ },
+ "neighbour": {
+  "name": "Extractora de orujo de Oleícola El Tejar (existente)",
+  "x": 0,
+  "y": -20,
+  "w": 200,
+  "h": 16
+ },
+ "roads": [
+  [
+   0,
+   146,
+   186,
+   8
+  ],
+  [
+   58,
+   14,
+   8,
+   132
+  ],
+  [
+   106,
+   14,
+   8,
+   132
+  ],
+  [
+   176,
+   14,
+   8,
+   140
+  ],
+  [
+   14,
+   14,
+   8,
+   132
+  ],
+  [
+   14,
+   14,
+   170,
+   8
+  ],
+  [
+   114,
+   78,
+   62,
+   4
+  ]
+ ],
+ "green": [
+  0,
+  190,
+  146,
+  10
+ ],
+ "conveyor": {
+  "desde": [
+   40,
+   -4
+  ],
+  "hasta": [
+   40,
+   26
+  ],
+  "nota": "cinta de hueso desde El Tejar"
+ },
+ "route": [
+  {
+   "zone": "N1",
+   "x": 40,
+   "y": 74,
+   "label": "Recepción y limpieza"
+  },
+  {
+   "zone": "SI",
+   "x": 40,
+   "y": 41,
+   "label": "Silos de hueso"
+  },
+  {
+   "zone": "N2",
+   "x": 86,
+   "y": 48,
+   "label": "Secado, pirólisis y energía"
+  },
+  {
+   "zone": "N3",
+   "x": 86,
+   "y": 94,
+   "label": "Lavado ácido"
+  },
+  {
+   "zone": "N4",
+   "x": 137,
+   "y": 51,
+   "label": "Carbonización a 1.300 °C"
+  },
+  {
+   "zone": "N5",
+   "x": 154,
+   "y": 99,
+   "label": "Molienda y envasado"
+  },
+  {
+   "zone": "N6",
+   "x": 154,
+   "y": 128,
+   "label": "Almacén y expedición"
+  }
+ ],
+ "categories": {
+  "Proceso": "#8C9A55",
+  "Almacenes": "#C99A3C",
+  "Servicios": "#9AA096",
+  "Seguridad": "#C27556",
+  "Personas": "#3BB6C4"
+ },
+ "zones": [
+  {
+   "id": "OF",
+   "name": "Oficinas, laboratorio y vestuarios (2 plantas)",
+   "x": 25,
+   "y": 160,
+   "w": 25,
+   "h": 20,
+   "area_m2": 1000,
+   "type": "edif",
+   "height_m": 8,
+   "cat": "Personas",
+   "text": "Dirección, administración, vestuarios y el laboratorio de calidad, donde se certifica cada lote antes de expedirlo.",
+   "equipment": [
+    [
+     "LB-901",
+     "Laboratorio de calidad y ensayo electroquímico · Granulometría láser, BET, DRX, ICP-OES, CHNS, TGA; caja de guantes con Ar; 64 canales de ciclado"
+    ]
+   ]
+  },
+  {
+   "id": "N1",
+   "name": "Nave de recepción y limpieza",
+   "x": 25,
+   "y": 64,
+   "w": 30,
+   "h": 20,
+   "area_m2": 600,
+   "type": "nave",
+   "height_m": 10,
+   "cat": "Proceso",
+   "text": "Descarga de camiones, cribado y control de calidad del hueso que entra. Recibe también la cinta que llega desde la extractora de El Tejar.",
+   "equipment": [
+    [
+     "SI-101/104",
+     "Silos de hueso · 1.000 m³ útiles c/u (Ø 10,5 × 11,5 m + tolva); 33 días de consumo (2.184 t)"
+    ],
+    [
+     "TO-101",
+     "Tolva de descarga de camiones · 40 m³, parrilla 50 mm, extractor de cadenas 10 t/h"
+    ],
+    [
+     "CR-101",
+     "Criba rotativa (trómel) y separador magnético · 10 t/h; malla 2 y 12 mm; overband + detector de metales"
+    ],
+    [
+     "AN-101",
+     "Analizador NIR en línea y muestreador · Humedad, cenizas y extractivos lote a lote"
+    ]
+   ]
+  },
+  {
+   "id": "SI",
+   "name": "Silos de hueso (4 × 1.000 m³)",
+   "x": 25,
+   "y": 26,
+   "w": 30,
+   "h": 30,
+   "area_m2": 0,
+   "type": "silo",
+   "height_m": 16,
+   "cat": "Almacenes",
+   "text": "Cuatro silos de 1.000 m³ que dan 33 días de autonomía; el hueso se contrata con entregas repartidas todo el año.",
+   "equipment": [
+    [
+     "SI-101/104",
+     "Silos de hueso · 1.000 m³ útiles c/u (Ø 10,5 × 11,5 m + tolva); 33 días de consumo (2.184 t)"
+    ],
+    [
+     "TO-101",
+     "Tolva de descarga de camiones · 40 m³, parrilla 50 mm, extractor de cadenas 10 t/h"
+    ],
+    [
+     "CR-101",
+     "Criba rotativa (trómel) y separador magnético · 10 t/h; malla 2 y 12 mm; overband + detector de metales"
+    ],
+    [
+     "AN-101",
+     "Analizador NIR en línea y muestreador · Humedad, cenizas y extractivos lote a lote"
+    ]
+   ]
+  },
+  {
+   "id": "N2",
+   "name": "Nave de proceso térmico: secado, pirólisis, oxidador, caldera, ORC y activación",
+   "x": 68,
+   "y": 26,
+   "w": 36,
+   "h": 44,
+   "area_m2": 1600,
+   "type": "nave",
+   "height_m": 14,
+   "cat": "Proceso",
+   "text": "El corazón térmico: secadero, tambores de pirólisis, oxidador de gases, caldera de aceite térmico, ciclo ORC y horno de activación.",
+   "equipment": [
+    [
+     "SE-201",
+     "Secadero de banda de baja temperatura · 3,02 t/h; evapora 0,33 t/h; banda de 3 × 14 m; aire a 90–110 °C"
+    ],
+    [
+     "PI-301/302",
+     "Tambores rotatorios de pirólisis (calentamiento indirecto) · 1,32 t/h de hueso seco c/u; 550 °C; 45 min; Ø 1,8 × 14 m (13 m calentados); sellos con N₂"
+    ],
+    [
+     "EN-301/302",
+     "Enfriadores de carbonizado (tornillo encamisado) · 0,27 t/h c/u; de 550 a < 60 °C; agua de refrigeración"
+    ],
+    [
+     "OX-301",
+     "Oxidador térmico de gases · 9,7 MW de combustible medio (diseño 12 MW); ≥ 1.000 °C; ≥ 2 s; Ø 3,2 × 6 m; quemadores bajo NOx"
+    ],
+    [
+     "CA-301",
+     "Caldera de recuperación de aceite térmico · 10 MWt; aceite a 320/250 °C; calor útil medio 8,2 MW"
+    ],
+    [
+     "DN-301",
+     "Depuración de humos (SNCR + filtro de mangas) y chimenea · ≈ 12.000 Nm³/h; urea; mangas PTFE; chimenea de 30 m con muestreo"
+    ]
+   ]
+  },
+  {
+   "id": "N3",
+   "name": "Nave de lavado ácido, neutralización y aguas",
+   "x": 68,
+   "y": 80,
+   "w": 36,
+   "h": 28,
+   "area_m2": 1000,
+   "type": "nave",
+   "height_m": 10,
+   "cat": "Proceso",
+   "text": "Reactores de lavado con ácido clorhídrico, filtros prensa, secadero de paletas, neutralización y recuperación de sales. Suelo antiácido y cubetos.",
+   "equipment": [
+    [
+     "R-401/404",
+     "Reactores agitados de lavado ácido · 15 m³ c/u; HCl 2 M; 6 h + 2 h de carga y descarga; 1,08 t de carbonizado por lote; L/S = 8"
+    ],
+    [
+     "FP-401/402",
+     "Filtros prensa de membrana · ≈ 150 m², placas 1.200 × 1.200; lavado y soplado de torta; ciclo de 2 h"
+    ],
+    [
+     "SE-401",
+     "Secadero de paletas (aceite térmico) · 0,52 t/h de carbonizado seco; evapora 0,52 t/h; 40 m² de intercambio"
+    ],
+    [
+     "TK-401/402",
+     "Depósitos de HCl al 33 % (APQ) · 30 m³ c/u en cubeto; consumo ≈ 437 t/año (≈ 1,6 meses de reserva)"
+    ],
+    [
+     "NE-401",
+     "Neutralización con cal y concentración de salmuera · Reactor de 10 m³ + evaporador de doble efecto 0,5 m³/h; ≈ 274 t/año de sales"
+    ]
+   ]
+  },
+  {
+   "id": "N4",
+   "name": "Nave de carbonización (2 hornos de empuje)",
+   "x": 117,
+   "y": 26,
+   "w": 40,
+   "h": 50,
+   "area_m2": 2000,
+   "type": "nave",
+   "height_m": 12,
+   "cat": "Proceso",
+   "text": "Dos hornos de empuje de unos 30 m a 1.300 °C con su célula robotizada de carga de gacetas. Es la partida mayor de la inversión.",
+   "equipment": [
+    [
+     "HE-501/502",
+     "Hornos de empuje eléctricos a 1.300 °C · 262 kg/h de entrada y 217 kg/h de salida c/u; N₂; 4 filas × 2 pisos; ≈ 30 m; 1,0 MW instalados c/u"
+    ],
+    [
+     "RB-501",
+     "Célula robotizada de llenado y vaciado de gacetas · 62 gacetas/h; gacetas de grafito 400 × 400 × 120 mm (≈ 8,5 kg)"
+    ]
+   ]
+  },
+  {
+   "id": "N5",
+   "name": "Nave de molienda, clasificación y envasado (sala limpia)",
+   "x": 134,
+   "y": 84,
+   "w": 40,
+   "h": 30,
+   "area_m2": 1200,
+   "type": "nave",
+   "height_m": 12,
+   "cat": "Proceso",
+   "text": "Molienda por chorro, clasificación, desferrización, homogeneización y envasado en atmósfera de nitrógeno. Zona ATEX por polvo de carbono.",
+   "equipment": [
+    [
+     "MO-601",
+     "Premolino de púas · 0,43 t/h a < 150 µm"
+    ],
+    [
+     "MC-601/602",
+     "Molinos de chorro de lecho fluidizado con clasificador · 217 kg/h c/u; D50 5–10 µm; aire a 6 bar"
+    ],
+    [
+     "CL-601",
+     "Clasificador de corte fino, tamiz de seguridad y desferrizador · Corte < 1 µm; tamiz ultrasónico de 45 µm; separador magnético de 12.000 G"
+    ],
+    [
+     "EV-601",
+     "Homogeneizador de lotes y envasadora en N₂ · Lotes de 10 t; big bag de 500 kg y bidón de 100 kg; paletizado robotizado"
+    ]
+   ]
+  },
+  {
+   "id": "N6",
+   "name": "Almacén de producto y expedición",
+   "x": 134,
+   "y": 118,
+   "w": 40,
+   "h": 20,
+   "area_m2": 800,
+   "type": "nave",
+   "height_m": 9,
+   "cat": "Almacenes",
+   "text": "Treinta días de producto en big bags y bidones; muelle de expedición al vial sur.",
+   "equipment": []
+  },
+  {
+   "id": "TA",
+   "name": "Taller de mantenimiento y almacén de repuestos",
+   "x": 68,
+   "y": 116,
+   "w": 30,
+   "h": 20,
+   "area_m2": 600,
+   "type": "nave",
+   "height_m": 8,
+   "cat": "Servicios",
+   "text": "Taller mecánico y eléctrico y almacén de repuestos críticos: resistencias de los hornos, gacetas y piezas de los molinos.",
+   "equipment": []
+  },
+  {
+   "id": "NZ",
+   "name": "Planta de N₂ y aire comprimido",
+   "x": 160,
+   "y": 26,
+   "w": 14,
+   "h": 21,
+   "area_m2": 300,
+   "type": "nave",
+   "height_m": 6,
+   "cat": "Servicios",
+   "text": "Dos generadores de nitrógeno por PSA de 200 Nm³/h y los compresores de aire de la molienda.",
+   "equipment": [
+    [
+     "N2-501",
+     "Generadores de N₂ por PSA y respaldo líquido · 200 Nm³/h c/u al 99,99 %; depósito de N₂ líquido de 30 m³"
+    ],
+    [
+     "CP-601/602",
+     "Compresores de tornillo exentos de aceite · 1.800 Nm³/h a 7 bar c/u (uno en reserva)"
+    ]
+   ]
+  },
+  {
+   "id": "EE",
+   "name": "Edificio eléctrico y sala de control",
+   "x": 100,
+   "y": 158,
+   "w": 20,
+   "h": 20,
+   "area_m2": 400,
+   "type": "edif",
+   "height_m": 6,
+   "cat": "Servicios",
+   "text": "Cuadros de media y baja tensión, sala de control redundante y servidores del SCADA y del MES.",
+   "equipment": [
+    [
+     "CT-801",
+     "Centro de seccionamiento y transformación · 20 kV; 2 × 2.000 kVA; grupo electrógeno de emergencia 500 kVA"
+    ]
+   ]
+  },
+  {
+   "id": "AQ",
+   "name": "Depósitos de HCl y cubeto (APQ)",
+   "x": 116,
+   "y": 86,
+   "w": 14,
+   "h": 18,
+   "area_m2": null,
+   "type": "exterior",
+   "height_m": null,
+   "cat": "Seguridad",
+   "text": "Depósitos de ácido clorhídrico al 33 % en cubeto de retención, según la ITC MIE APQ-6.",
+   "equipment": [
+    [
+     "TK-401/402",
+     "Depósitos de HCl al 33 % (APQ) · 30 m³ c/u en cubeto; consumo ≈ 437 t/año (≈ 1,6 meses de reserva)"
+    ]
+   ]
+  },
+  {
+   "id": "CH",
+   "name": "Chimenea (30 m)",
+   "x": 99,
+   "y": 72,
+   "w": 4,
+   "h": 4,
+   "area_m2": null,
+   "type": "exterior",
+   "height_m": 30,
+   "cat": "Servicios",
+   "text": "Chimenea de 30 m con plataforma de muestreo para los humos depurados del oxidador.",
+   "equipment": [
+    [
+     "DN-301",
+     "Depuración de humos (SNCR + filtro de mangas) y chimenea · ≈ 12.000 Nm³/h; urea; mangas PTFE; chimenea de 30 m con muestreo"
+    ]
+   ]
+  },
+  {
+   "id": "AR",
+   "name": "Aerorrefrigeradores del ORC",
+   "x": 68,
+   "y": 3,
+   "w": 36,
+   "h": 9,
+   "area_m2": null,
+   "type": "exterior",
+   "height_m": null,
+   "cat": "Servicios",
+   "text": "Aerorrefrigeradores que disipan el calor del condensador del ORC que no aprovecha el secadero.",
+   "equipment": [
+    [
+     "RF-801",
+     "Aerorrefrigeradores y torre de refrigeración · Disipación del condensador del ORC y de los enfriadores"
+    ]
+   ]
+  },
+  {
+   "id": "CT",
+   "name": "Centro de transformación",
+   "x": 124,
+   "y": 160,
+   "w": 14,
+   "h": 12,
+   "area_m2": null,
+   "type": "exterior",
+   "height_m": null,
+   "cat": "Servicios",
+   "text": "Centro de seccionamiento y transformación de 20 kV, con 2 × 2.000 kVA.",
+   "equipment": [
+    [
+     "CT-801",
+     "Centro de seccionamiento y transformación · 20 kV; 2 × 2.000 kVA; grupo electrógeno de emergencia 500 kVA"
+    ]
+   ]
+  },
+  {
+   "id": "GN",
+   "name": "Planta satélite de GNL",
+   "x": 178,
+   "y": 158,
+   "w": 16,
+   "h": 22,
+   "area_m2": null,
+   "type": "exterior",
+   "height_m": null,
+   "cat": "Seguridad",
+   "text": "Planta satélite de gas natural licuado para arranques y respaldo: Mancha Real no tiene gas canalizado.",
+   "equipment": [
+    [
+     "GN-801",
+     "Planta satélite de GNL (respaldo y arranques) · Depósito de 60 m³ y vaporizadores"
+    ]
+   ]
+  },
+  {
+   "id": "PC",
+   "name": "Depósito y grupo de PCI (600 m³)",
+   "x": 186,
+   "y": 96,
+   "w": 12,
+   "h": 20,
+   "area_m2": null,
+   "type": "exterior",
+   "height_m": null,
+   "cat": "Seguridad",
+   "text": "Depósito de 600 m³ y grupo de bombeo de la red de protección contra incendios.",
+   "equipment": []
+  },
+  {
+   "id": "BP",
+   "name": "Balsa de pluviales y primera lluvia",
+   "x": 146,
+   "y": 184,
+   "w": 48,
+   "h": 12,
+   "area_m2": null,
+   "type": "exterior",
+   "height_m": null,
+   "cat": "Servicios",
+   "text": "Balsa de laminación de pluviales y de primera lluvia, con separador de hidrocarburos.",
+   "equipment": []
+  },
+  {
+   "id": "PK",
+   "name": "Aparcamiento",
+   "x": 55,
+   "y": 160,
+   "w": 40,
+   "h": 20,
+   "area_m2": null,
+   "type": "exterior",
+   "height_m": null,
+   "cat": "Personas",
+   "text": "Aparcamiento de personal y visitas.",
+   "equipment": []
+  },
+  {
+   "id": "BS",
+   "name": "Báscula y control de accesos",
+   "x": 30,
+   "y": 147,
+   "w": 16,
+   "h": 6,
+   "area_m2": null,
+   "type": "exterior",
+   "height_m": null,
+   "cat": "Personas",
+   "text": "Báscula puente y control de accesos de camiones.",
+   "equipment": []
+  },
+  {
+   "id": "RS",
+   "name": "Zona libre para un tercer horno",
+   "x": 160,
+   "y": 52,
+   "w": 14,
+   "h": 26,
+   "area_m2": null,
+   "type": "exterior",
+   "height_m": null,
+   "cat": "Servicios",
+   "text": "Espacio reservado para un tercer horno de carbonización si el mercado lo pide.",
+   "equipment": []
+  }
+ ],
+ "acceso": "Acceso desde la A-320 por el vial sur",
+ "superficie": {
+  "built": 9500,
+  "foot": 9886,
+  "parcel": 40000
+ }
+}

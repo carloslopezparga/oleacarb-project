@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<style>
+html, body { margin: 0; background: #121614; }
+svg { display: block; }
+</style></head>
+<body>
+<svg id="v" xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080"></svg>
+<script>
+const DATA = __DATA__;
+const C = { bg: "#121614", bg2: "#1A201C", ink: "#F1F0E8", mut: "#A6AD9F", rule: "#2E3631", olive: "#8C9A55", oliveB: "#A3B465", oliveL: "#C9D49A", oliveD: "#3C4A1C",
+  ochre: "#D6A54A", terra: "#D08A62", ion: "#2DBCCB", ionL: "#7FE0EA", paper: "#F6F4EE" };
+const SERIF = "'Source Serif 4', Georgia, serif", SANS = "'IBM Plex Sans', sans-serif", MONO = "'IBM Plex Mono', monospace";
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const eo = x => 1 - Math.pow(1 - x, 3), eio = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const fio = (t, a, b, fi = .6, fo = .6) => Math.min(eo(seg(t, a, a + fi)), 1 - eio(seg(t, b - fo, b)));
+const es = (x, d = 0) => { const s = Math.abs(x).toFixed(d).split("."); s[0] = s[0].replace(/\B(?=(\d{3})+(?!\d))/g, "."); return (x < 0 ? "−" : "") + s.join(","); };
+function T(x, y, s, o = {}) {
+  const sz = o.size || 32, f = o.font || SANS, w = o.weight || 400, fill = o.fill || C.ink, a = o.anchor || "start", op = o.op === undefined ? 1 : o.op, ls = o.ls || 0;
+  const st = o.italic ? "font-style:italic;" : "";
+  return `<text x="${x}" y="${y}" font-family="${f}" font-size="${sz}" font-weight="${w}" fill="${fill}" text-anchor="${a}" opacity="${op}" letter-spacing="${ls}" style="${st}">${s}</text>`;
+}
+const ALMOND = (cx, cy, s) => `M${cx},${cy - 45 * s} C${cx + 31 * s},${cy - 23 * s} ${cx + 31 * s},${cy + 23 * s} ${cx},${cy + 45 * s} C${cx - 31 * s},${cy + 23 * s} ${cx - 31 * s},${cy - 23 * s} ${cx},${cy - 45 * s} Z`;
+function hexPts(cx, cy, r, rot = 30) { let p = []; for (let i = 0; i < 6; i++) { const a = (60 * i + rot) * Math.PI / 180; p.push((cx + r * Math.cos(a)).toFixed(1) + "," + (cy + r * Math.sin(a)).toFixed(1)); } return p.join(" "); }
+function logo(cx, cy, s, op = 1) {
+  return `<g opacity="${op}"><g transform="rotate(-32 ${cx} ${cy})"><path d="${ALMOND(cx, cy, s)}" fill="#6E8034"/></g><polygon points="${hexPts(cx, cy, 15.5 * s)}" fill="none" stroke="${C.paper}" stroke-width="${3.2 * s}"/><circle cx="${cx}" cy="${cy}" r="${4.8 * s}" fill="${C.ion}"/></g>`;
+}
+// fondo: retícula hexagonal tenue, precalculada
+let HEX = ""; (function () { const r = 34, dx = r * Math.sqrt(3), dy = r * 1.5; for (let j = -1; j < 1080 / dy + 2; j++) for (let i = -1; i < 1920 / dx + 2; i++) { const x = i * dx + (j % 2 ? dx / 2 : 0), y = j * dy; HEX += `<polygon points="${hexPts(x, y, r)}"/>`; } })();
+const DEFS = `<defs>
+ <radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#6E8034" stop-opacity=".42"/><stop offset="1" stop-color="#121614" stop-opacity="0"/></radialGradient>
+ <radialGradient id="glowI" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#2DBCCB" stop-opacity=".35"/><stop offset="1" stop-color="#121614" stop-opacity="0"/></radialGradient>
+ <linearGradient id="vig" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".35"/><stop offset=".25" stop-color="#000" stop-opacity="0"/><stop offset=".75" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></linearGradient>
+ <clipPath id="alm"><path transform="rotate(-32 1340 540)" d="${ALMOND(1340, 540, 8.6)}"/></clipPath>
+ <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="6"/></filter>
+</defs>`;
+const WM = (x, y, size, anchor = "start", ls = 2) => T(x, y, `OLEA<tspan fill="${C.ink}">CARB</tspan>`, { size, font: SERIF, weight: 600, fill: C.oliveB, anchor, ls });
+function bg(t, hexOp = .06) { return `<rect width="1920" height="1080" fill="${C.bg}"/><g fill="none" stroke="${C.olive}" stroke-width="1" opacity="${hexOp}">${HEX}</g>`; }
+function caption(t, txt, a, b) { const o = fio(t, a, b, .4, .4); return o > 0 ? T(160, 1000, txt, { size: 20, font: MONO, fill: C.mut, op: o }) : ""; }
+function corner(t, op) { return op > 0 ? `<g opacity="${op * .9}">${logo(1584, 990, .5)}${WM(1614, 1000, 26)}</g>` : ""; }
+
+/* ---------------- escenas ---------------- */
+function s1(t) { // 0–8: el hueso
+  let o = bg(t, .05);
+  const k = eo(seg(t, .2, 2.6)), L = 2600;
+  o += `<circle cx="1340" cy="540" r="520" fill="url(#glow)" opacity="${eo(seg(t, .5, 3))}"/>`;
+  o += `<g clip-path="url(#alm)" opacity="${.85 * eo(seg(t, 1.2, 3.4))}"><g fill="none" stroke="${C.olive}" stroke-width="1.6">`;
+  const r = 30, dx = r * Math.sqrt(3), dy = r * 1.5;
+  for (let j = 0; j < 30; j++) for (let i = 0; i < 26; i++) { const x = 900 + i * dx + (j % 2 ? dx / 2 : 0), y = 80 + j * dy; const d = Math.hypot(x - 1340, y - 540); const show = seg(t, 1.2 + d / 420, 1.9 + d / 420); if (show > 0) o += `<polygon points="${hexPts(x, y, r * (.6 + .4 * show))}" opacity="${show}"/>`; }
+  o += `</g></g>`;
+  o += `<g transform="rotate(-32 1340 540)"><path d="${ALMOND(1340, 540, 8.6)}" fill="none" stroke="${C.oliveB}" stroke-width="3" stroke-dasharray="${L}" stroke-dashoffset="${L * (1 - k)}"/></g>`;
+  // iones de sodio que entran en la red de carbono a lo largo del eje de la almendra
+  const ax = Math.sin(32 * Math.PI / 180), ay = Math.cos(32 * Math.PI / 180);
+  [-230, -115, 0, 115, 230].forEach((dd, i) => {
+    const a = eio(seg(t, 4.9 + i * .22, 6.0 + i * .22)); if (a <= 0) return;
+    const tx = 1340 + ax * dd, ty = 540 + ay * dd, x = tx + 520 * (1 - a), y = ty - 60 * (1 - a);
+    o += `<circle cx="${x}" cy="${y}" r="26" fill="${C.ion}" opacity="${.18 * a}" filter="url(#soft)"/><circle cx="${x}" cy="${y}" r="9" fill="${C.ion}" opacity="${a}"/>`;
+    if (a > .98) o += `<circle cx="${tx}" cy="${ty}" r="${9 + 30 * seg(t, 6.0 + i * .22, 6.8 + i * .22)}" fill="none" stroke="${C.ion}" stroke-width="1.5" opacity="${1 - seg(t, 6.0 + i * .22, 6.8 + i * .22)}"/>`;
+  });
+  if (t > 5) o += T(1700, 300, "Na⁺", { size: 30, font: MONO, fill: C.ionL, op: fio(t, 5, 8, .5, .6) });
+  const out = 1 - eio(seg(t, 7.2, 8));
+  o += `<g opacity="${out}">`;
+  o += T(160, 400, "Jaén es la mayor provincia", { size: 62, font: SERIF, weight: 600, op: eo(seg(t, .8, 1.8)) });
+  o += T(160, 474, "olivarera del mundo.", { size: 62, font: SERIF, weight: 600, op: eo(seg(t, 1.3, 2.3)) });
+  o += T(160, 580, "Su hueso de aceituna se vende como combustible,", { size: 34, font: SERIF, fill: C.mut, op: eo(seg(t, 2.8, 3.7)) });
+  o += T(160, 628, "a unos 0,20 € el kilo.", { size: 34, font: SERIF, fill: C.mut, op: eo(seg(t, 3.3, 4.2)) });
+  o += T(160, 676, "AVEBIOM, 2.º trimestre de 2026", { size: 20, font: MONO, fill: C.mut, op: .8 * eo(seg(t, 3.5, 4.4)) });
+  o += T(160, 790, "¿Y si fuera el ánodo de una batería?", { size: 42, font: SERIF, italic: true, fill: C.ionL, op: eo(seg(t, 5.0, 5.9)) });
+  o += `</g>`;
+  return o;
+}
+function s2(t) { // 8–18: el problema
+  let o = bg(t, .05);
+  const u = t - 8;
+  o += T(160, 250, "Las baterías de ion-sodio no usan litio, cobalto ni níquel.", { size: 44, font: SERIF, weight: 600, op: fio(u, .2, 9.6, .8, .6) });
+  const a1 = fio(u, 1.2, 9.6, .6, .6), c1 = Math.round(95 * eo(seg(u, 1.2, 3.2)));
+  o += T(160, 510, (c1 >= 95 ? "&gt;" : "") + c1 + `<tspan font-size="90" fill="${C.olive}"> %</tspan>`, { size: 180, font: SERIF, weight: 600, fill: C.oliveB, op: a1 });
+  o += T(170, 600, "de la capacidad de celdas de sodio prevista", { size: 30, fill: C.ink, op: a1 });
+  o += T(170, 642, "para 2030 está en China", { size: 30, fill: C.ink, op: a1 });
+  o += T(170, 694, "IEA, febrero de 2026", { size: 20, font: MONO, fill: C.mut, op: a1 });
+  const a2 = fio(u, 4.2, 9.6, .6, .6), c2 = 1.2 + .3 * eo(seg(u, 4.4, 5.8));
+  o += `<g opacity="${a2}" transform="translate(0,${24 * (1 - eo(seg(u, 4.2, 5)))})">` + T(1000, 510, "1,2–" + es(c2, 1) + `<tspan font-size="90" fill="#1E8C98"> kg</tspan>`, { size: 180, font: SERIF, weight: 600, fill: C.ion });
+  o += T(1010, 600, "de hard carbon, el material del ánodo,", { size: 30 }) + T(1010, 642, "por cada kWh de batería", { size: 30 });
+  o += T(1010, 694, "SMM, septiembre de 2026", { size: 20, font: MONO, fill: C.mut }) + `</g>`;
+  o += `<line x1="160" y1="820" x2="${160 + 1600 * eo(seg(u, 6.6, 7.6))}" y2="820" stroke="${C.rule}" stroke-width="2"/>`;
+  o += T(160, 900, "Casi todo el hard carbon se fabrica en China. Europa necesita un proveedor propio.", { size: 38, font: SERIF, italic: true, fill: C.ink, op: fio(u, 7, 9.7, .7, .5) });
+  return o;
+}
+function s3(t) { // 18–25: OLEACARB y Mancha Real
+  let o = bg(t, .05); const u = t - 18;
+  const k = eo(seg(u, .2, 1.4)), mv = eio(seg(u, 3.2, 4.4));
+  const cx = 960 - 640 * mv, cy = 470 - 250 * mv, s = (3.2 - 1.6 * mv) * (.6 + .4 * k);
+  o += `<circle cx="${cx}" cy="${cy}" r="${380 * (1 - mv * .6)}" fill="url(#glow)" opacity="${k}"/>`;
+  o += logo(cx, cy, s, k);
+  const wm = fio(u, 1.0, 7, .8, .6);
+  o += `<g opacity="${wm * (1 - mv)}">` + WM(960, 700, 110, "middle", 6) + T(960, 770, "DEL HUESO DE ACEITUNA AL ÁNODO DE SODIO", { size: 26, weight: 500, fill: C.ion, anchor: "middle", ls: 7 }) + `</g>`;
+  // mapa esquemático
+  const m = fio(u, 3.6, 7, .8, .6);
+  if (m > 0) {
+    const towns = { "Jaén": [37.7796, -3.7849], "Mancha Real": [37.7864, -3.6125], "Baeza": [37.9939, -3.4708], "Úbeda": [38.0133, -3.3705], "Bailén": [38.0937, -3.7765], "Villanueva del Arzobispo": [38.1686, -3.0097] };
+    const X = lo => 620 + (lo + 3.95) * 1000, Y = la => 900 - (la - 37.65) * 1150;
+    const [mx, my] = [X(-3.6125), Y(37.7864)];
+    o += `<g opacity="${m}">`;
+    // anillos de distancia (≈ 11 px/km a esta escala)
+    [[25, 275], [50, 550]].forEach(([km, r], i) => { const g = eo(seg(u, 3.8 + i * .3, 5 + i * .3));
+      o += `<circle cx="${mx}" cy="${my}" r="${r * g}" fill="none" stroke="${C.olive}" stroke-width="1.5" stroke-dasharray="6 8" opacity=".55"/>` + T(mx - r * g * .94 + 6, my + r * g * .34 - 8, km + " km", { size: 20, font: MONO, fill: C.olive, op: g }); });
+    Object.entries(towns).forEach(([n, [la, lo]], i) => { const x = X(lo), y = Y(la); const p = eo(seg(u, 4 + i * .2, 5 + i * .2));
+      if (n !== "Mancha Real") { o += `<line x1="${x}" y1="${y}" x2="${x + (mx - x) * p}" y2="${y + (my - y) * p}" stroke="${C.olive}" stroke-width="3" opacity=".8"/>`; o += `<circle cx="${x}" cy="${y}" r="7" fill="${C.mut}"/>` + T(x + 14, y - 12, n, { size: 24, fill: C.mut }); } });
+    o += `<circle cx="${mx}" cy="${my}" r="${26 + 6 * Math.sin(u * 4)}" fill="${C.ion}" opacity=".22"/><circle cx="${mx}" cy="${my}" r="12" fill="${C.ion}"/>`;
+    o += T(mx + 26, my + 50, "Mancha Real (Jaén)", { size: 40, font: SERIF, weight: 600 }) + T(mx + 26, my + 90, "junto a la extractora de El Tejar", { size: 26, fill: C.ionL });
+    o += T(420, 205, "Una planta de unas 3.000 t/año de hard carbon", { size: 42, font: SERIF, weight: 600, op: m }) + T(420, 252, `con ${es(DATA.b.recv)} t/año de hueso de almazaras y orujeras de la provincia`, { size: 26, fill: C.mut, op: m });
+    o += `</g>`;
+  }
+  return o;
+}
+const STG = [
+  ["Recepción", "báscula · NIR · cribado", "33 días", "en silos"], ["Secado", "con calor residual", "11 → 2 %", "de humedad"],
+  ["Pirólisis", "2 tambores · N₂ · 45 min", "550 °C", ""], ["Lavado ácido", "retira K y Ca", "HCl 2 M", "6 h"],
+  ["Carbonización", "2 hornos de empuje · N₂", "1.300 °C", ""], ["Molienda", "chorro de aire · clasificador", "5–10 µm", "D50"],
+  ["Envasado", "lotes de 10 t certificados", "≥ 330", "mAh/g"]];
+function s4(t) { // 25–45: el proceso
+  let o = bg(t, .04); const u = t - 25;
+  const fade = fio(u, 0, 20, .7, .7);
+  const cw = 380, gap = 140, x0 = 240, y0 = 360;
+  const act = clamp(Math.floor((u - 1.2) / 2.55), 0, 6), prog = eio(seg(u, 1.2, 1.2 + 2.55 * 6.2));
+  const camX = -prog * (6 * (cw + gap)) + 0;
+  o += `<g opacity="${fade}">`;
+  o += T(160, 150, "El proceso", { size: 30, font: MONO, fill: C.oliveB }) + T(160, 220, "Siete etapas, ningún residuo a vertedero", { size: 56, font: SERIF, weight: 600 });
+  o += `<g transform="translate(${camX + 720 - cw / 2 - x0 + 0},0)">`;
+  // corriente principal
+  const total = 6 * (cw + gap);
+  o += `<line x1="${x0 + cw}" y1="${y0 + 150}" x2="${x0 + total}" y2="${y0 + 150}" stroke="${C.olive}" stroke-width="10" opacity=".25"/>`;
+  o += `<line x1="${x0 - 200}" y1="${y0 + 150}" x2="${x0 + total + cw + 220}" y2="${y0 + 150}" stroke="${C.oliveB}" stroke-width="6" stroke-dasharray="18 22" stroke-dashoffset="${-u * 90}"/>`;
+  const flows = [es(DATA.b.recv), es(DATA.b.recv - DATA.rej), es(DATA.b.pyro_in), es(DATA.b.char), es(DATA.b.washed), es(DATA.b.carb), es(DATA.b.hc)];
+  STG.forEach(([n, sub, big, unit], i) => {
+    const x = x0 + i * (cw + gap), on = i === act, a = 1;
+    const sc = on ? 1.04 : 1;
+    o += `<g transform="translate(${x + cw / 2},${y0 + 150}) scale(${sc}) translate(${-(x + cw / 2)},${-(y0 + 150)})">`;
+    o += `<rect x="${x}" y="${y0}" width="${cw}" height="300" rx="10" fill="${on ? "#202820" : C.bg2}" stroke="${on ? C.ion : C.rule}" stroke-width="${on ? 4 : 2}"/>`;
+    o += `<circle cx="${x + 40}" cy="${y0 + 42}" r="20" fill="${on ? C.ion : C.olive}"/>` + T(x + 40, y0 + 51, String(i + 1), { size: 24, weight: 700, fill: C.bg, anchor: "middle" });
+    o += T(x + 74, y0 + 52, n, { size: 34, font: SERIF, weight: 600 });
+    o += T(x + 30, y0 + 175, big, { size: 76, font: SERIF, weight: 600, fill: on ? C.ionL : C.oliveL });
+    o += T(x + 30, y0 + 215, unit, { size: 24, fill: C.mut });
+    o += T(x + 30, y0 + 268, sub, { size: 24, fill: C.mut });
+    o += `</g>`;
+    o += T(x - gap / 2, y0 + 136, flows[i] + " t", { size: 22, font: MONO, fill: C.oliveL, anchor: "middle" });
+  });
+  // corrientes laterales
+  const gx = x0 + 2 * (cw + gap) + cw / 2, fx = x0 + 5 * (cw + gap) + cw / 2;
+  o += `<path d="M${gx},${y0 + 300} L${gx},${y0 + 470}" stroke="${C.ochre}" stroke-width="6" stroke-dasharray="14 16" stroke-dashoffset="${-u * 70}" fill="none"/>`;
+  o += `<rect x="${gx - 260}" y="${y0 + 480}" width="520" height="120" rx="10" fill="#2A2416" stroke="${C.ochre}" stroke-width="2"/>`;
+  o += T(gx, y0 + 528, "Volátiles al oxidador térmico", { size: 30, font: SERIF, weight: 600, anchor: "middle" }) + T(gx, y0 + 572, `${es(DATA.heat.useful)} GWh de calor · ${es(DATA.heat.orc_e, 1)} GWh eléctricos (ORC)`, { size: 24, fill: C.ochre, anchor: "middle" });
+  o += `<path d="M${fx},${y0 + 300} L${fx},${y0 + 470}" stroke="${C.ion}" stroke-width="5" stroke-dasharray="12 14" stroke-dashoffset="${-u * 60}" fill="none"/>`;
+  o += `<rect x="${fx - 230}" y="${y0 + 480}" width="460" height="120" rx="10" fill="#14292B" stroke="${C.ion}" stroke-width="2"/>`;
+  o += T(fx, y0 + 528, "Finos a activación con vapor", { size: 30, font: SERIF, weight: 600, anchor: "middle" }) + T(fx, y0 + 572, `${es(DATA.b.ac)} t/año de carbón activo`, { size: 24, fill: C.ionL, anchor: "middle" });
+  // producto
+  const px = x0 + total + cw + 230;
+  o += `<rect x="${px}" y="${y0 + 40}" width="420" height="220" rx="12" fill="${C.oliveD}" stroke="${C.oliveB}" stroke-width="3"/>`;
+  o += T(px + 210, y0 + 112, "Hard carbon", { size: 52, font: SERIF, weight: 600, anchor: "middle" }) + T(px + 210, y0 + 166, `${es(DATA.b.hc)} t/año`, { size: 36, fill: C.oliveL, anchor: "middle" }) + T(px + 210, y0 + 210, `${es(DATA.b15.hc)} t/año con el 15 % objetivo`, { size: 22, fill: C.mut, anchor: "middle" });
+  o += `</g></g>`;
+  o += caption(t, "Caudales anuales del caso de diseño (14 % de rendimiento); 15 % como objetivo", 26.2, 44.5);
+  return o;
+}
+function iso(x, y, z, s) { return [(x - y) * 0.866 * s, (x + y) * 0.5 * s - z * s]; }
+const HGT = { OF: 8, N1: 10, SI: 18, N2: 16, N3: 10, N4: 12, N5: 11, N6: 9, TA: 7, NZ: 7, EE: 6 };
+const GREY = ["#BFC5B9", "#8E958A", "#6E756B"];
+const CAT = { OF: ["#5CC3CF", "#2E8A96", "#236B75"], SI: ["#E2C27A", "#B8913F", "#8F6F2C"], N6: ["#E2C27A", "#B8913F", "#8F6F2C"], TA: GREY, NZ: GREY, EE: GREY };
+const PROC = ["#C9D49A", "#8C9A55", "#5E6E31"];
+const ROUTE = [["N1", 40, 74, "Recepción y limpieza"], ["SI", 40, 41, "Silos de hueso"], ["N2", 86, 48, "Secado, pirólisis y energía"], ["N3", 86, 94, "Lavado ácido"],
+  ["N4", 137, 51, "Carbonización a 1.300 °C"], ["N5", 154, 99, "Molienda y envasado"], ["N6", 154, 128, "Almacén y expedición"]];
+function quad(P, pts, fill, extra = "") { return `<polygon points="${pts.map(q => P(...q)).join(" ")}" fill="${fill}" ${extra}/>`; }
+function box(P, x, y, w, d, h, cols, roof) {
+  let o = quad(P, [[x, y + d, 0], [x + w, y + d, 0], [x + w, y + d, h], [x, y + d, h]], cols[1]) + quad(P, [[x + w, y, 0], [x + w, y + d, 0], [x + w, y + d, h], [x + w, y, h]], cols[2]) +
+    quad(P, [[x, y, h], [x + w, y, h], [x + w, y + d, h], [x, y + d, h]], cols[0], `stroke="#121614" stroke-width=".6" stroke-opacity=".35"`);
+  if (roof) for (let k = 1; k < 4; k++) { const yy = y + d * k / 4; o += `<polyline points="${P(x + 2, yy, h)} ${P(x + w - 2, yy, h)}" stroke="#FFFFFF" stroke-width="1.4" opacity=".28" fill="none"/>`; }
+  return o;
+}
+function shadow(P, x, y, w, d, h) { const sx = h * .35, sy = h * .9; return quad(P, [[x, y, 0], [x + w, y, 0], [x + w + sx, y + sy, 0], [x + w + sx, y + d + sy, 0], [x + sx, y + d + sy, 0], [x, y + d, 0]], "#000", `opacity=".32"`); }
+function cyl(P, s, cx, cy, r, h, cols) {
+  const [bx, by] = P(cx, cy, 0).split(",").map(Number), [tx, ty] = P(cx, cy, h).split(",").map(Number); const rx = r * s * 1.22, ry = r * s * 0.7;
+  return `<rect x="${bx - rx}" y="${ty}" width="${2 * rx}" height="${by - ty}" fill="${cols[1]}"/><ellipse cx="${bx}" cy="${by}" rx="${rx}" ry="${ry}" fill="${cols[1]}"/><rect x="${bx}" y="${ty}" width="${rx}" height="${by - ty}" fill="${cols[2]}" opacity=".7"/><ellipse cx="${tx}" cy="${ty}" rx="${rx}" ry="${ry}" fill="${cols[0]}"/>`;
+}
+function plant(u, s, ox, oy, rise, routeK) {
+  let o = "";
+  const P = (a, b, c) => { const [px, py] = iso(a, b, c, s); return (px + ox).toFixed(1) + "," + (py + oy).toFixed(1); };
+  // terreno, El Tejar al norte, viales y zonas verdes
+  o += quad(P, [[-30, -60, 0], [230, -60, 0], [230, 230, 0], [-30, 230, 0]], "#161B18");
+  o += quad(P, [[0, -52, 0], [200, -52, 0], [200, -4, 0], [0, -4, 0]], "#1D221F");
+  o += box(P, 20, -46, 70, 30, 9, ["#3C433E", "#2E3430", "#262B28"], false) + box(P, 104, -42, 22, 22, 14, ["#3C433E", "#2E3430", "#262B28"], false);
+  o += quad(P, [[0, 0, 0], [200, 0, 0], [200, 200, 0], [0, 200, 0]], "#1E2621", `stroke="${C.olive}" stroke-width="2" stroke-dasharray="10 8"`);
+  [[0, 146, 186, 8], [58, 14, 8, 132], [106, 14, 8, 132], [176, 14, 8, 140], [14, 14, 8, 132], [14, 14, 170, 8], [114, 78, 62, 4]].forEach(([x, y, w, d]) => o += quad(P, [[x, y, 0], [x + w, y, 0], [x + w, y + d, 0], [x, y + d, 0]], "#38413B"));
+  o += quad(P, [[0, 190, 0], [146, 190, 0], [146, 200, 0], [0, 200, 0]], "#2D3A22") + quad(P, [[196, 0, 0], [200, 0, 0], [200, 200, 0], [196, 200, 0]], "#2D3A22");
+  // exteriores bajos
+  DATA.outdoor.forEach(([id, n, x, y, w, d]) => { if (id === "CH" || id === "RS") return; const col = { BP: "#1F4E55", PK: "#2B312D", AQ: "#5A3B2C", GN: "#5A3B2C" }[id] || "#454D47"; o += quad(P, [[x, y, 0], [x + w, y, 0], [x + w, y + d, 0], [x, y + d, 0]], col); });
+  const rs = DATA.outdoor.find(r => r[0] === "RS"); o += quad(P, [[rs[2], rs[3], 0], [rs[2] + rs[4], rs[3], 0], [rs[2] + rs[4], rs[3] + rs[5], 0], [rs[2], rs[3] + rs[5], 0]], "none", `stroke="${C.ochre}" stroke-width="1.5" stroke-dasharray="6 5"`);
+  // cinta desde El Tejar
+  o += `<polyline points="${P(40, -16, 2)} ${P(40, 26, 2)}" stroke="${C.ochre}" stroke-width="${.9 * s}" fill="none" opacity=".85"/>`;
+  const items = DATA.layout.map(([id, name, x, y, w, d, area, typ], k) => ({ id, x, y, w, d, typ, k })).sort((a, b) => (a.x + a.y) - (b.x + b.y));
+  const hOf = it => (HGT[it.id] || 8) * eo(seg(rise, it.k * .14, it.k * .14 + .9));
+  items.forEach(it => { const h = hOf(it); if (h > .05 && it.typ !== "silo") o += shadow(P, it.x, it.y, it.w, it.d, h); });
+  items.forEach(it => { const h = hOf(it); if (h <= .05) return; const cols = CAT[it.id] || PROC;
+    if (it.typ === "silo") [[7.5, 7.5], [22.5, 7.5], [7.5, 22.5], [22.5, 22.5]].forEach(([a, b]) => o += cyl(P, s, it.x + a, it.y + b, 5.25, h, cols));
+    else o += box(P, it.x, it.y, it.w, it.d, h, cols, it.typ === "nave");
+    if (it.id === "N2") { const ch = eo(seg(rise, 1.4, 2.2)); if (ch > 0) o += cyl(P, s, 101, 74, 1.4, 30 * ch, ["#B3B8AE", "#7E857A", "#5B6158"]); } });
+  // camiones por el vial sur
+  [0, .34, .67].forEach(ph => { const q = ((u * .085 + ph) % 1); o += box(P, 4 + 178 * q, 148, 9, 3.4, 3.2, ["#ECEAE2", "#BDBBB3", "#8F8D86"], false); });
+  // ruta del proceso por encima de las cubiertas
+  if (routeK > 0) {
+    const Z = 27, pts = ROUTE.map(r => P(r[1], r[2], Z).split(",").map(Number));
+    let L = 0; const cum = [0]; for (let i = 1; i < pts.length; i++) { L += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); cum.push(L); }
+    const shown = L * routeK;
+    o += `<polyline points="${pts.map(p => p.join(",")).join(" ")}" fill="none" stroke="${C.ion}" stroke-width="3" stroke-linejoin="round" stroke-dasharray="${shown} ${L}" opacity=".9"/>`;
+    ROUTE.forEach((r, i) => { if (cum[i] > shown + 1) return; const [px, py] = pts[i]; const it = items.find(q => q.id === r[0]); const base = P(r[1], r[2], hOf(it)).split(",").map(Number);
+      o += `<line x1="${px}" y1="${py}" x2="${base[0]}" y2="${base[1]}" stroke="${C.ion}" stroke-width="1.2" stroke-dasharray="3 4" opacity=".7"/>`;
+      o += `<circle cx="${px}" cy="${py}" r="17" fill="${C.bg}" stroke="${C.ion}" stroke-width="2.5"/>` + T(px, py + 7, String(i + 1), { size: 19, weight: 700, fill: C.ionL, anchor: "middle" }); });
+    if (routeK >= 1) for (let j = 0; j < 5; j++) { const d = ((u * 120 + j * L / 5) % L); let i = 1; while (i < cum.length - 1 && cum[i] < d) i++; const f = (d - cum[i - 1]) / (cum[i] - cum[i - 1]);
+      const x = pts[i - 1][0] + (pts[i][0] - pts[i - 1][0]) * f, y = pts[i - 1][1] + (pts[i][1] - pts[i - 1][1]) * f; o += `<circle cx="${x}" cy="${y}" r="5" fill="${C.ionL}"/>`; }
+  }
+  return o;
+}
+function s5(t) { // 45–60: recorrido por la planta
+  let o = bg(t, .03); const u = t - 45;
+  const fade = fio(u, 0, 15, .6, .7);
+  const keys = [[0, 3.6], [3.6, 6.6, 86, 48, "Nave de proceso térmico", "secado · pirólisis · oxidador · caldera · ORC", "1.600 m²"], [6.6, 9.6, 137, 51, "Nave de carbonización", "2 hornos de empuje a 1.300 °C en N₂", "2.000 m²"], [9.6, 12.6, 154, 99, "Molienda y envasado", "molinos de chorro · sala limpia · lotes de 10 t", "1.200 m²"], [12.6, 15.5]];
+  const kf = keys.find(k => u >= k[0] && u < k[1]) || keys[keys.length - 1], idx = keys.indexOf(kf), prev = keys[Math.max(0, idx - 1)];
+  const ZM = 2.0, camOf = k => k[2] ? { x: k[2], y: k[3], s: ZM, sx: 820, sy: 560 } : { x: 100, y: 100, s: 1, sx: 860, sy: 600 };
+  const a = eio(seg(u, kf[0], kf[0] + 1.1)), c0 = camOf(prev), c1 = camOf(kf), L = (p, q) => p + (q - p) * a;
+  const zs = L(c0.s, c1.s), s = 3.0 * zs, [cx, cy] = iso(L(c0.x, c1.x), L(c0.y, c1.y), 0, s), ox = L(c0.sx, c1.sx) - cx, oy = L(c0.sy, c1.sy) - cy;
+  const hdr = 1 - clamp(2.5 * (zs - 1) / (ZM - 1));
+  o += `<g opacity="${fade}">` + plant(u, s, ox, oy, u * 1.25, eio(seg(u, 2.0, 3.8))) + `</g>`;
+  o += `<g opacity="${fade * hdr}">` + T(160, 150, "La planta", { size: 30, font: MONO, fill: C.oliveB }) + T(160, 220, "Cuatro hectáreas junto a El Tejar", { size: 56, font: SERIF, weight: 600 });
+  ROUTE.forEach((r, i) => { const la = eo(seg(u, 2.2 + i * .22, 2.8 + i * .22)); o += `<g opacity="${la}"><circle cx="1500" cy="${410 + i * 56}" r="15" fill="${C.bg}" stroke="${C.ion}" stroke-width="2"/>` + T(1500, 416 + i * 56, String(i + 1), { size: 16, weight: 700, fill: C.ionL, anchor: "middle" }) + T(1530, 418 + i * 56, r[3], { size: 24, fill: C.ink }) + `</g>`; });
+  o += T(1485, 360, "Recorrido del material", { size: 20, font: MONO, fill: C.mut, op: eo(seg(u, 2, 2.6)) });
+  o += T(980, 268, "El Tejar (existente)", { size: 20, font: MONO, fill: C.mut, op: eo(seg(u, 1, 1.6)) });
+  o += `</g>`;
+  if (kf[4]) { const lo2 = Math.min(eo(seg(u, kf[0] + .8, kf[0] + 1.3)), 1 - eio(seg(u, kf[1] - .35, kf[1]))); o += `<g opacity="${lo2 * fade}"><rect x="1220" y="740" width="590" height="170" rx="10" fill="#141917" stroke="${C.ion}" stroke-width="2"/>` + T(1250, 800, kf[4], { size: 38, font: SERIF, weight: 600 }) + T(1250, 846, kf[5], { size: 24, fill: C.ionL }) + T(1250, 884, kf[6], { size: 20, font: MONO, fill: C.mut }) + `</g>`; }
+  o += `<g opacity="${hdr}">` + caption(t, "Parcela de 200 × 200 m · 9.500 m² construidos · el material avanza de oeste a este", 45.8, 59.6) + `</g>`;
+  return o;
+}
+function s6(t) { // 60–70: cifras
+  let o = bg(t, .05); const u = t - 60;
+  const F = [[DATA.b15.hc, 0, "t/año", "de hard carbon al 15 % de rendimiento"], [DATA.capex, 1, "M€", "de inversión en la planta"], [DATA.staff, 0, "", "empleos directos"],
+    [(DATA.el.orc + DATA.el.fv) / DATA.el.total * 100, 0, "%", "de la electricidad, generada en planta"], [DATA.fixed * 100, 0, "%", "del carbono del hueso queda fijado"], [0, 0, "t", "de residuos a vertedero"]];
+  const fade = fio(u, 0, 10, .5, .7);
+  o += `<g opacity="${fade}">` + T(160, 150, "En cifras", { size: 30, font: MONO, fill: C.oliveB });
+  F.forEach(([v, d, un, lab], i) => { const col = i % 3, row = Math.floor(i / 3); const x = 160 + col * 560, y = 360 + row * 270; const a = eo(seg(u, .4 + i * .3, 1.2 + i * .3)); const val = v * eo(seg(u, .4 + i * .3, 2 + i * .3));
+    o += `<g opacity="${a}" transform="translate(0,${(1 - a) * 30})"><line x1="${x}" y1="${y - 120}" x2="${x + 120 + 360 * a}" y2="${y - 120}" stroke="${i === 5 ? C.ion : C.olive}" stroke-width="3"/>` + T(x, y, es(val, d) + (un ? `<tspan font-size="48" fill="${C.mut}"> ${un}</tspan>` : ""), { size: 116, font: SERIF, weight: 600, fill: i === 5 ? C.ionL : C.ink }) + T(x, y + 54, lab, { size: 27, fill: C.mut }) + `</g>`; });
+  const b = eo(seg(u, 3.6, 4.4));
+  o += `<g opacity="${b}" transform="translate(0,${(1 - b) * 20})"><rect x="160" y="850" width="1600" height="110" rx="10" fill="#14292B" stroke="${C.ion}" stroke-width="2"/>`;
+  o += T(196, 900, `A 7 €/kg y 15 % de rendimiento, la planta está en el umbral: VAN ${es(DATA.npvC, 1)} M€ sin ayudas,`, { size: 30, fill: C.ink });
+  o += T(196, 940, `+${es(DATA.npvCA, 1)} M€ con las ayudas a las que puede optar. Por eso la decisión se toma por fases.`, { size: 30, fill: C.ionL }) + `</g>`;
+  o += `</g>`;
+  return o;
+}
+function s7(t) { // 70–79: decisión por fases y cierre
+  let o = bg(t, .05); const u = t - 70;
+  const f1 = fio(u, 0, 5.6, .5, .6);
+  const steps = [["2027", "Fase 0", "laboratorio y piloto", 0.6], ["dic-2027", "Hito 1", "≥ 15 % · ≥ 330 mAh/g", null], ["2028-29", "Fase 1", "planta de muestras", 3.7], ["dic-2029", "Hito 2", "precio ≥ 7,1 €/kg", null], ["2030-32", "Obra y arranque", "planta industrial", 3.7 + DATA.capex]];
+  o += `<g opacity="${f1}">` + T(160, 150, "Cómo se decide", { size: 30, font: MONO, fill: C.oliveB }) + T(160, 220, "Invertir por fases, con dos puntos de parada", { size: 58, font: SERIF, weight: 600 });
+  const base = 650, k = 3.9, X = i => 240 + i * 360;
+  o += T(160, 300, "Capital comprometido acumulado, M€", { size: 20, font: MONO, fill: C.mut, op: eo(seg(u, .6, 1.2)) });
+  steps.forEach(([d, n, s, m], i) => { if (m === null) return; const g = eio(seg(u, .8 + i * .3, 1.8 + i * .3)), h = m * k * g, x = X(i);
+    o += `<rect x="${x - 34}" y="${base - 30 - h}" width="68" height="${h}" fill="${i === 4 ? C.ion : C.oliveB}" opacity="${i === 4 ? .85 : 1}"/>` + T(x, base - 42 - h, es(m * g, 1), { size: 30, font: SERIF, weight: 600, anchor: "middle", op: g }); });
+  o += `<line x1="${X(0)}" y1="${base}" x2="${X(0) + (X(4) - X(0)) * eo(seg(u, .3, 2.3))}" y2="${base}" stroke="${C.olive}" stroke-width="4"/>`;
+  steps.forEach(([d, n, s], i) => { const x = X(i), a = eo(seg(u, .5 + i * .3, 1.1 + i * .3)), hito = n.startsWith("Hito");
+    o += `<g opacity="${a}">` + (hito ? `<rect x="${x - 16}" y="${base - 16}" width="32" height="32" transform="rotate(45 ${x} ${base})" fill="${C.ochre}"/>` : `<circle cx="${x}" cy="${base}" r="16" fill="${i === 4 ? C.ion : C.oliveB}"/>`) +
+      T(x, base + 52, d, { size: 22, font: MONO, fill: C.mut, anchor: "middle" }) + T(x, base + 98, n, { size: 36, font: SERIF, weight: 600, anchor: "middle", fill: hito ? C.ochre : C.ink }) + T(x, base + 136, s, { size: 23, fill: C.mut, anchor: "middle" }) + `</g>`; });
+  o += T(160, 950, "Si un hito no se cumple, se para con 0,6 M€ o con 3,7 M€ invertidos, no con 65.", { size: 30, fill: C.ionL, op: eo(seg(u, 2.8, 3.6)) });
+  o += `</g>`;
+  const f2 = Math.min(eo(seg(u, 5.6, 6.6)), 1 - eio(seg(u, 8.4, 9)));
+  if (f2 > 0) { o += `<g opacity="${f2}"><circle cx="960" cy="420" r="320" fill="url(#glow)"/>` + logo(960, 420, 2.6 * (.92 + .08 * eo(seg(u, 5.6, 7)))) + WM(960, 640, 96, "middle", 6) +
+    T(960, 700, "DEL HUESO DE ACEITUNA AL ÁNODO DE SODIO", { size: 24, weight: 500, fill: C.ion, anchor: "middle", ls: 7 }) + T(960, 840, "Planta de hard carbon · Mancha Real (Jaén)", { size: 30, font: SERIF, anchor: "middle" }) +
+    T(960, 888, "Proyectos · GITI · ETSII-UPM · Grupo T1 · noviembre de 2026", { size: 22, font: MONO, fill: C.mut, anchor: "middle" }) + `</g>`; }
+  return o;
+}
+function render(t) {
+  let o = DEFS;
+  const drift = (a, b, k = .03) => { const z = 1 + k * seg(t, a, b); return [`<g transform="translate(960 540) scale(${z.toFixed(5)}) translate(-960 -540)">`, `</g>`]; };
+  let w = ["", ""];
+  if (t < 8) w = drift(0, 8); else if (t < 18) w = drift(8, 18); else if (t < 25) w = drift(18, 25, .02); else if (t >= 60 && t < 70) w = drift(60, 70, .025); else if (t >= 70) w = drift(70, 79, .03);
+  o += w[0];
+  if (t < 8) o += s1(t); else if (t < 18) o += s2(t); else if (t < 25) o += s3(t); else if (t < 45) o += s4(t); else if (t < 60) o += s5(t); else if (t < 70) o += s6(t); else o += s7(t);
+  o += w[1];
+  if (t >= 25 && t < 70) o += corner(t, Math.min(eo(seg(t, 25, 26)), 1 - eio(seg(t, 69.4, 70))));
+  o += `<rect width="1920" height="1080" fill="url(#vig)"/>`;
+  document.getElementById("v").innerHTML = o;
+}
+window.render = render;
+render(0);
+</script></body></html>

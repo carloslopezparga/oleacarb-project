@@ -1,0 +1,33 @@
+---
+/* Reproductor del vídeo o, si se configura PUBLIC_YOUTUBE_ID, una fachada ligera de youtube-nocookie. */
+import VideoPlayer from './VideoPlayer.svelte';
+import { VIDEO, PUBLIC_YOUTUBE_ID } from '../config';
+interface Props { eager?: boolean }
+const { eager = false } = Astro.props;
+const label = 'Vídeo de 79 segundos sin voz, con los textos en la imagen: el hueso de aceituna como precursor, el problema del ánodo en Europa, las siete etapas del proceso, un recorrido por la planta en Mancha Real y las cifras clave.';
+---
+{PUBLIC_YOUTUBE_ID ? (
+  <div class="yt" data-id={PUBLIC_YOUTUBE_ID}>
+    <img src={VIDEO.poster} alt="" width="1920" height="1080" loading="lazy" />
+    <button type="button" class="btn btn--ion yt-play">Reproducir en YouTube · {VIDEO.duration}</button>
+  </div>
+) : eager ? (
+  <VideoPlayer client:load sd={VIDEO.sd} hd={VIDEO.hd} poster={VIDEO.poster} label={label} duration={VIDEO.seconds} />
+) : (
+  <VideoPlayer client:visible sd={VIDEO.sd} hd={VIDEO.hd} poster={VIDEO.poster} label={label} duration={VIDEO.seconds} />
+)}
+<script>
+  document.querySelectorAll<HTMLElement>('.yt').forEach(el => {
+    el.querySelector('button')?.addEventListener('click', () => {
+      const f = document.createElement('iframe');
+      f.src = `https://www.youtube-nocookie.com/embed/${el.dataset.id}?autoplay=1`;
+      f.allow = 'autoplay; fullscreen; picture-in-picture'; f.allowFullscreen = true; f.title = 'Vídeo de OLEACARB';
+      el.replaceChildren(f);
+    });
+  });
+</script>
+<style>
+  .yt { position: relative; aspect-ratio: 16 / 9; background: #000; }
+  .yt img, .yt :global(iframe) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border: 0; }
+  .yt-play { position: absolute; left: 50%; top: 50%; translate: -50% -50%; }
+</style>

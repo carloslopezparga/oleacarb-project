@@ -1,0 +1,45 @@
+---
+import Base from '../layouts/Base.astro';
+import VideoBlock from '../components/VideoBlock.astro';
+import { VIDEO, SITE_URL } from '../config';
+const sdAbs = new URL(VIDEO.sd, SITE_URL).toString();
+---
+<Base title="OLEACARB · La planta en 79 segundos"
+  description="Del hueso de aceituna al ánodo de sodio: el problema, el proceso, un recorrido por la planta y las cifras clave."
+  path="/video" ogImage={VIDEO.og} ogType="video.other" headerBase="/" bodyClass="on-char">
+  <Fragment slot="head">
+    <meta property="og:video" content={sdAbs} />
+    <meta property="og:video:secure_url" content={sdAbs} />
+    <meta property="og:video:type" content="video/mp4" />
+    <meta property="og:video:width" content="1280" />
+    <meta property="og:video:height" content="720" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+  </Fragment>
+  <main id="main" class="vpage on-char chapter">
+    <div class="wrap">
+      <h1>OLEACARB · La planta en 79&nbsp;segundos</h1>
+      <p class="lede">Del hueso de aceituna al ánodo de sodio: el problema, el proceso, un recorrido por la planta y las cifras clave.</p>
+      <div class="vframe"><VideoBlock eager /></div>
+      <p class="vlinks">
+        <a class="btn btn--ion" href="/">Ver la web</a>
+        <a class="btn btn--line" href={VIDEO.hd} download="oleacarb-1080.mp4">Descargar MP4 <span class="mono">1080p</span></a>
+        <span class="mono dur">Duración {VIDEO.duration}</span>
+      </p>
+    </div>
+  </main>
+</Base>
+<style>
+  .vpage { min-height: 100svh; padding: calc(var(--header-h) + clamp(28px, 6vh, 64px)) 0 calc(48px + env(safe-area-inset-bottom, 0px)); }
+  .vpage h1 { font-size: clamp(30px, 4.4vw, 56px); max-width: 22ch; color: var(--char-ink); }
+  .vpage .lede { margin: 14px 0 clamp(20px, 3vw, 32px); }
+  .vframe { margin-inline: calc(-1 * clamp(0px, 2vw, 24px)); }
+  .vlinks { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 18px; }
+  .vlinks .mono { font-size: 12.5px; }
+  .dur { color: var(--char-muted); font-size: 13px !important; }
+  @media (max-width: 720px) { .vframe { margin-inline: calc(-1 * var(--side)); } }
+</style>
+<script>
+  import { initMotion } from '../lib/motion';
+  initMotion();
+</script>

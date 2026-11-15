@@ -1,0 +1,66 @@
+---
+import SectionHead from '../components/SectionHead.astro';
+import Logo from '../components/Logo.astro';
+import { PUBLIC_MEMORIA_URL } from '../config';
+// BRIEF §14
+const SOURCES = [
+  ['IEA (2026)', 'Sodium-ion battery momentum grows, but challenges remain', '17-02-2026', 'https://www.iea.org/commentaries/sodium-ion-battery-momentum-grows-but-challenges-remain'],
+  ['SMM (2026)', 'Sodium-ion battery included in the strengthened list during the 15th Five-Year Plan', 'sep-2026', 'https://news.metal.com/newscontent/104121178'],
+  ['SPIR (Qidian Research Institute), recopilado por NaCells (2026)', 'Hard carbon anode market report 2026', '2026', 'https://www.nacells.com/reports/hard-carbon-2026'],
+  ['Energy-Storage.news (2026)', 'CATL and HyperStrong sign 60 GWh sodium-ion agreement', '27-04-2026', 'https://www.energy-storage.news/a-turning-point-catl-and-hyperstrong-sign-60gwh-sodium-ion-agreement/'],
+  ['CRU (2026)', 'Sodium-ion battery technology gains traction in 2026', '06-03-2026', 'https://www.crugroup.com/en/communities/thought-leadership/2026/Sodium-ion-battery-technology-gains-traction-in-2026'],
+  ['ESS News (2026)', 'Spain’s Bihar Batteries targets sodium-ion pilot cell line by 2027', '18-06-2026', 'https://www.ess-news.com/2026/06/18/spains-bihar-batteries-targets-sodium-ion-pilot-cell-line-by-2027/'],
+  ['AVEBIOM (2026)', 'Índice de precios de biocombustibles, 2T-2026', '2T-2026', 'https://garzongreenenergy.es/blog/precio-hueso-de-aceituna-2026/'],
+  ['Agronews Castilla y León (2018), con datos de AVEBIOM', 'Ventas de hueso de aceituna como biocombustible', '2018', 'https://www.agronewscastillayleon.com/las-ventas-del-hueso-de-aceituna-como-biocombustible-ascienden-casi-51-millones-de-euros-anuales'],
+  ['El Español · Invertia (2026)', 'El biochar se pone de moda en España (Carboliva)', '23-08-2026', 'https://www.elespanol.com/invertia/20260823/biochar-pone-moda-espana-afronta-reto-incrementar-toneladas-produccion/1003744359818_0.html'],
+  ['Voß, T. et al. (2025)', 'Energy and carbon footprint of hard carbon and graphite anode production. Energy & Environmental Science, 18, 8104', '2025', 'https://pubs.rsc.org/en/content/articlepdf/2025/ee/d5ee00415b'],
+  ['Recio-Ruiz, R. et al. (2025)', 'Olive stone pyrolysis and char properties. Biomass and Bioenergy, 196, 107676', '2025', 'https://riuma.uma.es/bitstreams/b2a1b6a5-6ace-411f-80bf-ee83b4cf410b/download'],
+  ['OLEACARB (2026)', 'Memoria del proyecto: modelo revisado, capítulos 4–16 y anexos A–H. Fuente de todas las cifras de planta y economía', '2026', '']
+];
+---
+<section id="fuentes" class="sec on-char chapter fuentes" aria-labelledby="fuentes-h">
+  <div class="wrap">
+    <SectionHead n="13" name="Fuentes" id="fuentes" title="Fuentes" />
+    <ol class="src-list" role="list">
+      {SOURCES.map(([a, t, d, u], i) => (
+        <li>
+          <span class="mono n">{String(i + 1).padStart(2, '0')}</span>
+          <span><b>{a}.</b> {u ? <a href={u} rel="noopener">{t}</a> : <span>{t}</span>}. <span class="mono d">{d}</span></span>
+        </li>
+      ))}
+    </ol>
+    <div class="foot">
+      <div class="foot-a">
+        <Logo />
+        <p>Cifras del modelo revisado de la memoria del proyecto, en euros constantes de 2026. Estimación de estudios previos (±&#8239;30&#8239;%).</p>
+        <p>Foto de portada: Veinticuatro de Jahén, <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" rel="license noopener">CC BY-SA 4.0</a>, virada a duotono.</p>
+      </div>
+      <div class="foot-b">
+        <p class="mono">Proyectos (55000037) · GITI · ETSII · Universidad Politécnica de Madrid · Grupo T1 · noviembre de 2026</p>
+        <p class="foot-links">
+          {PUBLIC_MEMORIA_URL && <a class="btn btn--ion" href={PUBLIC_MEMORIA_URL}>Descargar la memoria (PDF)</a>}
+          <a class="btn btn--line" href="/video">Ver el vídeo</a>
+          <a class="btn btn--line" href="#inicio">Volver arriba <span aria-hidden="true">↑</span></a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+<style>
+  @layer sections {
+    .fuentes { padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px)); }
+    .src-list { columns: 2 420px; column-gap: calc(var(--gutter) * 2); margin: 0; }
+    .src-list li { break-inside: avoid; display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 8px; padding: 10px 0; border-top: 1px solid var(--char-rule); font-size: 14.5px; color: var(--char-muted); }
+    .src-list b { color: var(--char-ink); font-weight: 600; }
+    .src-list a { color: var(--char-ink); }
+    .src-list .n { font-size: 12px; padding-top: 3px; }
+    .src-list .d { font-size: 12.5px; }
+    .foot { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--gutter); margin-top: clamp(48px, 7vw, 96px); padding-top: 28px; border-top: 1px solid var(--char-ink); color: var(--char-muted); font-size: 14.5px; }
+    .foot-a { display: grid; gap: 12px; align-content: start; }
+    .foot-a a, .foot-b a:not(.btn) { color: var(--char-ink); }
+    .foot-b { display: grid; gap: 18px; align-content: start; }
+    .foot-b .mono { font-size: 12.5px; }
+    .foot-links { display: flex; flex-wrap: wrap; gap: 8px; }
+    @media (max-width: 760px) { .foot { grid-template-columns: minmax(0, 1fr); } }
+  }
+</style>

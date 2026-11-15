@@ -1,0 +1,24 @@
+---
+import SectionHead from '../components/SectionHead.astro';
+import VideoBlock from '../components/VideoBlock.astro';
+import { VIDEO } from '../config';
+---
+<section id="video" class="sec on-char chapter vid" aria-labelledby="video-h">
+  <div class="wrap">
+    <SectionHead n="11" name="Vídeo" id="video" title="La planta en 79 segundos"
+      lede="Del hueso de aceituna al ánodo de sodio: el problema, el proceso, un recorrido por la planta y las cifras clave. Sin voz; los textos van en la imagen." />
+    <div class="vid-frame"><VideoBlock /></div>
+    <p class="vid-links">
+      <a class="btn btn--line" href="/video">Abrir a pantalla completa <span aria-hidden="true">↗</span></a>
+      <span class="mono">{VIDEO.duration} · MP4 alojado en esta web</span>
+    </p>
+  </div>
+</section>
+<style>
+  @layer sections {
+    .vid-frame { margin-inline: calc(-1 * clamp(0px, 2vw, 24px)); }
+    .vid-links { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 18px; }
+    .vid-links .mono { font-size: 13px; color: var(--char-muted); }
+    @media (max-width: 720px) { .vid-frame { margin-inline: calc(-1 * var(--side)); } }
+  }
+</style>

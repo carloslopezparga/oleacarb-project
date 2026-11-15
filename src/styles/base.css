@@ -62,11 +62,11 @@
   }
 
   .skip {
-    position: fixed; left: 12px; top: -100px; z-index: 200;
+    position: fixed; left: 12px; top: 8px; z-index: 200;
     background: var(--ion); color: var(--char); padding: 10px 14px; border-radius: 4px;
-    font-weight: 600;
+    font-weight: 600; clip-path: inset(50%); opacity: 0;
   }
-  .skip:focus { top: 8px; }
+  .skip:focus { clip-path: none; opacity: 1; }
 
   .num, .tab { font-variant-numeric: tabular-nums; }
   .mono { font-family: var(--f-mono); }

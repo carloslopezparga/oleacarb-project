@@ -3,7 +3,7 @@ import { markInView, reduced, gsap } from '../lib/motion';
 import { num } from '../lib/format';
 
 export function initInView(): void {
-  markInView('.waffle, .eq, .prec, .vbars, .terr-map, .pl-fig, [data-inview]', 0.3);
+  markInView('.waffle, .eq, .prec, .vbars, .terr-map, .pl-fig, .gantt, .fp, [data-inview]', 0.3);
   // La cuenta de la ecuación del reto rueda una vez.
   document.querySelectorAll<HTMLElement>('.eqn').forEach(el => {
     if (reduced) return;

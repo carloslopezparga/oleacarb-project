@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Página no encontrada · OLEACARB" description="Esta dirección no existe en la web de OLEACARB." path="/404" headerBase="/" bodyClass="on-char">
+  <main id="main" class="nf on-char chapter">
+    <div class="wrap">
+      <p class="mono k">Error 404 · hoja no encontrada</p>
+      <h1>Esta dirección no está en el plano</h1>
+      <p class="lede">Puede que el enlace esté mal copiado. Las direcciones de la memoria son la portada, <code>#proceso</code>, <code>#planta</code>, <code>#simulador</code> y <code>/video</code>.</p>
+      <p class="links"><a class="btn btn--ion" href="/">Ir a la portada</a><a class="btn btn--line" href="/video">Ver el vídeo</a></p>
+    </div>
+  </main>
+</Base>
+<style>
+  .nf { min-height: 100svh; display: grid; align-items: center; padding: calc(var(--header-h) + 40px) 0 60px; }
+  .k { font-size: 13px; color: var(--char-muted); margin-bottom: 16px; }
+  h1 { font-size: clamp(36px, 6vw, 72px); max-width: 16ch; color: var(--char-ink); }
+  .lede { margin: 18px 0 28px; }
+  code { font-family: var(--f-mono); font-size: .9em; color: var(--char-ink); }
+  .links { display: flex; flex-wrap: wrap; gap: 10px; }
+</style>

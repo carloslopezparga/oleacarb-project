@@ -2,7 +2,7 @@
 
 Web del proyecto OLEACARB (Grupo T1, Proyectos 55000037, GITI, ETSII-UPM): una planta en Mancha Real (Jaén) que convierte hueso de aceituna en *hard carbon* para el ánodo de las baterías de ion-sodio.
 
-**Producción:** https://oleacarb.vercel.app *(pendiente de confirmar al importar el proyecto en Vercel)*
+**Producción:** https://oleacarb.vercel.app
 
 ## Direcciones de los QR de la memoria
 
@@ -49,7 +49,7 @@ Para pasar las e2e contra producción: `E2E_BASE_URL=https://oleacarb.vercel.app
 ```
 src/
   pages/        index.astro · video.astro · 404.astro
-  sections/     Hero · Reto · Territorio · Viaje · Proceso · Planta · Balances · Calendario · Simulador · Impacto · Video · Equipo · Fuentes
+  sections/     Hero · Reto · Territorio · Viaje · Proceso · Planta · Balances · Calendario · Simulador · Impacto · Video · Fuentes
   components/   Header · Logo · SectionHead · Cajetin · Pfd · Fonts · Simulator.svelte · Sankey.svelte · PlantSheet.svelte · VideoPlayer.svelte …
   scripts/      hero · viaje · proceso · planta · plant3d (three.js) · inview
   lib/          model.ts · sim.ts · montecarlo.ts · format.ts · data.ts · pfd.ts · sankey.ts · motion.ts · anchors.ts · sheet.ts
@@ -80,7 +80,7 @@ docs/           BRIEF.md · PROMPT.md · DIRECCION.md · reference/ · brand/ ·
 
 JS de la carga inicial: 67 kB comprimidos (GSAP, ScrollTrigger, SplitText, Lenis y el código de la página). Las islas, three.js y el *worker* de Monte Carlo se cargan cuando hacen falta.
 
-**Pruebas e2e** (Playwright, Chromium y WebKit en 390 × 844 y 1440 × 900): las 13 anclas en carga en frío, ausencia de scroll horizontal de 360 a 1440 px, los cuatro escenarios del simulador y el estado en la URL, `/video` (src, póster, rangos y Open Graph), la página 404 y el modo de movimiento reducido.
+**Pruebas e2e** (Playwright, Chromium y WebKit en 390 × 844 y 1440 × 900): las 12 anclas en carga en frío, ausencia de scroll horizontal de 360 a 1440 px, los cuatro escenarios del simulador y el estado en la URL, `/video` (src, póster, rangos y Open Graph), la página 404 y el modo de movimiento reducido.
 
 ## Despliegue en Vercel
 

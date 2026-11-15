@@ -24,8 +24,7 @@
 | 9 | Simulador | hoja `E-01` | mando en 4 columnas, resultados en 8 | — (aquí manda la legibilidad) |
 | 10 | Impacto | papel liso | cifra gigante «0,21» con columna estrecha de texto; barras y destinos | la barra de 25,1 que se sale del ancho del texto |
 | 11 | Vídeo | carbón | reproductor grande, título a la izquierda | — |
-| 12 | Equipo | papel | cajetín de firmas de plano | — |
-| 13 | Fuentes | carbón | lista a dos columnas y pie | — |
+| 12 | Fuentes | carbón | lista a dos columnas y pie, con la nota de cómo se hizo la web | — |
 
 ## Los cuatro momentos de movimiento
 
@@ -48,4 +47,4 @@ Todo lo demás se dibuja, se llena o se ensambla con 150–250 ms y `ease-out`: 
 - **Balances:** Sankey vertical con rótulos de 12 px; el anillo debajo.
 - **Calendario:** fases e hitos; «Ver todas las actividades» despliega la lista completa.
 - **Simulador:** barra fija con VAN y TIR mientras se mueven los deslizadores; gráfico debajo; tornado y Monte Carlo en pestañas.
-- **Impacto, vídeo, equipo y fuentes:** una columna, sin tablas anchas.
+- **Impacto, vídeo y fuentes:** una columna, sin tablas anchas.

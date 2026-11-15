@@ -7,7 +7,7 @@ const { base = '' } = Astro.props;   // '' en la portada, '/' en /video y /404
 const SECTIONS = [
   ['inicio', 'Inicio'], ['reto', 'El reto'], ['territorio', 'Territorio'], ['viaje', 'Una tonelada'],
   ['proceso', 'Proceso'], ['planta', 'Planta'], ['balances', 'Balances'], ['calendario', 'Calendario'],
-  ['simulador', 'Simulador'], ['impacto', 'Impacto'], ['video', 'Vídeo'], ['equipo', 'Equipo'], ['fuentes', 'Fuentes']
+  ['simulador', 'Simulador'], ['impacto', 'Impacto'], ['video', 'Vídeo'], ['fuentes', 'Fuentes']
 ] as const;
 const NAV = ['viaje', 'proceso', 'planta', 'balances', 'calendario', 'simulador', 'impacto'];
 const label = (id: string) => SECTIONS.find(s => s[0] === id)![1];
@@ -31,7 +31,7 @@ const label = (id: string) => SECTIONS.find(s => s[0] === id)![1];
 <div id="menu" class="menu on-char" role="dialog" aria-modal="true" aria-label="Índice de secciones" hidden>
   <div class="wrap menu-in">
     <div class="menu-top">
-      <span class="mono menu-k">Índice · 13 secciones</span>
+      <span class="mono menu-k">Índice · {SECTIONS.length} secciones</span>
       <button class="menu-close" type="button" aria-label="Cerrar el índice">Cerrar <span aria-hidden="true">×</span></button>
     </div>
     <ol class="menu-list" role="list">
